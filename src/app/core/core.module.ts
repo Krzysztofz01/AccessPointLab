@@ -1,6 +1,9 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GlobalScopeService } from './services/global-scope.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './interceptors/token.interceptor';
+import { LocalStorageService } from './services/local-storage.service';
 
 @NgModule({
   declarations: [],
@@ -8,7 +11,10 @@ import { GlobalScopeService } from './services/global-scope.service';
     CommonModule
   ],
   providers: [
-    GlobalScopeService
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+
+    GlobalScopeService,
+    LocalStorageService
   ]
 })
 export class CoreModule {
