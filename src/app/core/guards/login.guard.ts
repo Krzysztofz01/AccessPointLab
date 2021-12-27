@@ -12,7 +12,7 @@ export class LoginGuard implements CanActivate {
     const user = this.authService.userValue;
     if(!user) return true;
 
-    this.router.navigate(['/panel']);
+    this.router.navigate(['']);
     return false;
   }
   
