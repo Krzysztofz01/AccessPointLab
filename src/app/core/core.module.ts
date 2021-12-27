@@ -4,6 +4,7 @@ import { GlobalScopeService } from './services/global-scope.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { LocalStorageService } from './services/local-storage.service';
+import { AccessPointService } from './services/access-point.service';
 
 @NgModule({
   declarations: [],
@@ -14,7 +15,8 @@ import { LocalStorageService } from './services/local-storage.service';
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
 
     GlobalScopeService,
-    LocalStorageService
+    LocalStorageService,
+    AccessPointService
   ]
 })
 export class CoreModule {
