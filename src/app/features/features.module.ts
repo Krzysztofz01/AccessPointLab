@@ -1,18 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainModule } from './main/main.module';
-import { AuthModule } from '../auth/auth.module';
-
+import { LoginModule } from './login/login.module';
 
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
+    CommonModule,
+    MainModule,
+    LoginModule
   ],
   exports: [
     MainModule,
-    AuthModule
+    LoginModule
   ]
 })
 export class FeaturesModule { }

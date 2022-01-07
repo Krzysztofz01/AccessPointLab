@@ -10,6 +10,7 @@ import { PasswordResetRequest } from '../contracts/password-reset.request';
 import { RefreshResponse } from '../contracts/refresh.response';
 import { AuthUser } from '../models/auth-user.model';
 import jwt_decode  from 'jwt-decode';
+import { RegisterRequest } from '../contracts/register.request';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class AuthService {
     this.user = this.userSubject.asObservable();
     
     this.globalScopeService.server.subscribe(e => {
-      this.serverPath = `${e}/api/v${this.authVersion}/auth`;
+      this.serverPath = `http://${e}/api/v${this.authVersion}/auth`;
     });
   }
 
@@ -86,6 +87,14 @@ export class AuthService {
         console.error(error);
       }
     });
+  }
+
+  /**
+  * Register new account
+  * @returns Register response as a observable
+  */
+  public register(contract: RegisterRequest): Observable<void> {
+    return this.httpClient.post<void>(`${ this.serverPath }/register`, contract, { withCredentials: true });
   }
 
   /**
