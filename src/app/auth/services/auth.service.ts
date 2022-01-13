@@ -16,10 +16,14 @@ import { RegisterRequest } from '../contracts/register.request';
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly serverUrlCookieName = "accesspointmap_server_url";
+  private readonly refreshTokenCookieName = "accesspointmap_refresh_token";
+
   private userSubject: BehaviorSubject<AuthUser>;
   public user: Observable<AuthUser>;
 
   private readonly authVersion = 1;
+  
   private serverPath: string;
 
   private refreshTokenTimeout: any;
@@ -29,8 +33,27 @@ export class AuthService {
     this.user = this.userSubject.asObservable();
     
     this.globalScopeService.server.subscribe(e => {
+      if (e === "" && this.cookieService.check(this.serverUrlCookieName)) {
+        this.serverPath = this.cookieService.get(this.serverUrlCookieName);
+        return;
+      }
+
+      if (e.startsWith("http://")) {
+        this.serverPath = `${e}/api/v${this.authVersion}/auth`;
+        return;
+      }
+
       this.serverPath = `http://${e}/api/v${this.authVersion}/auth`;
     });
+  }
+
+  /**
+   * Get the stripped server url
+   * @returns Server url
+   */
+  public getServerName(): string {
+    //TODO: Strip server path
+    return this.serverPath;
   }
 
   /**
@@ -51,6 +74,10 @@ export class AuthService {
       .pipe(map(res => {
         const authUser = this.mapAuthUser(res.jsonWebToken);
         
+        this.cookieService.set(this.serverUrlCookieName, this.serverPath, {
+          sameSite: "None"
+        });
+
         this.userSubject.next(authUser);
         this.startRefreshTokenTimer();
         return res;
@@ -73,6 +100,15 @@ export class AuthService {
   }
 
   /**
+   * Check if there is a session to refresh
+   * @returns Boolean value indicating the presence of auth cookies
+   */
+  public verifyCookies(): boolean {
+    return this.cookieService.check(this.refreshTokenCookieName) &&
+      this.cookieService.check(this.serverUrlCookieName);
+  }
+
+  /**
   * Revoke the refresh token and remove related cookies
   */
   public logout(): void {
@@ -80,8 +116,11 @@ export class AuthService {
       complete: () => {
         this.stopRefreshTokenTimer();
         this.userSubject.next(null);
-        this.cookieService.delete('refreshToken');
-        this.router.navigate(['/login']);
+
+        this.cookieService.delete(this.refreshTokenCookieName);
+        this.cookieService.delete(this.serverUrlCookieName);
+
+        this.router.navigate(['/auth']);
       },
       error: (error) => {
         console.error(error);
@@ -105,7 +144,10 @@ export class AuthService {
       complete: () => {
         this.stopRefreshTokenTimer();
         this.userSubject.next(null);
-        this.cookieService.delete('refreshToken');
+        
+        this.cookieService.delete(this.refreshTokenCookieName);
+        this.cookieService.delete(this.serverUrlCookieName);
+
         this.router.navigate(['/login']);
       },
       error: (error) => {

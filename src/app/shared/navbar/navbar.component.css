@@ -1,0 +1,8 @@
+/* Z-index between bootstrap's offcanvas and modal */
+.navbar-floating-index {
+    z-index: 1055;
+}
+
+b {
+    cursor: pointer;
+}

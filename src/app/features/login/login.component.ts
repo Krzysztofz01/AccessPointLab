@@ -29,6 +29,8 @@ export class LoginComponent implements OnInit {
       email: new FormControl('', [ Validators.required, Validators.email ]),
       password: new FormControl('', [ Validators.required, Validators.minLength(6) ])
     });
+
+    this.initializeRefreshToken();
   }
 
   /**
@@ -92,5 +94,21 @@ export class LoginComponent implements OnInit {
         }
       });
     }, () => {});
+  }
+
+  /**
+  * Check for a pending session and authenticate.
+  */
+  private initializeRefreshToken(): void {
+    if(!this.authService.verifyCookies()) return;
+
+    this.authService.refreshToken().subscribe({
+      complete: () => {
+        this.router.navigate(['']);
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 }
