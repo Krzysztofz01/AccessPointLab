@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { environment } from 'src/environments/environment';
 import { EncryptionTypes } from './encryption-types.enum';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-accesspoint-map',
@@ -25,6 +26,9 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
   @Input() centerLongitude: number | undefined;
   @Output() accessPointClick = new EventEmitter<Array<String>>(false);
 
+  public keywordFilterForm: FormGroup;
+  public encryptionTypeFilterForm: FormGroup;
+
   public readonly mapId = "openlayers_accesspoints_map";
   private readonly initialZoom = 16;
   private readonly initialCenterLatitude = 51;
@@ -32,6 +36,9 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
   private readonly featureAccessPointIdProp = "accesspoints_id";
   private readonly featureLayerNameProp = "layer_name";
   private readonly featureLayerName = "accesspoints_layer";
+  
+  public readonly encryptionTypesArray = Object.values(EncryptionTypes).filter(value => typeof value === 'string') as Array<String>;
+  public readonly deafultSelectedEncryptionType = EncryptionTypes.All.toString();
 
   private map: Map;
   private accessPoints: Array<AccessPoint>;
@@ -52,7 +59,24 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    //TODO: Initialize filter forms
+    this.encryptionTypeFilterForm = new FormGroup({
+      selectedEncryption: new FormControl()
+    });
+
+    this.keywordFilterForm = new FormGroup({
+      keyword: new FormControl()
+    });
+
+    this.encryptionTypeFilterForm.get('selectedEncryption').valueChanges.subscribe(value => {
+      const type = EncryptionTypes[this.keywordFilterForm.get('keyword').value];
+      const features = this.generateAccessPointFeatures(this.accessPoints, type, value);
+      this.swapVectorLayer(features);
+    });
+
+    this.keywordFilterForm.get('keyword').valueChanges.subscribe(value => {
+      const features = this.generateAccessPointFeatures(this.accessPoints, value, this.encryptionTypeFilterForm.get('selectedEncryption').value);
+      this.swapVectorLayer(features);
+    });
   }
 
   /**
@@ -118,7 +142,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Check if AccessPoint SSID, BSSID or manufacturer string contain a ceratin keyword
+   * Check if AccessPoint SSID, BSSID string contain a ceratin keyword
    * @param keyword Keyword used to check the AccessPoint entity
    * @param accessPoint AccessPoint entity
    * @return Boolean value representing if the AccessPoint entity is matching the requirements
@@ -130,7 +154,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
       return param.trim().toLowerCase().includes(keyword.trim().toLowerCase());
     };
 
-    return query(accessPoint.ssid) || query(accessPoint.bssid) || query(accessPoint.manufacturer);
+    return query(accessPoint.ssid) || query(accessPoint.bssid);
   }
 
   /**
@@ -143,11 +167,11 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
     if (type === EncryptionTypes.All || type === undefined) return true;
 
     const encryptionTypes = JSON.parse(accessPoint.serializedSecurityPayload) as Array<string>;
-    const selectedType = EncryptionTypes[type].toUpperCase();
+    const selectedType = type.toString().toUpperCase();
 
-    if (type !== EncryptionTypes.None) return encryptionTypes.includes(selectedType);
+    if (Number(EncryptionTypes[type]) !== Number(EncryptionTypes.None)) return encryptionTypes.includes(selectedType);
 
-    const availableTypes = Object.values(EncryptionTypes).map(value => value.toString().toUpperCase());
+    const availableTypes = this.encryptionTypesArray.map(value => value.toUpperCase());
     return !encryptionTypes.some(type => availableTypes.includes(type));
   }
 
@@ -176,7 +200,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
    * @returns Openlayers point feature with the pin icon and metadata
    */
   private generateAccessPointFeature(accessPoint: AccessPoint): Feature<Point> {
-    const accessPointsFeture = new Feature({
+    const accessPointsFeture = new Feature<Point>({
       geometry: new Point(olProj.fromLonLat([ accessPoint.highSignalLongitude, accessPoint.highSignalLatitude ]))
     });
     
@@ -198,12 +222,16 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
    * @returns Pin icon url as string
    */
   private getPinIcon(accessPoint: AccessPoint): string {
-    if (accessPoint.ssid === environment.SSID_HIDDEN) return environment.PIN_ICON_ALTERNATIVE;
-    if (accessPoint.isSecure) return environment.PIN_ICON_GOOD;
+    const setPath = (assetName: string): string => {
+      return `/assets/${assetName}`;
+    };
+
+    if (accessPoint.ssid === environment.SSID_HIDDEN) return setPath(environment.PIN_ICON_ALTERNATIVE);
+    if (accessPoint.isSecure) return setPath(environment.PIN_ICON_GOOD);
     
     const encryptionTypes = JSON.parse(accessPoint.serializedSecurityPayload) as Array<string>;
-    if(encryptionTypes.includes('WEP') || encryptionTypes.includes('WPS')) return environment.PIN_ICON_AVERAGE;
+    if(encryptionTypes.includes('WEP') || encryptionTypes.includes('WPS')) return setPath(environment.PIN_ICON_AVERAGE);
 
-    return environment.PIN_ICON_BAD;
+    return setPath(environment.PIN_ICON_BAD);
   }
 }

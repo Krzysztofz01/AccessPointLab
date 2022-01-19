@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AlertComponent } from './alert/alert.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { AccesspointMapComponent } from './accesspoint-map/accesspoint-map.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -13,7 +14,8 @@ import { AccesspointMapComponent } from './accesspoint-map/accesspoint-map.compo
     AccesspointMapComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule
   ],
   exports: [
     AlertComponent,
