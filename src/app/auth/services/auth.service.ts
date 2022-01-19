@@ -11,19 +11,18 @@ import { RefreshResponse } from '../contracts/refresh.response';
 import { AuthUser } from '../models/auth-user.model';
 import jwt_decode  from 'jwt-decode';
 import { RegisterRequest } from '../contracts/register.request';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly serverUrlCookieName = "accesspointmap_server_url";
-  private readonly refreshTokenCookieName = "accesspointmap_refresh_token";
-
   private userSubject: BehaviorSubject<AuthUser>;
   public user: Observable<AuthUser>;
 
   private readonly authVersion = 1;
   
+  private server: string;
   private serverPath: string;
 
   private refreshTokenTimeout: any;
@@ -32,18 +31,15 @@ export class AuthService {
     this.userSubject = new BehaviorSubject<AuthUser>(undefined);
     this.user = this.userSubject.asObservable();
     
-    this.globalScopeService.server.subscribe(e => {
-      if (e === "" && this.cookieService.check(this.serverUrlCookieName)) {
-        this.serverPath = this.cookieService.get(this.serverUrlCookieName);
+    this.globalScopeService.server.subscribe(server => {
+      this.server = server;
+
+      if (server.startsWith("http://")) {
+        this.serverPath = `${server}/api/v${this.authVersion}/auth`;
         return;
       }
 
-      if (e.startsWith("http://")) {
-        this.serverPath = `${e}/api/v${this.authVersion}/auth`;
-        return;
-      }
-
-      this.serverPath = `http://${e}/api/v${this.authVersion}/auth`;
+      this.serverPath = `http://${server}/api/v${this.authVersion}/auth`;
     });
   }
 
@@ -52,8 +48,7 @@ export class AuthService {
    * @returns Server url
    */
   public getServerName(): string {
-    //TODO: Strip server path
-    return this.serverPath;
+    return this.server;
   }
 
   /**
@@ -73,10 +68,6 @@ export class AuthService {
     return this.httpClient.post<LoginResponse>(this.serverPath, contract, { withCredentials: true })
       .pipe(map(res => {
         const authUser = this.mapAuthUser(res.jsonWebToken);
-        
-        this.cookieService.set(this.serverUrlCookieName, this.serverPath, {
-          sameSite: "None"
-        });
 
         this.userSubject.next(authUser);
         this.startRefreshTokenTimer();
@@ -104,8 +95,8 @@ export class AuthService {
    * @returns Boolean value indicating the presence of auth cookies
    */
   public verifyCookies(): boolean {
-    return this.cookieService.check(this.refreshTokenCookieName) &&
-      this.cookieService.check(this.serverUrlCookieName);
+    return this.cookieService.check(environment.REFRESH_TOKEN_COOKIE_NAME) &&
+      this.cookieService.check(environment.SERVER_URL_COOKIE_NAME);
   }
 
   /**
@@ -117,8 +108,8 @@ export class AuthService {
         this.stopRefreshTokenTimer();
         this.userSubject.next(null);
 
-        this.cookieService.delete(this.refreshTokenCookieName);
-        this.cookieService.delete(this.serverUrlCookieName);
+        this.cookieService.delete(environment.REFRESH_TOKEN_COOKIE_NAME);
+        this.cookieService.delete(environment.SERVER_URL_COOKIE_NAME);
 
         this.router.navigate(['/auth']);
       },
@@ -145,8 +136,8 @@ export class AuthService {
         this.stopRefreshTokenTimer();
         this.userSubject.next(null);
         
-        this.cookieService.delete(this.refreshTokenCookieName);
-        this.cookieService.delete(this.serverUrlCookieName);
+        this.cookieService.delete(environment.REFRESH_TOKEN_COOKIE_NAME);
+        this.cookieService.delete(environment.SERVER_URL_COOKIE_NAME);
 
         this.router.navigate(['/login']);
       },
