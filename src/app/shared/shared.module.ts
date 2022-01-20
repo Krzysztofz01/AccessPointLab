@@ -4,6 +4,8 @@ import { AlertComponent } from './alert/alert.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { AccesspointMapComponent } from './accesspoint-map/accesspoint-map.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AccesspointDetailsComponent } from './accesspoint-details/accesspoint-details.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 
@@ -11,16 +13,19 @@ import { ReactiveFormsModule } from '@angular/forms';
   declarations: [
     AlertComponent,
     NavbarComponent,
-    AccesspointMapComponent
+    AccesspointMapComponent,
+    AccesspointDetailsComponent
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbModule
   ],
   exports: [
     AlertComponent,
     NavbarComponent,
-    AccesspointMapComponent
+    AccesspointMapComponent,
+    AccesspointDetailsComponent
   ]
 })
 export class SharedModule { }
