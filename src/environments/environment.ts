@@ -5,8 +5,11 @@ export const environment = {
   ROLE_SUPPORT: 'Support',
   SERVER_URL_COOKIE_NAME: "accesspointmap_server_url",
   REFRESH_TOKEN_COOKIE_NAME: "accesspointmap_refresh_token",
-  PIN_ICON_GOOD: 'PIN_WPA2.png',//'http://cdn.mapmarker.io/api/v1/pin?size=50&hoffset=1&background=%2368BC00',
-  PIN_ICON_AVERAGE: 'PIN_WPA2.png',//'http://cdn.mapmarker.io/api/v1/pin?size=50&hoffset=1&background=%23FB9E00',
-  PIN_ICON_BAD: 'PIN_WPA2.png',//'http://cdn.mapmarker.io/api/v1/pin?size=50&hoffset=1&background=%23F44E3B',
-  PIN_ICON_ALTERNATIVE: 'PIN_WPA2.png'//'http://cdn.mapmarker.io/api/v1/pin?size=50&hoffset=1&background=%230062B1'
+  PIN_ICON_WPA3: 'PIN_WPA3.png',
+  PIN_ICON_WPA2: 'PIN_WPA2.png',
+  PIN_ICON_WPA: 'PIN_WPA.png',
+  PIN_ICON_WPS: 'PIN_WPS.png',
+  PIN_ICON_WEP: 'PIN_WEP.png',
+  PIN_ICON_NONE: 'PIN_NONE.png',
+  PIN_ICON_UNKNOWN: 'PIN_UNKNOWN.png',
 };
