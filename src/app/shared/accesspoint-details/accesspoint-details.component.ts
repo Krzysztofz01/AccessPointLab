@@ -152,7 +152,8 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
         })
       ],
       view: new View({
-        zoom:17
+        center: olProj.fromLonLat([0, 0]),
+        zoom: 17
       })
     });
   }
@@ -194,4 +195,52 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
     this.modal.close(undefined);
   }
 
+  /**
+   * Switch the currently selected AccessPoint entity display status
+   */
+  public updateAccessPointDisplayStatus(): void {
+    this.accessPointService.changeAccessPointDisplayStatus(this.selectedAccessPoint.id, !this.selectedAccessPoint.displayStatus)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          this.selectedAccessPoint.displayStatus = !this.selectedAccessPoint.displayStatus;
+          this.accessPointUpdatedEvent.next(this.selectedAccessPoint);
+        },
+        error: (error) => {
+          console.error(error)
+        }
+      });
+  }
+
+  /**
+   * Delete the currently selected AccessPoint entity
+   */
+  public deleteAccessPoint(): void {
+    this.accessPointService.deleteAccessPoint(this.selectedAccessPoint.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          if (this.singleAccessPoint) this.modal.close(undefined);
+
+          this.accessPointsIds = this.accessPointsIds.filter(id => id !== this.selectedAccessPoint.id);
+          this.selectedAccessPointId = this.accessPointsIds[0];
+
+          this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (accessPoint) => {
+                this.selectedAccessPoint = accessPoint;
+
+                this.swapVectorLayer();
+              },
+              error: (error) => {
+                console.error(error);
+              }
+            });
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+  }
 }

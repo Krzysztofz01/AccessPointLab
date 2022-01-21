@@ -5,42 +5,46 @@
                 <button (click)="closeModal()" type="button" class="btn-close"></button>
             </div>
         </div>
-
-        <div class="row justify-content-center">
+ 
+        <div *ngIf="selectedAccessPoint !== undefined" class="row justify-content-center">
             <div class="col-lg-12 col-md-12 text-center">           
-                <div *ngIf="singleAccessPoint">
+                <div *ngIf="singleAccessPoint; else multipleIds">
                     <h3>{{ selectedAccessPoint.ssid }}</h3>
                 </div>       
                 
-                <div *ngIf="!singleAccessPoint">
+                <ng-template #multipleIds>
                     <p class="my-0">Several access points at this location, select which you want to see:</p>
                     <select class="form-select my-0" [(ngModel)]="selectedAccessPointId" (ngModelChange)="selectedAccessPointChanged($event)">
                         <option *ngFor="let ap of accessPointsIds" [value]="ap">{{ ap }}</option>
-                    </select>
-                </div>
+                    </select>   
+                </ng-template>
 
-                <div>
+                <div *ngIf="selectedAccessPoint.stamps.length; else noStamps">
                     <p class="my-0">Select the stamp (snapshoot) of the currently selected access point:</p>
                     <select class="form-select my-0" [(ngModel)]="selectedAccessPointStamp" (ngModelChange)="selectedAccessPointStampChanged($event)">
                         <option *ngFor="let stamp of selectedAccessPoint.stamps" [value]="stamp">{{ stamp.id }}</option>
                     </select>
                 </div>
+
+                <ng-template #noStamps>
+                    <p class="my-0">This access point has not stamps.</p>
+                </ng-template>
             </div>
         </div>
 
-
-        <div class="row justify-content-center mt-3">         
-            <div class="col-lg-6 col-md-12">
-                <div id="openlayers_accesspoints_details_map"></div>
+        <div class="row justify-content-center">
+            <div class="col-lg-12 col-md-12">
+                <div class="apm-ol-detail-map" [id]="mapId"></div>
             </div>
+        </div>
 
+        <div *ngIf="selectedAccessPoint !== undefined" class="row justify-content-center">         
             <div>
                 <!-- Checkout to toggle between merged data and stamp -->
             </div>
 
-            <div class="col-lg-6 col-md-12">
+            <div class="col-lg-12 col-md-12">
                 <h4>BSSID: {{ selectedAccessPoint.bssid }}</h4>
-                <h5>SSID: {{ selectedAccessPoint.ssid }}</h5>
                 <h5>Manufacturer: {{ selectedAccessPoint.manufacturer }}</h5>
                 <h5>Device type: {{ selectedAccessPoint.deviceType }}</h5>
                 <h5>Signal area: {{ selectedAccessPoint.signalArea }}m<sup>2</sup></h5>
@@ -51,17 +55,15 @@
                 <h5>State from: {{ selectedAccessPoint.versionTimestamp }}</h5>
                 <h5 *ngIf="hasAdminPermission">Display status: {{ (selectedAccessPoint.displayStatus) ? "Public" : "Hidden" }}</h5>
             </div>
-        </div>
-        <div *ngIf="hasAdminPermission" class="row justify-content-center mt-3 text-center">
-            <!--<div class="col-lg-2 col-md-12">
-                <button type="button" class="btn btn-secondary mx-1 col-12" (click)="changeDisplay(selectedAccessPoint)">{{ (selectedAccessPoint.display) ? "Hide" : "Show" }}</button>
+
+            <div *ngIf="hasAdminPermission" class="row justify-content-center text-center">
+                <div class="col-lg-2 col-md-12">
+                    <button type="button" class="btn btn-secondary mx-1 col-12" (click)="updateAccessPointDisplayStatus()">{{ (selectedAccessPoint.displayStatus) ? "Hide" : "Show" }}</button>
+                </div>
+                <div class="col-lg-2 col-md-12">
+                    <button type="button" class="btn btn-secondary mx-1 col-12" (click)="deleteAccessPoint()">Delete</button> 
+                </div>
             </div>
-            <div class="col-lg-2 col-md-12">
-                <button type="button" class="btn btn-secondary mx-1 col-12" (click)="delete(selectedAccessPoint)">Delete</button> 
-            </div>
-            <div class="col-lg-2 col-md-12">
-                <button type="button" class="btn btn-secondary mx-1 col-12" (click)="fetchManufacturer(selectedAccessPoint)">Brand fetch</button>
-            </div>-->
         </div>
     </div>
 </div>
