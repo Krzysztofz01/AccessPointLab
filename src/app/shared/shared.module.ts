@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AlertComponent } from './alert/alert.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { AccesspointMapComponent } from './accesspoint-map/accesspoint-map.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccesspointDetailsComponent } from './accesspoint-details/accesspoint-details.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -19,6 +19,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     NgbModule
   ],
   exports: [

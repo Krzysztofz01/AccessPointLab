@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Circle from 'ol/geom/Circle';
@@ -13,17 +13,22 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { environment } from 'src/environments/environment';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Geometry from 'ol/geom/Geometry';
+import { Subject, takeUntil } from 'rxjs';
+import { AccessPointStamp } from 'src/app/core/models/access-point-stamp.model';
 
 @Component({
   selector: 'app-accesspoint-details',
   templateUrl: './accesspoint-details.component.html',
   styleUrls: ['./accesspoint-details.component.css']
 })
-export class AccesspointDetailsComponent implements AfterViewInit, OnInit {
+export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+
   public accessPointsIds: Array<string>;
   public singleAccessPoint: boolean;
   public selectedAccessPointId: string;
   public selectedAccessPoint: AccessPoint; 
+  public selectedAccessPointStamp: AccessPointStamp;
 
   @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
   @Output() accessPointDeletedEvent = new EventEmitter<AccessPoint>();
@@ -34,10 +39,10 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit {
   private readonly featureLayerNameProp = "layer_name";
   private readonly featureLayerName = "accesspoint_layer";
 
-  private hasAdminPermission = false;
+  public hasAdminPermission = false;
 
   constructor(private modal: NgbActiveModal, private accessPointService: AccessPointService, private authService: AuthService) { }
-
+  
   ngAfterViewInit(): void {
     this.initializeMap();
   }
@@ -53,14 +58,22 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit {
     this.singleAccessPoint = (this.accessPointsIds.length === 1);
     this.selectedAccessPointId = this.accessPointsIds[0];
 
-    this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission).subscribe({
-      next: (accessPoint) => {
-        this.selectedAccessPoint = accessPoint;
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
+    this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (accessPoint) => {
+          this.selectedAccessPoint = accessPoint;
+          this.swapVectorLayer();
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   /**
@@ -70,21 +83,31 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit {
    public selectedAccessPointChanged(e: any): void {
     this.selectedAccessPointId = e as string;
     
-    this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission).subscribe({
-      next: (accessPoint) => {
-        this.selectedAccessPoint = accessPoint;
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
+    this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (accessPoint) => {
+          this.selectedAccessPoint = accessPoint;
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
 
     this.swapVectorLayer();
   }
 
   /**
-    * Swap the vector layer with a new one with updated features
-    */
+   * Select AccessPoint entity stamp event handler
+   * @param e Event args
+   */
+  public selectedAccessPointStampChanged(e: any): void {
+    throw new Error("Not implemented");
+  }
+
+  /**
+   * Swap the vector layer with a new one with updated features
+   */
    private swapVectorLayer(): void {
     if (this.map === undefined) return;
     
@@ -99,9 +122,9 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit {
   }
 
   /**
-     * Generate a vector layer representing the information about the selected AccessPoint entity
-     * @returns OpenLayers vector layer
-     */
+   * Generate a vector layer representing the information about the selected AccessPoint entity
+   * @returns OpenLayers vector layer
+   */
    private generateVector(): VectorLayer<VectorSource<Geometry>> {
     const circle = new Circle(olProj.fromLonLat([ this.selectedAccessPoint.highSignalLongitude, this.selectedAccessPoint.highSignalLatitude ]),
       (this.selectedAccessPoint.signalRadius < 16) ? 16 : this.selectedAccessPoint.signalRadius);
@@ -117,22 +140,18 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit {
   }
 
   /**
-     * Initialize the map object with vector features layer
-     */
+   * Initialize the map object
+   */
    private initializeMap(): void {
-    const vector = this.generateVector();
-
     this.map = new Map({
       controls: [],
       target: this.mapId,
       layers: [
         new TileLayer({
           source: new OSM()
-        }),
-        vector
+        })
       ],
       view: new View({
-        center: olProj.fromLonLat([ this.selectedAccessPoint.highSignalLongitude, this.selectedAccessPoint.highSignalLatitude ]),
         zoom:17
       })
     });
@@ -168,6 +187,11 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit {
     return 'var(--apm-danger)';
   }
 
-  
+  /**
+   * Dismiss the current modal instance
+   */
+  public closeModal(): void {
+    this.modal.close(undefined);
+  }
 
 }
