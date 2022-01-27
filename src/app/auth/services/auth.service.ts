@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { GlobalScopeService } from 'src/app/core/services/global-scope.service';
 import { LoginRequest } from '../contracts/login.request';
@@ -12,6 +11,9 @@ import { AuthUser } from '../models/auth-user.model';
 import jwt_decode  from 'jwt-decode';
 import { RegisterRequest } from '../contracts/register.request';
 import { environment } from 'src/environments/environment';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { RefreshRequest } from '../contracts/refresh.request';
+import { LogoutRequest } from '../contracts/logout.request';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +29,13 @@ export class AuthService {
 
   private refreshTokenTimeout: any;
 
-  constructor(private router: Router, private httpClient: HttpClient, private globalScopeService: GlobalScopeService, private cookieService: CookieService) {
+  constructor(private router: Router, private httpClient: HttpClient, private globalScopeService: GlobalScopeService, private localStorageService: LocalStorageService) {
     this.userSubject = new BehaviorSubject<AuthUser>(undefined);
     this.user = this.userSubject.asObservable();
     
     this.globalScopeService.server.subscribe(server => {
+      if (server === null) return;
+      
       this.server = server;
 
       if (server.startsWith("http://")) {
@@ -69,6 +73,12 @@ export class AuthService {
       .pipe(map(res => {
         const authUser = this.mapAuthUser(res.jsonWebToken);
 
+        this.localStorageService.set({
+          key: environment.LSK_REFRESH_TOKEN,
+          value: res.refreshToken,
+          expirationMinutes: null,
+        });
+
         this.userSubject.next(authUser);
         this.startRefreshTokenTimer();
         return res;
@@ -80,10 +90,20 @@ export class AuthService {
   * @returns Refresh response as a observable
   */
    public refreshToken(): Observable<RefreshResponse> {
-    return this.httpClient.post<RefreshResponse>(`${ this.serverPath }/refresh`, {}, { withCredentials: true })
+    const refreshRequest: RefreshRequest = {
+      refreshToken: this.localStorageService.get(environment.LSK_REFRESH_TOKEN)
+    };
+
+    return this.httpClient.post<RefreshResponse>(`${ this.serverPath }/refresh`, refreshRequest, { withCredentials: true })
       .pipe(map(res => {
         const authUser = this.mapAuthUser(res.jsonWebToken);
         
+        this.localStorageService.set({
+          key: environment.LSK_REFRESH_TOKEN,
+          value: res.refreshToken,
+          expirationMinutes: null,
+        });
+
         this.userSubject.next(authUser);
         this.startRefreshTokenTimer();
         return res;
@@ -92,24 +112,28 @@ export class AuthService {
 
   /**
    * Check if there is a session to refresh
-   * @returns Boolean value indicating the presence of auth cookies
+   * @returns Boolean value indicating the presence of auth token
    */
   public verifyCookies(): boolean {
-    return this.cookieService.check(environment.REFRESH_TOKEN_COOKIE_NAME) &&
-      this.cookieService.check(environment.SERVER_URL_COOKIE_NAME);
+    return this.localStorageService.check(environment.LSK_REFRESH_TOKEN) &&
+      this.localStorageService.check(environment.LSK_SERVER);
   }
 
   /**
-  * Revoke the refresh token and remove related cookies
+  * Revoke the refresh token and remove related tokens from local storage
   */
   public logout(): void {
-    this.httpClient.post(`${ this.serverPath }/logout`, {}, { withCredentials: true }).subscribe({
+    const logoutRequest: LogoutRequest = {
+      refreshToken: this.localStorageService.get(environment.LSK_REFRESH_TOKEN)
+    };
+
+    this.httpClient.post(`${ this.serverPath }/logout`, logoutRequest, { withCredentials: true }).subscribe({
       complete: () => {
         this.stopRefreshTokenTimer();
         this.userSubject.next(null);
 
-        this.cookieService.delete(environment.REFRESH_TOKEN_COOKIE_NAME);
-        this.cookieService.delete(environment.SERVER_URL_COOKIE_NAME);
+        this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
+        this.localStorageService.unset(environment.LSK_SERVER);
 
         this.router.navigate(['/auth']);
       },
@@ -136,8 +160,8 @@ export class AuthService {
         this.stopRefreshTokenTimer();
         this.userSubject.next(null);
         
-        this.cookieService.delete(environment.REFRESH_TOKEN_COOKIE_NAME);
-        this.cookieService.delete(environment.SERVER_URL_COOKIE_NAME);
+        this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
+        this.localStorageService.unset(environment.LSK_SERVER);
 
         this.router.navigate(['/login']);
       },

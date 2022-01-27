@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { FeaturesModule } from './features/features.module';
 import { SharedModule } from './shared/shared.module';
-import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [
@@ -20,7 +19,6 @@ import { CookieService } from 'ngx-cookie-service';
     FeaturesModule,
     SharedModule
   ],
-  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

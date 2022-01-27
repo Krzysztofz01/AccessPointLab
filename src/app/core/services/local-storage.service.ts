@@ -44,12 +44,26 @@ export class LocalStorageService {
     const expirationMilisec = (options.expirationMinutes !== 0) ? options.expirationMinutes * 60 * 1000 : 0;
 
     const item = {
-      value: (typeof options.value === 'string') ? options.value : JSON.stringify(options.value),
+      value: JSON.stringify(options.value),
       expiration: (expirationMilisec !== 0) ? new Date().getTime() + expirationMilisec : null,
       hasExpiration: (expirationMilisec !== 0) ? true : false
     }
 
     localStorage.setItem(options.key, JSON.stringify(item));
+  }
+
+  /**
+   * Check if a ceratin element exists in local storage, if supported
+   * @param key Unique value identifier
+   * @returns 
+   */
+  public check(key: string): boolean {
+    if(!this.checkService()) {
+      console.error('Local storage service is unavailable!');
+      return false;
+    }
+
+    return localStorage.getItem(key) != null;
   }
 
   /**
