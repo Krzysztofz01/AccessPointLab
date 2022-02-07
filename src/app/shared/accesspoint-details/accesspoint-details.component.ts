@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Circle from 'ol/geom/Circle';
@@ -15,20 +15,25 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Geometry from 'ol/geom/Geometry';
 import { Subject, takeUntil } from 'rxjs';
 import { AccessPointStamp } from 'src/app/core/models/access-point-stamp.model';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-accesspoint-details',
   templateUrl: './accesspoint-details.component.html',
   styleUrls: ['./accesspoint-details.component.css']
 })
-export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDestroy {
+export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDestroy, AfterContentInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  public accessPointsIds: Array<string>;
+  public accessPoints: Array<AccessPoint>;
   public singleAccessPoint: boolean;
-  public selectedAccessPointId: string;
-  public selectedAccessPoint: AccessPoint; 
-  public selectedAccessPointStamp: AccessPointStamp;
+  
+  public __selectedAccessPoint: AccessPoint;
+  public __selectedAccessPointStamp: AccessPointStamp | undefined;
+  public readonly _emptyStampSelection: string = "_none";
+
+  public accessPointSelectionForm: FormGroup;
+  public accessPointStampSelectionForm: FormGroup;
 
   @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
   @Output() accessPointDeletedEvent = new EventEmitter<AccessPoint>();
@@ -47,27 +52,49 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
     this.initializeMap();
   }
 
+  ngAfterContentInit(): void {
+    this.accessPointSelectionForm.get('selectedAccessPointId').setValue(this.accessPoints[0].id);
+  }
+
   ngOnInit(): void {
-    if (this.accessPointsIds.length === 0) {
+    if (this.accessPoints.length === 0) {
       this.modal.close(undefined);
+      return;
     }
 
+    // Initializing default values
+    this.singleAccessPoint = (this.accessPoints.length === 1);
+
+    // Permissions
     const role = this.authService.userValue.role;
     this.hasAdminPermission = (role === environment.ROLE_SUPPORT || role === environment.ROLE_ADMIN);
 
-    this.singleAccessPoint = (this.accessPointsIds.length === 1);
-    this.selectedAccessPointId = this.accessPointsIds[0];
+    // Initializing forms and form event listeners
+    this.accessPointSelectionForm = new FormGroup({
+      selectedAccessPointId: new FormControl(this.accessPoints[0].id)
+    });
+    
+    this.accessPointStampSelectionForm = new FormGroup({
+      selectedStampId: new FormControl(this._emptyStampSelection)
+    });
 
-    this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission)
+    this.accessPointSelectionForm.get('selectedAccessPointId').valueChanges
       .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (accessPoint) => {
-          this.selectedAccessPoint = accessPoint;
-          this.swapVectorLayer();
-        },
-        error: (error) => {
-          console.error(error);
+      .subscribe(id => {
+        this.accessPointStampSelectionForm.get('selectedStampId').setValue(this._emptyStampSelection);
+        this.switchSelectedAccessPoint(id)
+      });
+
+    this.accessPointStampSelectionForm.get('selectedStampId').valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(id => {  
+        if (id !== this._emptyStampSelection) {
+          this.__selectedAccessPointStamp = this.__selectedAccessPoint.stamps.find(s => s.id === id);
+          this.swapVectorLayer(this.__selectedAccessPointStamp);
+          return;
         }
+
+        this.__selectedAccessPointStamp = undefined;
       });
   }
 
@@ -76,39 +103,33 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
     this.destroy$.unsubscribe();
   }
 
-  /**
-   * Selected AccessPoint event handler
-   * @param e Event args
-   */
-   public selectedAccessPointChanged(e: any): void {
-    this.selectedAccessPointId = e as string;
-    
-    this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (accessPoint) => {
-          this.selectedAccessPoint = accessPoint;
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      });
-
-    this.swapVectorLayer();
+  public get currentSelectedAcccessPointSnapshoot(): AccessPoint | AccessPointStamp {
+    if (this.__selectedAccessPointStamp !== undefined) return this.__selectedAccessPointStamp;
+    return this.__selectedAccessPoint;
   }
 
   /**
-   * Select AccessPoint entity stamp event handler
-   * @param e Event args
+   * Fetch an AccessPoint entity and replace the vector layer
+   * @param accessPointId Accesspoint entity id
    */
-  public selectedAccessPointStampChanged(e: any): void {
-    throw new Error("Not implemented");
+  private switchSelectedAccessPoint(accessPointId: string): void {
+    this.accessPointService.getAccessPointById(accessPointId, this.hasAdminPermission)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (accessPoint) => {
+          this.__selectedAccessPoint = accessPoint;
+          this.swapVectorLayer(this.__selectedAccessPoint);
+        },
+        error: (error) => console.error(error)
+      });
   }
 
   /**
    * Swap the vector layer with a new one with updated features
+   * @param accessPoint AccessPoint or AccessPointStamp entity
+   * @returns 
    */
-   private swapVectorLayer(): void {
+  private swapVectorLayer(accessPoint : AccessPoint | AccessPointStamp): void {
     if (this.map === undefined) return;
     
     this.map.getLayers().forEach(layer => {
@@ -117,17 +138,26 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
       }
     });
     
-    this.map.addLayer(this.generateVector());
-    this.map.getView().setCenter(olProj.fromLonLat([ this.selectedAccessPoint.highSignalLongitude, this.selectedAccessPoint.highSignalLatitude ]));
+    this.map.addLayer(this.generateVector(accessPoint));
+
+    const longitude = accessPoint.highSignalLongitude;
+    const latitude = accessPoint.highSignalLatitude;
+
+    this.map.getView().setCenter(olProj.fromLonLat([ longitude, latitude ]));
   }
 
   /**
    * Generate a vector layer representing the information about the selected AccessPoint entity
+   * @param accessPoint AccessPoint or AccessPointStamp entity
    * @returns OpenLayers vector layer
    */
-   private generateVector(): VectorLayer<VectorSource<Geometry>> {
-    const circle = new Circle(olProj.fromLonLat([ this.selectedAccessPoint.highSignalLongitude, this.selectedAccessPoint.highSignalLatitude ]),
-      (this.selectedAccessPoint.signalRadius < 16) ? 16 : this.selectedAccessPoint.signalRadius);
+  private generateVector(accessPoint : AccessPoint | AccessPointStamp): VectorLayer<VectorSource<Geometry>> {
+    const longitude = accessPoint.highSignalLongitude;
+    const latitude = accessPoint.highSignalLatitude;
+    const radius = accessPoint.signalRadius;
+
+    const circle = new Circle(olProj.fromLonLat([ longitude, latitude ]),
+      (radius < 16) ? 16 : radius);
 
     const vector = new VectorLayer({
       source: new VectorSource({
@@ -142,7 +172,7 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
   /**
    * Initialize the map object
    */
-   private initializeMap(): void {
+  private initializeMap(): void {
     this.map = new Map({
       controls: [],
       target: this.mapId,
@@ -160,10 +190,11 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
 
   /**
    * Genereate description according to the access points encryption type
-   * @returns Ecryption description
+   * @param accessPoint AccessPoint or AccessPointStamp entity
+   * @returns Encryption description
    */
-  public getSecurityText(): string {
-    const sd: Array<string> = JSON.parse(this.selectedAccessPoint.serializedSecurityPayload);
+  public getSecurityText(accessPoint: AccessPoint | AccessPointStamp): string {
+    const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
 
     if(sd.includes('WPA3')) return 'WPA3 - It is the newest and safest standard available to all. It uses secure CCMP-128 / AES-256 encryption. Currently mainly used by companies and offices.';
     if(sd.includes('WPA2')) return 'WPA2 - One of the most popular standards. It uses secure CCMP / AES encryption. It is completely secure. If you have a strong password, you dont need to worry.';
@@ -175,10 +206,11 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
 
   /**
    * Generate CSS color according to the access points encryption type
+   * @param accessPoint AccessPoint or AccessPointStamp entity 
    * @returns CSS color variable string
    */
-  public getSecurityColor(): string {
-    const sd: Array<string> = JSON.parse(this.selectedAccessPoint.serializedSecurityPayload);
+  public getSecurityColor(accessPoint: AccessPoint | AccessPointStamp): string {
+    const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
 
     if(sd.includes('WPA3')) return 'var(--apm-success)';
     if(sd.includes('WPA2')) return 'var(--apm-success)';
@@ -199,12 +231,12 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
    * Switch the currently selected AccessPoint entity display status
    */
   public updateAccessPointDisplayStatus(): void {
-    this.accessPointService.changeAccessPointDisplayStatus(this.selectedAccessPoint.id, !this.selectedAccessPoint.displayStatus)
+    this.accessPointService.changeAccessPointDisplayStatus(this.__selectedAccessPoint.id, !this.__selectedAccessPoint.displayStatus)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
-          this.selectedAccessPoint.displayStatus = !this.selectedAccessPoint.displayStatus;
-          this.accessPointUpdatedEvent.next(this.selectedAccessPoint);
+          this.__selectedAccessPoint.displayStatus = !this.__selectedAccessPoint.displayStatus;
+          this.accessPointUpdatedEvent.next(this.__selectedAccessPoint);
         },
         error: (error) => {
           console.error(error)
@@ -216,31 +248,49 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
    * Delete the currently selected AccessPoint entity
    */
   public deleteAccessPoint(): void {
-    this.accessPointService.deleteAccessPoint(this.selectedAccessPoint.id)
+    this.accessPointService.deleteAccessPoint(this.__selectedAccessPoint.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
           if (this.singleAccessPoint) this.modal.close(undefined);
 
-          this.accessPointsIds = this.accessPointsIds.filter(id => id !== this.selectedAccessPoint.id);
-          this.selectedAccessPointId = this.accessPointsIds[0];
+          this.accessPoints = this.accessPoints.filter(a => a.id !== this.__selectedAccessPoint.id);
+          if (this.accessPoints.length === 1) this.singleAccessPoint = true;
 
-          this.accessPointService.getAccessPointById(this.selectedAccessPointId, this.hasAdminPermission)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-              next: (accessPoint) => {
-                this.selectedAccessPoint = accessPoint;
-
-                this.swapVectorLayer();
-              },
-              error: (error) => {
-                console.error(error);
-              }
-            });
+          this.accessPointSelectionForm.get('selectedAccessPointId').setValue(this.accessPoints[0].id);  
         },
         error: (error) => {
           console.error(error);
         }
       });
+  }
+
+  /**
+   * Delete the currently selected AccessPointStamp entity
+   */
+  public deleteAccessPointStamp(): void {
+    this.accessPointService.deleteAccessPointStamp(this.__selectedAccessPoint.id, this.__selectedAccessPointStamp.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          this.__selectedAccessPoint.stamps = this.__selectedAccessPoint.stamps.filter(s => s.id !== this.__selectedAccessPointStamp.id);
+          
+          const stamp = (this.__selectedAccessPoint.stamps.length)
+            ? this.__selectedAccessPoint.stamps[0].id
+            : this._emptyStampSelection;
+
+          this.accessPointStampSelectionForm.get('selectedStampId').setValue(stamp);
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+  }
+
+  /**
+   * Merge the currently selected AccessPointStamp entity
+   */
+  public mergeAccessPointStamp(): void {
+    //TODO Implement merging, introduce merge option form 
   }
 }
