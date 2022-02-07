@@ -26,7 +26,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Input() centerLatitude: number | undefined;
   @Input() centerLongitude: number | undefined;
-  @Output() accessPointClick = new EventEmitter<Array<String>>(false);
+  @Output() accessPointClick = new EventEmitter<Array<AccessPoint>>(false);
 
   public keywordFilterForm: FormGroup;
   public encryptionTypeFilterForm: FormGroup;
@@ -121,15 +121,18 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Marker click event
     this.map.on('click', (e) => {
-      const accessPointIds = new Array<String>();
+      const accessPoints = new Array<AccessPoint>();
       
       this.map.forEachFeatureAtPixel(e.pixel, (feature) => {
-        accessPointIds.push(feature.get(this.featureAccessPointIdProp) as String);
+        accessPoints.push(this.accessPoints.find(a => a.id == feature.get(this.featureAccessPointIdProp) as string));
       });
 
       //Emit the selected features
-      const distinctIds = accessPointIds.filter((a, i) => accessPointIds.findIndex((s) => a === s) === i);
-      if (distinctIds.length) this.accessPointClick.emit(distinctIds);
+      const disctinctAccessPoints = Array.from(new Set(accessPoints.map(a => a.id))).map(id => {
+        return accessPoints.find(a => a.id == id);
+      });
+
+      if (disctinctAccessPoints.length) this.accessPointClick.emit(disctinctAccessPoints);
     });
   }
 

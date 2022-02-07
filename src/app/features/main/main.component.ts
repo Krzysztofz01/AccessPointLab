@@ -27,10 +27,16 @@ export class MainComponent implements OnInit {
     const role = this.authService.userValue.role;
     this.hasFullPermission = (role === environment.ROLE_SUPPORT || role === environment.ROLE_ADMIN);
 
-    this.accessPointIdParamValue = this.route.snapshot.paramMap.get(this.accessPointIdParamName);
-    if (this.accessPointIdParamValue !== null) this.createDetailsModalInstance([ this.accessPointIdParamValue ]);
-
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
+
+    this.accessPointIdParamValue = this.route.snapshot.paramMap.get(this.accessPointIdParamName);
+    if (this.accessPointIdParamValue !== null)
+    {
+      this.accessPointService.getAccessPointById(this.accessPointIdParamValue, this.hasFullPermission).subscribe({
+        next: (accessPoint) => this.createDetailsModalInstance([ accessPoint ]),
+        error: (error) => console.error(error)
+      });
+    }
   }
 
   /**
@@ -38,17 +44,17 @@ export class MainComponent implements OnInit {
    * @param e Event args
    */
   public showDetailsClick(e: any): void {
-    this.createDetailsModalInstance(e as Array<string>);
+    this.createDetailsModalInstance(e as Array<AccessPoint>);
   }
 
   /**
    * Create a new modal with details about one or many AccessPoint entites
    * @param accessPointIds Collection of AccessPoint entity ids
    */
-  private createDetailsModalInstance(accessPointIds: Array<string>): void {
+  private createDetailsModalInstance(accessPointIds: Array<AccessPoint>): void {
     const modalReference = this.modalService.open(AccesspointDetailsComponent, { modalDialogClass: 'modal-xl' });
     
-    modalReference.componentInstance.accessPointsIds = accessPointIds;
+    (modalReference.componentInstance as AccesspointDetailsComponent).accessPoints = accessPointIds;
 
     const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
       complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission)
