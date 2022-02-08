@@ -6,6 +6,11 @@ import { AccesspointMapComponent } from './accesspoint-map/accesspoint-map.compo
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccesspointDetailsComponent } from './accesspoint-details/accesspoint-details.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RouterModule } from '@angular/router';
+import { AccesspointListComponent } from './accesspoint-list/accesspoint-list.component';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { OrderModule } from 'ngx-order-pipe';
 
 
 
@@ -14,19 +19,25 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AlertComponent,
     NavbarComponent,
     AccesspointMapComponent,
-    AccesspointDetailsComponent
+    AccesspointDetailsComponent,
+    AccesspointListComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    RouterModule,
+    Ng2SearchPipeModule,
+    NgxPaginationModule,
+    OrderModule
   ],
   exports: [
     AlertComponent,
     NavbarComponent,
     AccesspointMapComponent,
-    AccesspointDetailsComponent
+    AccesspointDetailsComponent,
+    AccesspointListComponent
   ]
 })
 export class SharedModule { }
