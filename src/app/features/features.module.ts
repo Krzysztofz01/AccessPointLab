@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainModule } from './main/main.module';
 import { LoginModule } from './login/login.module';
+import { ListModule } from './list/list.module';
 
 
 @NgModule({
@@ -9,11 +10,13 @@ import { LoginModule } from './login/login.module';
   imports: [
     CommonModule,
     MainModule,
-    LoginModule
+    LoginModule,
+    ListModule
   ],
   exports: [
     MainModule,
-    LoginModule
+    LoginModule,
+    ListModule
   ]
 })
 export class FeaturesModule { }

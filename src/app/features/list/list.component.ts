@@ -9,17 +9,18 @@ import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css']
+  selector: 'app-list',
+  templateUrl: './list.component.html',
+  styleUrls: ['./list.component.css']
 })
-export class MainComponent implements OnInit {
+export class ListComponent implements OnInit {
   public accessPointsObservable: Observable<Array<AccessPoint>>;
-  
+  public listPage: number | undefined = undefined;
+
   private hasFullPermission: boolean;
   
-  private readonly accessPointIdParamName = 'id';
-  private accessPointIdParamValue: string;
+  private readonly listPageParamName = 'page';
+  private listPageParamValue: string;
 
   constructor(private modalService: NgbModal, private route: ActivatedRoute, private authService: AuthService, private accessPointService: AccessPointService) { }
 
@@ -29,32 +30,26 @@ export class MainComponent implements OnInit {
 
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
 
-    this.accessPointIdParamValue = this.route.snapshot.paramMap.get(this.accessPointIdParamName);
-    if (this.accessPointIdParamValue !== null)
-    {
-      this.accessPointService.getAccessPointById(this.accessPointIdParamValue, this.hasFullPermission).subscribe({
-        next: (accessPoint) => this.createDetailsModalInstance([ accessPoint ]),
-        error: (error) => console.error(error)
-      });
-    }
+    this.listPageParamValue = this.route.snapshot.paramMap.get(this.listPageParamName);
+    if (this.listPageParamValue !== null) this.listPage = parseInt(this.listPageParamValue, 10);
   }
 
   /**
-   * Selected AccessPoint marker event handler
+   * Selected AccessPoint event handler
    * @param e Event args
    */
-  public showDetailsClick(e: any): void {
-    this.createDetailsModalInstance(e as Array<AccessPoint>);
+   public showDetailsClick(e: any): void {
+    this.createDetailsModalInstance(e as AccessPoint);
   }
 
   /**
-   * Create a new modal with details about one or many AccessPoint entites
-   * @param accessPointIds Collection of AccessPoint entity ids
+   * Create a new modal with details about the AccessPoint entity
+   * @param accessPoint AccessPoint entity
    */
-  private createDetailsModalInstance(accessPointIds: Array<AccessPoint>): void {
+  private createDetailsModalInstance(accessPoint: AccessPoint): void {
     const modalReference = this.modalService.open(AccesspointDetailsComponent, { modalDialogClass: 'modal-xl' });
     
-    (modalReference.componentInstance as AccesspointDetailsComponent).accessPoints = accessPointIds;
+    (modalReference.componentInstance as AccesspointDetailsComponent).accessPoints = new Array<AccessPoint>(accessPoint);
 
     const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
       complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission)

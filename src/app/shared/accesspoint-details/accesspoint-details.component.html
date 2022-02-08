@@ -1,1 +1,111 @@
-<p>accesspoint-details works!</p>
+<div class="modal-body">
+    <div class="container-fluid"> 
+        <div class="row">
+            <div class="col-12">
+                <button (click)="closeModal()" type="button" class="btn-close"></button>
+            </div>
+        </div>
+ 
+        <div *ngIf="__selectedAccessPoint !== undefined" class="row justify-content-center">
+            <div class="col-lg-12 col-md-12 text-center">           
+                <div *ngIf="singleAccessPoint; else multipleIds">
+                    <h3>{{ __selectedAccessPoint.ssid }}</h3>
+                </div>       
+                
+                <ng-template #multipleIds>
+                    <p class="my-0">Several access points at this location, select which you want to see:</p>
+                    <form [formGroup]="accessPointSelectionForm">
+                        <select class="form-select my-0" formControlName="selectedAccessPointId">
+                            <option *ngFor="let ap of accessPoints" [value]="ap.id">{{ ap.ssid }}</option>
+                        </select>
+                    </form>   
+                </ng-template>
+            </div>
+        </div>
+
+        <div *ngIf="__selectedAccessPoint !== undefined" class="row justify-content-center">
+            <div *ngIf="__selectedAccessPoint.stamps.length === 0; else stampsPresent" class="col-lg-12 col-md-12 text-center">
+                <p class="my-0">This access point has not stamps.</p>
+            </div>
+
+            <ng-template #stampsPresent>
+                <p class="my-0">Several access point snapshoots available to compare:</p>
+                <form [formGroup]="accessPointStampSelectionForm">
+                    <div>
+                        <select class="form-select my-0" formControlName="selectedStampId">
+                            <option [value]="this._emptyStampSelection">Merged master</option>
+                            <option *ngFor="let stamp of __selectedAccessPoint.stamps" [value]="stamp.id">{{ stamp.creationTimestamp }}</option>
+                        </select>
+                    </div>
+                </form>
+            </ng-template>   
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-12 col-md-12">
+                <div class="apm-ol-detail-map" [id]="mapId"></div>
+            </div>
+        </div>
+
+        <div *ngIf="__selectedAccessPoint !== undefined" class="row justify-content-center">
+            <div class="col-lg-12 col-md-12">
+                <h4>BSSID: {{ __selectedAccessPoint.bssid }}</h4>
+                <h5>Manufacturer: {{ __selectedAccessPoint.manufacturer }}</h5>
+                <h5>Device type: {{ currentSelectedAcccessPointSnapshoot.deviceType }}</h5>
+                <h5>Signal area: {{ currentSelectedAcccessPointSnapshoot.signalArea }}m<sup>2</sup></h5>
+                <h5>Frequency: {{ currentSelectedAcccessPointSnapshoot.frequency }}</h5>
+                <h5>Security: <span [style.color]="getSecurityColor(currentSelectedAcccessPointSnapshoot)">{{ getSecurityText(currentSelectedAcccessPointSnapshoot) }}</span></h5>
+                <h5>Available encryption types: {{ currentSelectedAcccessPointSnapshoot.serializedSecurityPayload }}</h5>
+
+                <div *ngIf="__selectedAccessPointStamp === undefined; else dataForStamp">
+                    <h5>First seen: {{ __selectedAccessPoint.creationTimestamp }}</h5>
+                    <h5>State from: {{ __selectedAccessPoint.versionTimestamp }}</h5>
+                    <h5 *ngIf="hasAdminPermission">Display status: {{ (__selectedAccessPoint.displayStatus) ? "Public" : "Hidden" }}</h5>   
+                </div>
+
+                <ng-template #dataForStamp>
+                    <h5>Created on: {{ __selectedAccessPointStamp.creationTimestamp }}</h5>
+                    <h5>Stamp merge status: {{ (__selectedAccessPointStamp.status) ? "Merged" : "Pending" }}</h5> 
+                </ng-template>
+            </div>
+
+            <div *ngIf="hasAdminPermission" class="row justify-content-center text-center">
+                <div class="col-lg-2 col-md-12">
+                    <button type="button" class="btn btn-secondary mx-1 col-12" [disabled]="__selectedAccessPointStamp !== undefined" (click)="updateAccessPointDisplayStatus()">{{ (__selectedAccessPoint.displayStatus) ? "Hide" : "Show" }}</button>
+                </div>
+                <div class="col-lg-2 col-md-12">
+                    <button type="button" class="btn btn-secondary mx-1 col-12" [disabled]="__selectedAccessPointStamp !== undefined" (click)="deleteAccessPoint()">Delete</button> 
+                </div>
+                <div class="col-lg-2 col-md12">
+                    <button type="button" class="btn btn-secondary mx-1 col-12" [disabled]="__selectedAccessPointStamp === undefined" (click)="deleteAccessPointStamp()">Delete stamp</button>
+                </div>
+                <div class="col-lg-2 col-md12">
+                    <button type="button" class="btn btn-secondary mx-1 col-12" [disabled]="__selectedAccessPointStamp === undefined" (click)="mergeAccessPointStamp()">Merge stamp</button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="__selectedAccessPoint !== undefined" class="row justify-content-center">
+            <div class="col-lg-12 col-md-12">
+                <form [formGroup]="accessPointStampMergeForm">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeLowSignalLevel" id="mergeLowSignalLevel"> 
+                        <label class="form-check-label" for="mergeLowSignalLevel">Merge the lowest signal location</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeHighSignalLevel" id="mergeHighSignalLevel"> 
+                        <label class="form-check-label" for="mergeHighSignalLevel">Merge the highest signal location</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeSsid" id="mergeSsid"> 
+                        <label class="form-check-label" for="mergeSsid">Merge name and type</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeSecurityData" id="mergeSecurityData"> 
+                        <label class="form-check-label" for="mergeSecurityData">Merge security data</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

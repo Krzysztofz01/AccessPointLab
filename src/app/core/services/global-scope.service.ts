@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +10,8 @@ export class GlobalScopeService {
   private serverSubject = new BehaviorSubject<string>("");
   public server = this.serverSubject.asObservable();
 
-  constructor(private cookieService: CookieService) {
-    this.serverSubject.next(this.cookieService.get(environment.SERVER_URL_COOKIE_NAME));
+  constructor(private localStorageService: LocalStorageService) {
+    this.serverSubject.next(this.localStorageService.get(environment.LSK_SERVER));
   }
 
   /**
@@ -21,8 +21,10 @@ export class GlobalScopeService {
   public setServer(server: string): void {
     this.serverSubject.next(server);
 
-    this.cookieService.set(environment.SERVER_URL_COOKIE_NAME, server, {
-      sameSite: "None"
+    this.localStorageService.set({
+      key: environment.LSK_SERVER,
+      value: server,
+      expirationMinutes: null
     });
   }
 }

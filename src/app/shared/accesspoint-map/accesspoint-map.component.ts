@@ -8,8 +8,8 @@ import Icon from 'ol/style/Icon';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import TileLayer from 'ol/layer/Tile';
 import * as olProj from 'ol/proj';
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable } from 'rxjs';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { environment } from 'src/environments/environment';
 import { EncryptionTypes } from './encryption-types.enum';
@@ -20,11 +20,13 @@ import { FormControl, FormGroup } from '@angular/forms';
   templateUrl: './accesspoint-map.component.html',
   styleUrls: ['./accesspoint-map.component.css']
 })
-export class AccesspointMapComponent implements OnInit, AfterViewInit {
+export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Input() centerLatitude: number | undefined;
   @Input() centerLongitude: number | undefined;
-  @Output() accessPointClick = new EventEmitter<Array<String>>(false);
+  @Output() accessPointClick = new EventEmitter<Array<AccessPoint>>(false);
 
   public keywordFilterForm: FormGroup;
   public encryptionTypeFilterForm: FormGroup;
@@ -44,18 +46,20 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
   private accessPoints: Array<AccessPoint>;
 
   ngAfterViewInit(): void {
-    this.accessPointObservable.subscribe({
-      next: (result) => {
-        this.accessPoints = result;
+    this.accessPointObservable
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result) => {
+          this.accessPoints = result;
 
-        const features = this.generateAccessPointFeatures(this.accessPoints);
-        this.initializeMap(features);
-      },
-      error: (error) => {
-        console.log(error);
-        this.accessPoints = [];
-      }
-    });
+          const features = this.generateAccessPointFeatures(this.accessPoints);
+          this.initializeMap(features);
+        },
+        error: (error) => {
+          console.log(error);
+          this.accessPoints = [];
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -67,16 +71,25 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
       keyword: new FormControl()
     });
 
-    this.encryptionTypeFilterForm.get('selectedEncryption').valueChanges.subscribe(value => {
-      const type = EncryptionTypes[this.keywordFilterForm.get('keyword').value];
-      const features = this.generateAccessPointFeatures(this.accessPoints, type, value);
-      this.swapVectorLayer(features);
-    });
+    this.encryptionTypeFilterForm.get('selectedEncryption').valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => {
+        const type = EncryptionTypes[this.keywordFilterForm.get('keyword').value];
+        const features = this.generateAccessPointFeatures(this.accessPoints, type, value);
+        this.swapVectorLayer(features);
+      });
 
-    this.keywordFilterForm.get('keyword').valueChanges.subscribe(value => {
-      const features = this.generateAccessPointFeatures(this.accessPoints, value, this.encryptionTypeFilterForm.get('selectedEncryption').value);
-      this.swapVectorLayer(features);
-    });
+    this.keywordFilterForm.get('keyword').valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => {
+        const features = this.generateAccessPointFeatures(this.accessPoints, value, this.encryptionTypeFilterForm.get('selectedEncryption').value);
+        this.swapVectorLayer(features);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   /**
@@ -108,15 +121,18 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
 
     // Marker click event
     this.map.on('click', (e) => {
-      const accessPointIds = new Array<String>();
+      const accessPoints = new Array<AccessPoint>();
       
       this.map.forEachFeatureAtPixel(e.pixel, (feature) => {
-        accessPointIds.push(feature.get(this.featureAccessPointIdProp) as String);
+        accessPoints.push(this.accessPoints.find(a => a.id == feature.get(this.featureAccessPointIdProp) as string));
       });
 
       //Emit the selected features
-      const distinctIds = accessPointIds.filter((a, i) => accessPointIds.findIndex((s) => a === s) === i);
-      if (distinctIds.length) this.accessPointClick.emit(distinctIds);
+      const disctinctAccessPoints = Array.from(new Set(accessPoints.map(a => a.id))).map(id => {
+        return accessPoints.find(a => a.id == id);
+      });
+
+      if (disctinctAccessPoints.length) this.accessPointClick.emit(disctinctAccessPoints);
     });
   }
 
@@ -164,7 +180,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
    * @return Boolean value representing if the AccessPoint entity is matching the requirements
    */
   private filterByEncryptionType(type: EncryptionTypes, accessPoint: AccessPoint): boolean {
-    if (type === EncryptionTypes.All || type === undefined) return true;
+    if (Number(EncryptionTypes[type]) === Number(EncryptionTypes.All) || type === undefined) return true;
 
     const encryptionTypes = JSON.parse(accessPoint.serializedSecurityPayload) as Array<string>;
     const selectedType = type.toString().toUpperCase();
@@ -226,12 +242,16 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit {
       return `/assets/${assetName}`;
     };
 
-    if (accessPoint.ssid === environment.SSID_HIDDEN) return setPath(environment.PIN_ICON_ALTERNATIVE);
-    if (accessPoint.isSecure) return setPath(environment.PIN_ICON_GOOD);
-    
-    const encryptionTypes = JSON.parse(accessPoint.serializedSecurityPayload) as Array<string>;
-    if(encryptionTypes.includes('WEP') || encryptionTypes.includes('WPS')) return setPath(environment.PIN_ICON_AVERAGE);
+    if (accessPoint.ssid === environment.SSID_HIDDEN) return setPath(environment.PIN_ICON_UNKNOWN);
 
-    return setPath(environment.PIN_ICON_BAD);
+    const encryptionTypes = (JSON.parse(accessPoint.serializedSecurityPayload) as Array<string>).map(type => type.toUpperCase());
+
+    if(encryptionTypes.includes('WPA3')) return setPath(environment.PIN_ICON_WPA3);
+    if(encryptionTypes.includes('WPA2')) return setPath(environment.PIN_ICON_WPA2);
+    if(encryptionTypes.includes('WPA')) return setPath(environment.PIN_ICON_WPA);
+    if(encryptionTypes.includes('WPS')) return setPath(environment.PIN_ICON_WPS);
+    if(encryptionTypes.includes('WEP')) return setPath(environment.PIN_ICON_WEP);
+
+    return setPath(environment.PIN_ICON_NONE);
   }
 }
