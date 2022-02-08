@@ -84,5 +84,28 @@
                 </div>
             </div>
         </div>
+
+        <div *ngIf="__selectedAccessPoint !== undefined" class="row justify-content-center">
+            <div class="col-lg-12 col-md-12">
+                <form [formGroup]="accessPointStampMergeForm">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeLowSignalLevel" id="mergeLowSignalLevel"> 
+                        <label class="form-check-label" for="mergeLowSignalLevel">Merge the lowest signal location</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeHighSignalLevel" id="mergeHighSignalLevel"> 
+                        <label class="form-check-label" for="mergeHighSignalLevel">Merge the highest signal location</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeSsid" id="mergeSsid"> 
+                        <label class="form-check-label" for="mergeSsid">Merge name and type</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="mergeSecurityData" id="mergeSecurityData"> 
+                        <label class="form-check-label" for="mergeSecurityData">Merge security data</label>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

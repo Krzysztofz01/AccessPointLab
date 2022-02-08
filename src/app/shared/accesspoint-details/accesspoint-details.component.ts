@@ -34,6 +34,7 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
 
   public accessPointSelectionForm: FormGroup;
   public accessPointStampSelectionForm: FormGroup;
+  public accessPointStampMergeForm: FormGroup;
 
   @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
   @Output() accessPointDeletedEvent = new EventEmitter<AccessPoint>();
@@ -76,6 +77,13 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
     
     this.accessPointStampSelectionForm = new FormGroup({
       selectedStampId: new FormControl(this._emptyStampSelection)
+    });
+
+    this.accessPointStampMergeForm = new FormGroup({
+      mergeLowSignalLevel: new FormControl(false),
+      mergeHighSignalLevel: new FormControl(false),
+      mergeSsid: new FormControl(false),
+      mergeSecurityData: new FormControl(false)
     });
 
     this.accessPointSelectionForm.get('selectedAccessPointId').valueChanges
@@ -291,6 +299,15 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
    * Merge the currently selected AccessPointStamp entity
    */
   public mergeAccessPointStamp(): void {
-    //TODO Implement merging, introduce merge option form 
+    this.accessPointService.mergeAccessPoints(this.__selectedAccessPoint.id, this.__selectedAccessPointStamp.id,
+      this.accessPointStampMergeForm.get('mergeLowSignalLevel').value,
+      this.accessPointStampMergeForm.get('mergeHighSignalLevel').value,
+      this.accessPointStampMergeForm.get('mergeSsid').value,
+      this.accessPointStampMergeForm.get('mergeSecurityData').value)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          complete: () => this.accessPointSelectionForm.get('selectedAccessPointId').setValue(this.__selectedAccessPoint.id),
+          error: (error) => console.error(error)
+        });
   }
 }
