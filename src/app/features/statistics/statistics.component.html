@@ -1,0 +1,44 @@
+<app-navbar></app-navbar>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+            <div *ngIf="encryptionChartOptions !== undefined">
+                <canvas baseChart
+                    [data]="encryptionChartOptions.data"
+                    [options]="encryptionChartOptions.options"
+                    [type]="encryptionChartOptions.type">
+                </canvas>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+            <div *ngIf="frequencyChartOptions !== undefined">
+                <canvas baseChart
+                    [data]="frequencyChartOptions.data"
+                    [options]="frequencyChartOptions.options"
+                    [type]="frequencyChartOptions.type">
+                </canvas>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+            <div *ngIf="signalRangeChartOptions !== undefined">
+                <canvas baseChart
+                    [data]="signalRangeChartOptions.data"
+                    [options]="signalRangeChartOptions.options"
+                    [type]="signalRangeChartOptions.type">
+                </canvas>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+            <div *ngIf="manufacturerChartOptions !== undefined">
+                <canvas baseChart
+                    [data]="manufacturerChartOptions.data"
+                    [options]="manufacturerChartOptions.options"
+                    [type]="manufacturerChartOptions.type">
+                </canvas>
+            </div>
+        </div>
+    </div>
+</div>

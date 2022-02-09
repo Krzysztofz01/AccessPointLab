@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MainModule } from './main/main.module';
 import { LoginModule } from './login/login.module';
 import { ListModule } from './list/list.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 
 @NgModule({
@@ -11,12 +12,14 @@ import { ListModule } from './list/list.module';
     CommonModule,
     MainModule,
     LoginModule,
-    ListModule
+    ListModule,
+    StatisticsModule
   ],
   exports: [
     MainModule,
     LoginModule,
-    ListModule
+    ListModule,
+    StatisticsModule
   ]
 })
 export class FeaturesModule { }
