@@ -1,0 +1,37 @@
+<app-navbar></app-navbar>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-12">
+            <h2>Default</h2>
+            <form [formGroup]="defaultUploadForm" (ngSubmit)="submitUploadDefault()">
+                <div>
+                    <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
+                </div>
+                <button type="submit" class="btn btn-secondary col-12 mt-3">Upload</button> 
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-12">
+            <h2>WiGLE</h2>
+            <form [formGroup]="wigleUploadForm" (ngSubmit)="submitUploadWigle()">
+                <div>
+                    <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, wigleUploadForm)">
+                </div>
+                <button type="submit" class="btn btn-secondary col-12 mt-3">Upload</button> 
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-12">
+            <h2>Aircrack-ng</h2>
+            <form [formGroup]="aircrackngUploadForm" (ngSubmit)="submitUploadAircrackng()">
+                <div>
+                    <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, aircrackngUploadForm)">
+                </div>
+                <button type="submit" class="btn btn-secondary col-12 mt-3">Upload</button> 
+            </form>
+        </div>
+    </div>
+</div>

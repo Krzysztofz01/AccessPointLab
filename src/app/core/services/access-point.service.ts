@@ -138,16 +138,16 @@ export class AccessPointService {
   }
 
   public postAccessPointsWigle(csvDatabaseFile: File): Observable<void> {
-    const formData = new FormData()
-      .append('csvDatabaseFile', csvDatabaseFile);
+    const formData = new FormData();
+    formData.append('csvDatabaseFile', csvDatabaseFile);
 
     return this.httpClient.post<void>(this.requestUrl('wigle', true), formData);
   }
 
   public postAccessPointsAircrackng(csvLogFile: File): Observable<void> {
-    const formData = new FormData()
-      .append('csvLogFile', csvLogFile);
+    const formData = new FormData();
+    formData.append('csvLogFile', csvLogFile);
 
-      return this.httpClient.post<void>(this.requestUrl('aircrackng', true), formData);
+    return this.httpClient.post<void>(this.requestUrl('aircrackng', true), formData);
   }
 }

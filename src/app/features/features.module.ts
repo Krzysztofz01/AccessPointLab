@@ -4,6 +4,7 @@ import { MainModule } from './main/main.module';
 import { LoginModule } from './login/login.module';
 import { ListModule } from './list/list.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { UploadModule } from './upload/upload.module';
 
 
 @NgModule({
@@ -13,13 +14,15 @@ import { StatisticsModule } from './statistics/statistics.module';
     MainModule,
     LoginModule,
     ListModule,
-    StatisticsModule
+    StatisticsModule,
+    UploadModule
   ],
   exports: [
     MainModule,
     LoginModule,
     ListModule,
-    StatisticsModule
+    StatisticsModule,
+    UploadModule
   ]
 })
 export class FeaturesModule { }
