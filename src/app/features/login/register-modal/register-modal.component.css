@@ -1,0 +1,11 @@
+.modal-container {
+    padding: 3em;
+}
+
+h3 {
+    color: var(--apm-primary);
+}
+
+p {
+    color: var(--apm-accent);
+}
