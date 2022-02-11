@@ -29,6 +29,7 @@ div {
 input[type=password],
 input[type=email],
 input[type=text],
+input[type=file],
 textarea {
     font-family: 'Montserrat', sans-serif !important;
     background: transparent !important;
@@ -41,6 +42,7 @@ textarea {
 input[type=password]:focus,
 input[type=email]:focus,
 input[type=text]:focus,
+input[type=file]:focus,
 textarea:focus {
     border-color: var(--apm-accent) !important;
     box-shadow: none;
@@ -51,6 +53,15 @@ textarea:focus {
 ::-webkit-input-placeholder {
     font-style: italic !important;
     color: var(--apm-placeholder) !important
+}
+
+input[type=file], input[type=file]:hover {
+    cursor: pointer !important;
+}
+
+input[type=file]::file-selector-button, input[type=file]::file-selector-button:hover {
+    display: none !important;
+    cursor: pointer !important;
 }
 
 /* Button */
