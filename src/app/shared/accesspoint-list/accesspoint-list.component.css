@@ -1,0 +1,15 @@
+.col-sortable, .clickable-title {
+    cursor: pointer !important;
+}
+
+.clickable-title:hover {
+    color: var(--apm-primary)
+}
+
+thead {
+    color: var(--apm-primary) !important;
+}
+
+tbody {
+    color: var(--apm-accent) !important;
+}

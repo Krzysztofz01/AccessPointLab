@@ -21,7 +21,7 @@
                     <tbody>
                         <tr *ngFor="let ap of enrichedAccessPoints | orderBy: key: reverse | paginate: { itemsPerPage:pageSize, currentPage: page };">
                             <th scope="row">{{ ap.parsedId }}</th>
-                            <td class="deatils" (click)="accessPointShowDetails(ap)">{{ ap.ssid }}</td>
+                            <td><span class="clickable-title"(click)="accessPointShowDetails(ap)">{{ ap.ssid }}</span></td>
                             <td [style.color]="ap.parsedColorValue">{{ ap.parsedEncryptionType }}</td>
                             <td>{{ ap.parsedManufacturer }}</td>
                         </tr>

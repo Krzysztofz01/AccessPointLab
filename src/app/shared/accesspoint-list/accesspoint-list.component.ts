@@ -16,6 +16,8 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
 
   public readonly pageSize = 18; 
 
+  private accessPoints: Array<AccessPoint>;
+
   public enrichedAccessPoints: Array<AccessPoint>;
   public searchKeyword: string = '';
   public lastSearchKeyword: string = '';
@@ -42,16 +44,25 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (accessPoints) => {
-          this.enrichedAccessPoints = this.filterAccessPointByKeyword(accessPoints).map((accessPoint) => ({
-            parsedId: this.parseId(accessPoint),
-            parsedColorValue: this.parseSecurityColor(accessPoint),
-            parsedEncryptionType: this.parseSecurityName(accessPoint),
-            parsedManufacturer: this.parseManufacturer(accessPoint),
-            ...accessPoint
-          }));
+          this.accessPoints = accessPoints;
+          this.applyFiltersToAccessPoint(this.accessPoints);
         },
         error: (error) => console.error(error)
       });
+  }
+
+  /**
+   * Filter out AccessPoints and prepare aditional data
+   * @param accessPoints AccessPoint entity collection
+   */
+  private applyFiltersToAccessPoint(accessPoints: Array<AccessPoint>): void {
+    this.enrichedAccessPoints = this.filterAccessPointByKeyword(accessPoints).map((accessPoint) => ({
+      parsedId: this.parseId(accessPoint),
+      parsedColorValue: this.parseSecurityColor(accessPoint),
+      parsedEncryptionType: this.parseSecurityName(accessPoint),
+      parsedManufacturer: this.parseManufacturer(accessPoint),
+      ...accessPoint
+    }));
   }
 
   /**
@@ -74,7 +85,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
    * Reinitialize AccessPoint entity collection with keyword. Method used by the ng2-search-filter dependency
    */
   public searchAccessPoints(): void {
-    this.initializeAccessPoints();
+    this.applyFiltersToAccessPoint(this.accessPoints);
   }
 
   /**
@@ -102,12 +113,12 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   private parseSecurityColor(accessPoint: AccessPoint): string {
     const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
 
-    if(sd.includes('WPA3')) return 'var(--apm-success)';
-    if(sd.includes('WPA2')) return 'var(--apm-success)';
-    if(sd.includes('WPA')) return 'var(--apm-success)';
-    if(sd.includes('WPS')) return 'var(--apm-warning)';
-    if(sd.includes('WEP')) return 'var(--apm-warning)';
-    return 'var(--apm-danger)';
+    if(sd.includes('WPA3')) return 'var(--apm-encryption-good)';
+    if(sd.includes('WPA2')) return 'var(--apm-encryption-good)';
+    if(sd.includes('WPA')) return 'var(--apm-encryption-good)';
+    if(sd.includes('WPS')) return 'var(--apm-encryption-medium)';
+    if(sd.includes('WEP')) return 'var(--apm-encryption-medium)';
+    return 'var(--apm-encryption-bad)';
   }
 
   /**
