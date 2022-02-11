@@ -1,1 +1,94 @@
-/* You can add global styles to this file, and also import other style files */
+/* AccessPointLab theme */
+:root {
+    --apm-primary: rgba(95,10,135,1);
+    --apm-accent: rgba(164,80,139,1);
+    --apm-placeholder: rgb(151, 107, 138);
+    --apm-light: #fff;
+    --apm-dark: #000;
+    --apm-primary-fade: rgba(95,10,135,.5);
+    --apm-accent-fade: rgba(164,80,139,.5);
+}
+
+/* Google font */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600&display=swap');
+
+/* Global settings */
+html,
+body,
+div {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Bootstrap 5 customization */
+
+/* Input */
+input[type=password],
+input[type=email],
+input[type=text],
+textarea {
+    font-family: 'Montserrat', sans-serif !important;
+    background: transparent !important;
+    color: var(--apm-primary) !important;
+    border: .1em var(--apm-primary) solid !important;
+    border-radius: 1em !important;
+    text-align: center;
+}
+
+input[type=password]:focus,
+input[type=email]:focus,
+input[type=text]:focus,
+textarea:focus {
+    border-color: var(--apm-accent) !important;
+    box-shadow: none;
+}
+
+::placeholder,
+::-moz-placeholder,
+::-webkit-input-placeholder {
+    font-style: italic !important;
+    color: var(--apm-placeholder) !important
+}
+
+/* Button */
+.btn-primary {
+    font-family: 'Montserrat', sans-serif !important;
+    background-color: var(--apm-primary) !important;
+    border-color: transparent !important;
+    border-radius: 1em !important;
+    color: var(--apm-light) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus:hover {
+    background-color: var(--apm-accent) !important;
+    color: var(--apm-light) !important;
+    box-shadow: none !important;
+}
+
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+    background-color: var(--apm-primary) !important;
+    color: var(--apm-light) !important;
+    box-shadow: none !important;
+}
+
+/* Select */
+select {
+    text-align: center !important;
+    color: var(--apm-primary) !important;
+    border: .1em var(--apm-primary) solid !important;
+    border-radius: 1em !important;
+}
+
+select:focus {
+    box-shadow: none !important;
+}
+
+/* Modal */
+.fade {
+    background: linear-gradient(315deg, var(--apm-primary-fade) 0%, var(--apm-accent-fade) 100%);
+}
+
+.modal-content {
+    border-radius: 2em !important;
+}
