@@ -90,7 +90,8 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
       .pipe(takeUntil(this.destroy$))
       .subscribe(id => {
         this.accessPointStampSelectionForm.get('selectedStampId').setValue(this._emptyStampSelection);
-        this.switchSelectedAccessPoint(id)
+        this.switchSelectedAccessPoint(id);
+        this.__selectedAccessPointStamp = undefined;
       });
 
     this.accessPointStampSelectionForm.get('selectedStampId').valueChanges
@@ -103,6 +104,7 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
         }
 
         this.__selectedAccessPointStamp = undefined;
+        this.swapVectorLayer(this.__selectedAccessPoint);
       });
   }
 
@@ -220,12 +222,12 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
   public getSecurityColor(accessPoint: AccessPoint | AccessPointStamp): string {
     const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
 
-    if(sd.includes('WPA3')) return 'var(--apm-success)';
-    if(sd.includes('WPA2')) return 'var(--apm-success)';
-    if(sd.includes('WPA')) return 'var(--apm-success)';
-    if(sd.includes('WPS')) return 'var(--apm-warning)';
-    if(sd.includes('WEP')) return 'var(--apm-warning)';
-    return 'var(--apm-danger)';
+    if(sd.includes('WPA3')) return 'var(--apm-encryption-good)';
+    if(sd.includes('WPA2')) return 'var(--apm-encryption-good)';
+    if(sd.includes('WPA')) return 'var(--apm-encryption-good)';
+    if(sd.includes('WPS')) return 'var(--apm-encryption-medium)';
+    if(sd.includes('WEP')) return 'var(--apm-encryption-medium)';
+    return 'var(--apm-encryption-bad)';
   }
 
   /**
