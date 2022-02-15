@@ -40,7 +40,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   private readonly featureLayerName = "accesspoints_layer";
   
   public readonly encryptionTypesArray = Object.values(EncryptionTypes).filter(value => typeof value === 'string') as Array<String>;
-  public readonly deafultSelectedEncryptionType = EncryptionTypes.All.toString();
+  public readonly defaultSelectedEncryptionType = EncryptionTypes[EncryptionTypes.All];
 
   private map: Map;
   private accessPoints: Array<AccessPoint>;
@@ -64,7 +64,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
 
   ngOnInit(): void {
     this.encryptionTypeFilterForm = new FormGroup({
-      selectedEncryption: new FormControl()
+      selectedEncryption: new FormControl(this.defaultSelectedEncryptionType)
     });
 
     this.keywordFilterForm = new FormGroup({

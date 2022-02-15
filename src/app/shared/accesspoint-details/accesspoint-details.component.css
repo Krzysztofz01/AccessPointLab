@@ -1,3 +1,17 @@
 .apm-ol-detail-map {
     height: 45vh;
+    border: 1px solid var(--apm-primary);
+}
+
+.property-name, h3, h4 {
+    color: var(--apm-primary);
+}
+
+label, h5, b {
+    color: var(--apm-accent);
+}
+
+h5 {
+    margin-top: .6em;
+    margin-bottom: .6em;
 }

@@ -5,6 +5,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { LocalStorageService } from './services/local-storage.service';
 import { AccessPointService } from './services/access-point.service';
+import { LoadingIndicatorInterceptor } from './interceptors/loading-indicator.interceptor';
 
 @NgModule({
   declarations: [],
@@ -13,6 +14,10 @@ import { AccessPointService } from './services/access-point.service';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingIndicatorInterceptor, multi: true },
+    
+    // The app-intializer is working unefficient, long routing time.
+    //{ provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AuthService] },
 
     GlobalScopeService,
     LocalStorageService,

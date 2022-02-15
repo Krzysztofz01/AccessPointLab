@@ -1,8 +1,28 @@
-/* Z-index between bootstrap's offcanvas and modal */
-.navbar-floating-index {
+.navbar {
     z-index: 1055;
+    background-image: linear-gradient(135deg, var(--apm-primary), var(--apm-accent)) !important;
+    color: var(--apm-light) !important;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.3);
 }
 
-b {
-    cursor: pointer;
+.navbar-animated {
+    transition: .2s opacity ease-in-out !important;
+    opacity: 50%;
+}
+
+.navbar-animated:hover {
+    opacity: 100%;
+}
+
+.navbar-brand, a {
+    color: var(--apm-light);
+    cursor: pointer;   
+}
+
+.navbar-brand:hover {
+    color: var(--apm-accent);
+}
+
+a:hover {
+    color: var(--apm-primary);
 }
