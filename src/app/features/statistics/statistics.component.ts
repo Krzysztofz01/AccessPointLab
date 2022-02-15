@@ -12,6 +12,14 @@ export class StatisticsComponent implements OnDestroy, OnInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   
   private readonly lineChartEntryLimit = 6;
+  private readonly chartsColors = [
+    '#5F0A87',
+    '#831BB3',
+    '#9B44C4',
+    '#B35999',
+    '#A24E8B',
+    '#D072B7'
+  ];
 
   public encryptionChartOptions: ChartOptionGroup;
   public frequencyChartOptions: ChartOptionGroup;
@@ -66,7 +74,12 @@ export class StatisticsComponent implements OnDestroy, OnInit {
             plugins: [],
             data: {
               labels,
-              datasets: [{ data }]
+              datasets: [{ 
+                data,
+                backgroundColor: this.chartsColors.slice(0, labels.length),
+                hoverBackgroundColor: this.chartsColors.reverse().slice(0, labels.length),
+                hoverBorderColor: this.chartsColors.reverse().slice(0, labels.length)
+              }]
             }
           };
         },
@@ -110,7 +123,12 @@ export class StatisticsComponent implements OnDestroy, OnInit {
             plugins: [],
             data: {
               labels,
-              datasets: [{ data }]
+              datasets: [{
+                data,
+                backgroundColor: this.chartsColors.slice(0, labels.length),
+                hoverBackgroundColor: this.chartsColors.reverse().slice(0, labels.length),
+                hoverBorderColor: this.chartsColors.reverse().slice(0, labels.length)
+              }]
             }
           };
         },
@@ -128,7 +146,6 @@ export class StatisticsComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (accessPoints) => {
-          console.log(accessPoints);
           const labels = new Array<string>();
           const data = new Array<number>();
 
@@ -152,7 +169,11 @@ export class StatisticsComponent implements OnDestroy, OnInit {
             plugins: [],
             data: {
               labels,
-              datasets: [{ data, label: 'Count' }]
+              datasets: [{
+                data,
+                label: 'Count',
+                borderColor: this.chartsColors.slice(0, 1)
+              }]
             }
           };
         },
@@ -170,7 +191,6 @@ export class StatisticsComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (manufacturer) => {
-          console.log(manufacturer);
           const labels = new Array<string>();
           const data = new Array<number>();
 
@@ -194,7 +214,11 @@ export class StatisticsComponent implements OnDestroy, OnInit {
             plugins: [],
             data: {
               labels,
-              datasets: [{ data, label: 'Count' }]
+              datasets: [{
+                data,
+                label: 'Count',
+                borderColor: this.chartsColors.slice(0, 1)
+              }],
             }
           };
         },

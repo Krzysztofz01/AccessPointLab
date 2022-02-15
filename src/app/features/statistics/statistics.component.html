@@ -1,9 +1,10 @@
 <app-navbar></app-navbar>
 
 <div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+    <div class="row justify-content-center mt-2">
+        <div class="col-lg-4 col-md-12 mx-3 px-5 text-center">
             <div *ngIf="encryptionChartOptions !== undefined">
+                <h3>Encryption types</h3>
                 <canvas baseChart
                     [data]="encryptionChartOptions.data"
                     [options]="encryptionChartOptions.options"
@@ -11,8 +12,9 @@
                 </canvas>
             </div>
         </div>
-        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+        <div class="col-lg-4 col-md-12 mx-3 px-5 text-center">
             <div *ngIf="frequencyChartOptions !== undefined">
+                <h3>Signal frequencies</h3>
                 <canvas baseChart
                     [data]="frequencyChartOptions.data"
                     [options]="frequencyChartOptions.options"
@@ -21,9 +23,10 @@
             </div>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+    <div class="row justify-content-center mt-3">
+        <div class="col-lg-4 col-md-12 px-5 text-center">
             <div *ngIf="signalRangeChartOptions !== undefined">
+                <h3>Highest signal range</h3>
                 <canvas baseChart
                     [data]="signalRangeChartOptions.data"
                     [options]="signalRangeChartOptions.options"
@@ -31,8 +34,9 @@
                 </canvas>
             </div>
         </div>
-        <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+        <div class="col-lg-4 col-md-12 px-5 text-center">
             <div *ngIf="manufacturerChartOptions !== undefined">
+                <h3>Most common manufacturer</h3>
                 <canvas baseChart
                     [data]="manufacturerChartOptions.data"
                     [options]="manufacturerChartOptions.options"
