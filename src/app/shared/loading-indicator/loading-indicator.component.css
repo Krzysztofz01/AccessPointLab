@@ -1,0 +1,22 @@
+.loading-indicator-background {
+    z-index: 1100 !important;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(315deg, var(--apm-primary) 0%, var(--apm-accent) 100%);
+    opacity: 40%;
+    overflow: hidden;
+}
+
+.loading-indicator-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
+.spinner-border {
+    width: 7em;
+    height: 7em;
+}

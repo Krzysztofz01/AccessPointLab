@@ -11,6 +11,7 @@ import { AccesspointListComponent } from './accesspoint-list/accesspoint-list.co
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { OrderModule } from 'ngx-order-pipe';
+import { LoadingIndicatorComponent } from './loading-indicator/loading-indicator.component';
 
 
 
@@ -20,7 +21,8 @@ import { OrderModule } from 'ngx-order-pipe';
     NavbarComponent,
     AccesspointMapComponent,
     AccesspointDetailsComponent,
-    AccesspointListComponent
+    AccesspointListComponent,
+    LoadingIndicatorComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +39,8 @@ import { OrderModule } from 'ngx-order-pipe';
     NavbarComponent,
     AccesspointMapComponent,
     AccesspointDetailsComponent,
-    AccesspointListComponent
+    AccesspointListComponent,
+    LoadingIndicatorComponent
   ]
 })
 export class SharedModule { }
