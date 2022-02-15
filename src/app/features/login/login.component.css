@@ -1,3 +1,11 @@
+.login-row {
+    padding-top: 25vh;
+}
+
+.login-content-container {
+    z-index: 1000;
+}
+
 .form-container {
     border: .1em var(--apm-primary) solid;
     border-radius: 2em;

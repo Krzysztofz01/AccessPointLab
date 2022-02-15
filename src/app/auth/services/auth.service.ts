@@ -114,7 +114,7 @@ export class AuthService {
    * Check if there is a session to refresh
    * @returns Boolean value indicating the presence of auth token
    */
-  public verifyCookies(): boolean {
+  public verifyLocalStorageTokens(): boolean {
     return this.localStorageService.check(environment.LSK_REFRESH_TOKEN) &&
       this.localStorageService.check(environment.LSK_SERVER);
   }

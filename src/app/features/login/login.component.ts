@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, takeUntil } from 'rxjs';
 import { RegisterRequest } from 'src/app/auth/contracts/register.request';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { GlobalScopeService } from 'src/app/core/services/global-scope.service';
@@ -12,7 +13,8 @@ import { RegisterModalComponent } from './register-modal/register-modal.componen
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
   public loginForm: FormGroup;
 
   public notificationShow: boolean;
@@ -31,6 +33,11 @@ export class LoginComponent implements OnInit {
     });
 
     this.initializeRefreshToken();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   /**
@@ -53,7 +60,7 @@ export class LoginComponent implements OnInit {
     this.authService.login({
       email: this.loginForm.get('email').value,
       password: this.loginForm.get('password').value
-    }).subscribe({
+    }).pipe(takeUntil(this.destroy$)).subscribe({
       complete: () => {
         this.router.navigate(['']);
       },
@@ -83,7 +90,7 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      this.authService.register(registerData).subscribe({
+      this.authService.register(registerData).pipe(takeUntil(this.destroy$)).subscribe({
         complete: () => {
           this.notificationShow = true;
           this.notificationType = 'success';
@@ -100,9 +107,9 @@ export class LoginComponent implements OnInit {
   * Check for a pending session and authenticate.
   */
   private initializeRefreshToken(): void {
-    if(!this.authService.verifyCookies()) return;
+    if(!this.authService.verifyLocalStorageTokens()) return;
 
-    this.authService.refreshToken().subscribe({
+    this.authService.refreshToken().pipe(takeUntil(this.destroy$)).subscribe({
       complete: () => {
         this.router.navigate(['']);
       },
