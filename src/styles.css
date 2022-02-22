@@ -11,6 +11,10 @@
     --apm-encryption-medium: #F39D2B;
     --apm-encryption-bad: #D33115;
     --apm-encryption-alt: #009CE1;
+    --apm-status-bad: #901600;
+    --apm-status-bad-accent: #d48273;
+    --apm-status-good: #407401;
+    --apm-status-good-accent: #a0b982;
 }
 
 /* Google font */
@@ -131,4 +135,9 @@ select:focus {
 .ngx-pagination .current {
     color: var(--apm-light) !important;
     background-color: var(--apm-primary) !important;
+}
+
+/* Toast */
+.toast {
+    display: block !important;
 }

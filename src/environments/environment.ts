@@ -12,4 +12,7 @@ export const environment = {
   PIN_ICON_WEP: 'PIN_WEP.png',
   PIN_ICON_NONE: 'PIN_NONE.png',
   PIN_ICON_UNKNOWN: 'PIN_UNKNOWN.png',
+  LOG_INFO: true,
+  LOG_ERROR: true,
+  LOG_SINGLE_LEVEL: true
 };
