@@ -6,6 +6,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { RegisterRequest } from 'src/app/auth/contracts/register.request';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { GlobalScopeService } from 'src/app/core/services/global-scope.service';
+import { LoggerService } from 'src/app/core/services/logger.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 import { RegisterModalComponent } from './register-modal/register-modal.component';
 
 @Component({
@@ -17,15 +19,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   public loginForm: FormGroup;
 
-  public notificationShow: boolean;
-  public notificationText: string;
-  public notificationType: string = 'danger';
-
-  constructor(private authService: AuthService, private router: Router, private modalService: NgbModal, private globalScopeService: GlobalScopeService) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private modalService: NgbModal,
+    private globalScopeService: GlobalScopeService,
+    private loggerService: LoggerService,
+    private toastService: ToastService) { }
 
   ngOnInit(): void {
-    this.notificationShow = false;
-
     this.loginForm = new FormGroup({
       server: new FormControl('', [ Validators.required ]),
       email: new FormControl('', [ Validators.required, Validators.email ]),
@@ -44,13 +46,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   * Method called on login button click, check form valiation and make the auth request
   */
   public loginSubmit(): void {
-    this.notificationShow = false;
-    
     if (!this.loginForm.valid) {
-      this.notificationShow = true;
-      this.notificationType = 'danger';
-      this.notificationText = 'Provided data invalid!';
-
+      this.toastService.setError("Provided authentication credentails are invalid.");
       this.loginForm.reset();
       return;
     }
@@ -62,13 +59,12 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: this.loginForm.get('password').value
     }).pipe(takeUntil(this.destroy$)).subscribe({
       complete: () => {
+        this.toastService.setInformation("Authenticated successful.");
         this.router.navigate(['']);
       },
       error: (error) => {
-        console.error(error);
-        this.notificationShow = true;
-        this.notificationType = 'danger';
-        this.notificationText = 'Check the provided data. Your account may not be activated yet!';
+        this.loggerService.logError(error);
+        this.toastService.setError("Account does not exist or has not been activated yet.");
       }
     });
 
@@ -84,20 +80,17 @@ export class LoginComponent implements OnInit, OnDestroy {
     ref.result.then(res => {
       const registerData = res as RegisterRequest;
       if (registerData === null) {
-        this.notificationShow = true;
-        this.notificationType = 'danger';
-        this.notificationText = 'Provided data invalid!';
+        this.toastService.setError("Provided authentication credentails are invalid.");
         return;
       }
 
       this.authService.register(registerData).pipe(takeUntil(this.destroy$)).subscribe({
         complete: () => {
-          this.notificationShow = true;
-          this.notificationType = 'success';
-          this.notificationText = 'Registration successful. Wait for account activation.';
+          this.toastService.setInformation("Registration successful. Wait for account activation.");
         },
         error: (error) => {
-          console.error(error);
+          this.loggerService.logError(error);
+          this.toastService.setError("Registration failed. Try again later.");
         }
       });
     }, () => {});
@@ -111,10 +104,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.authService.refreshToken().pipe(takeUntil(this.destroy$)).subscribe({
       complete: () => {
+        this.toastService.setInformation("Authenticated successful.");
         this.router.navigate(['']);
       },
       error: (error) => {
-        console.error(error);
+        this.loggerService.logError(error);
+        this.toastService.setError("Invalid session. Try to authenticate again.");
       }
     });
   }

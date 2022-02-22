@@ -2,8 +2,6 @@
     <h3>Registration</h3>
     <p>After successful registration you will have to wait for your account to be approved by the administration.</p>
 
-    <app-alert [type]="notificationType" [text]="notificationText" [show]="notificationShow"></app-alert>
-
     <form [formGroup]="registerForm" (ngSubmit)="submit()">
         <div class="form-group">
             <input type="text" class="form-control my-3" placeholder="Server" formControlName="server">
