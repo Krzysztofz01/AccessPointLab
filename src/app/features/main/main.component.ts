@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SecurityContext } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
+import { LoggerService } from 'src/app/core/services/logger.service';
 import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/accesspoint-details.component';
 import { environment } from 'src/environments/environment';
 
@@ -21,7 +23,13 @@ export class MainComponent implements OnInit {
   private readonly accessPointIdParamName = 'id';
   private accessPointIdParamValue: string;
 
-  constructor(private modalService: NgbModal, private route: ActivatedRoute, private authService: AuthService, private accessPointService: AccessPointService) { }
+  constructor(
+    private sanitizer: DomSanitizer,
+    private modalService: NgbModal,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private accessPointService: AccessPointService,
+    private loggerService: LoggerService) { }
 
   ngOnInit(): void {
     const role = this.authService.userValue.role;
@@ -29,13 +37,17 @@ export class MainComponent implements OnInit {
 
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
 
-    this.accessPointIdParamValue = this.route.snapshot.paramMap.get(this.accessPointIdParamName);
-    if (this.accessPointIdParamValue !== null)
-    {
-      this.accessPointService.getAccessPointById(this.accessPointIdParamValue, this.hasFullPermission).subscribe({
-        next: (accessPoint) => this.createDetailsModalInstance([ accessPoint ]),
-        error: (error) => console.error(error)
-      });
+    const paramDirty = this.route.snapshot.paramMap.get(this.accessPointIdParamName);
+    if (paramDirty !== null) {
+      try {
+        this.accessPointIdParamValue = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, paramDirty);
+        this.accessPointService.getAccessPointById(this.accessPointIdParamValue, this.hasFullPermission).subscribe({
+          next: (accessPoint) => this.createDetailsModalInstance([ accessPoint ]),
+          error: (error) => this.loggerService.logError(error)
+        });
+      } catch (error) {
+        this.loggerService.logError(error as Error, "Invalid page argument.");
+      }
     }
   }
 

@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SecurityContext } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
+import { LoggerService } from 'src/app/core/services/logger.service';
 import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/accesspoint-details.component';
 import { environment } from 'src/environments/environment';
 
@@ -22,7 +24,13 @@ export class ListComponent implements OnInit {
   private readonly listPageParamName = 'page';
   private listPageParamValue: string;
 
-  constructor(private modalService: NgbModal, private route: ActivatedRoute, private authService: AuthService, private accessPointService: AccessPointService) { }
+  constructor(
+    private sanitizer: DomSanitizer,
+    private modalService: NgbModal,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private accessPointService: AccessPointService,
+    private loggerService: LoggerService) { }
 
   ngOnInit(): void {
     const role = this.authService.userValue.role;
@@ -30,8 +38,15 @@ export class ListComponent implements OnInit {
 
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
 
-    this.listPageParamValue = this.route.snapshot.paramMap.get(this.listPageParamName);
-    if (this.listPageParamValue !== null) this.listPage = parseInt(this.listPageParamValue, 10);
+    const paramDirty = this.route.snapshot.paramMap.get(this.listPageParamName);
+    if (paramDirty !== null) {
+      try {
+        this.listPageParamValue = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, paramDirty);
+        this.listPage = parseInt(this.listPageParamValue, 10);
+      } catch (error) {
+        this.loggerService.logError(error as Error, "Invalid page argument.");
+      }
+    }
   }
 
   /**
