@@ -21,18 +21,28 @@ export class LoggerService {
    * @param error Exception instance
    * @param message Additional, optional message to log
    */
-  public logError(error: Error, message: string = undefined): void {
+  public logError(error: Error | string, message: string = undefined): void {
     if (!environment.LOG_ERROR) return;
 
-    const formatedMessage = (message === undefined)
-      ? this.prepareLogMessage("Error", error.message)
-      : this.prepareLogMessage("Error", `${message} ${error.message}`);
+    if (error instanceof Error) {
+      const formatedMessage = (message === undefined)
+        ? this.prepareLogMessage('Error', error.message)
+        : this.prepareLogMessage('Error', `${message} ${error.message}`);
 
-    if (environment.LOG_SINGLE_LEVEL) {
-      console.log(formatedMessage);
-      return;
+      if (environment.LOG_SINGLE_LEVEL) {
+        console.log(formatedMessage);
+        return;
+      }
+      console.error(formatedMessage);
+    } else {
+      const formatedMessage =  this.prepareLogMessage('Error', error as string);
+      
+      if (environment.LOG_SINGLE_LEVEL) {
+        console.log(formatedMessage);
+        return;
+      }
+      console.error(formatedMessage);
     }
-    console.error(formatedMessage);
   }
 
   /**
