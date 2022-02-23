@@ -14,6 +14,7 @@ import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { environment } from 'src/environments/environment';
 import { EncryptionTypes } from './encryption-types.enum';
 import { FormControl, FormGroup } from '@angular/forms';
+import { LoggerService } from 'src/app/core/services/logger.service';
 
 @Component({
   selector: 'app-accesspoint-map',
@@ -45,6 +46,8 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   private map: Map;
   private accessPoints: Array<AccessPoint>;
 
+  constructor(private loggerService: LoggerService) { }
+
   ngAfterViewInit(): void {
     this.accessPointObservable
       .pipe(takeUntil(this.destroy$))
@@ -56,7 +59,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
           this.initializeMap(features);
         },
         error: (error) => {
-          console.log(error);
+          this.loggerService.logError(error);
           this.accessPoints = [];
         }
       });
@@ -141,7 +144,10 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
    * @param features Collection of OpenLayers point feature representing AccessPoint entities
    */
   private swapVectorLayer(features: Array<Feature<Point>>): void {
-    if (this.map === undefined) return;
+    if (this.map === undefined) {
+      this.loggerService.logError('The map object is not initialized.');
+      return;
+    }
     
     this.map.getLayers().forEach(layer => {
       if (layer && layer.get(this.featureLayerNameProp) === this.featureLayerName) {

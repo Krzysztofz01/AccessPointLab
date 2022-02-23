@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
+import { LoggerService } from './logger.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
-  
+  constructor(private loggerService: LoggerService) { }
+
   /**
   * Retrive and elements associated to the given unique key
   * @param key Unique key identifier
@@ -12,7 +14,7 @@ export class LocalStorageService {
   */
   public get(key: string): any {
     if(!this.checkService()) {
-      console.error('Local storage service is unavailable!');
+      this.loggerService.logError('Local storage service is unavailable!');
       return null;
     }
 
@@ -36,7 +38,7 @@ export class LocalStorageService {
   */
   public set(options: LocalStorageOptions): void {
     if(!this.checkService()) {
-      console.error('Local storage service is unavailable!');
+      this.loggerService.logError('Local storage service is unavailable!');
       return;
     }
 
@@ -55,11 +57,11 @@ export class LocalStorageService {
   /**
    * Check if a ceratin element exists in local storage, if supported
    * @param key Unique value identifier
-   * @returns 
+   * @returns Boolean value indicating the element with given key exists
    */
   public check(key: string): boolean {
     if(!this.checkService()) {
-      console.error('Local storage service is unavailable!');
+      this.loggerService.logError('Local storage service is unavailable!');
       return false;
     }
 
@@ -72,7 +74,7 @@ export class LocalStorageService {
   */
   public unset(key: string): void {
     if(!this.checkService()) {
-      console.error('Local storage service is unavailable!');
+      this.loggerService.logError('Local storage service is unavailable!');
       return;
     }
 
@@ -84,7 +86,7 @@ export class LocalStorageService {
   */
   public drop(): void {
     if(!this.checkService()) {
-      console.error('Local storage service is unavailable!');
+      this.loggerService.logError('Local storage service is unavailable!');
       return;
     }
 
@@ -107,9 +109,7 @@ export class LocalStorageService {
   * @returns Boolean value which indicates if the browser supports the local storage
   */
   public test(): boolean {
-    if(this.checkService()) return true;
-    console.error('Local storage service is unavailable!');
-    return false;
+    return this.checkService();
   }
 }
 
