@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
+import { PreferencesService } from 'src/app/core/services/preferences.service';
 import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/accesspoint-details.component';
 import { environment } from 'src/environments/environment';
 
@@ -17,7 +18,9 @@ import { environment } from 'src/environments/environment';
 })
 export class MainComponent implements OnInit {
   public accessPointsObservable: Observable<Array<AccessPoint>>;
-  
+  public mapCenterLatitude: number | undefined;
+  public mapCenterLongitude: number | undefined;
+
   private hasFullPermission: boolean;
   
   private readonly accessPointIdParamName = 'id';
@@ -29,13 +32,15 @@ export class MainComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private accessPointService: AccessPointService,
-    private loggerService: LoggerService) { }
+    private loggerService: LoggerService,
+    private preferencesService: PreferencesService) { }
 
   ngOnInit(): void {
     const role = this.authService.userValue.role;
     this.hasFullPermission = (role === environment.ROLE_SUPPORT || role === environment.ROLE_ADMIN);
 
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
+    this.applyPreferences();
 
     const paramDirty = this.route.snapshot.paramMap.get(this.accessPointIdParamName);
     if (paramDirty !== null) {
@@ -82,5 +87,18 @@ export class MainComponent implements OnInit {
     };
 
     modalReference.result.then(() => unsubscribe(), () => unsubscribe());
+  }
+
+  /**
+   * Apply custom user preferences
+   */
+  private applyPreferences(): void {
+    const centerLatitude = this.preferencesService.getPreference("mapCenterLatitude");
+    const centerLongitude = this.preferencesService.getPreference("mapCenterLongitude");
+    
+    if (centerLatitude !== null && centerLongitude !== null) {
+      this.mapCenterLatitude = parseFloat(centerLatitude);
+      this.mapCenterLongitude = parseFloat(centerLongitude);
+    }
   }
 }

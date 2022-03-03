@@ -4,6 +4,7 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { ListComponent } from './features/list/list.component';
 import { LoginComponent } from './features/login/login.component';
 import { MainComponent } from './features/main/main.component';
+import { PreferencesComponent } from './features/preferences/preferences.component';
 import { StatisticsComponent } from './features/statistics/statistics.component';
 import { UploadComponent } from './features/upload/upload.component';
 
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'list', component: ListComponent, canActivate: [AuthGuard] },
   { path: 'statistics', component: StatisticsComponent, canActivate: [AuthGuard] },
   { path: 'upload', component: UploadComponent, canActivate: [AuthGuard] },
+  { path: 'preferences', component: PreferencesComponent },
   { path: 'auth', component: LoginComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: ''}
 ];
