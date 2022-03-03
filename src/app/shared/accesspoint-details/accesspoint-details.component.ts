@@ -16,6 +16,8 @@ import Geometry from 'ol/geom/Geometry';
 import { Subject, takeUntil } from 'rxjs';
 import { AccessPointStamp } from 'src/app/core/models/access-point-stamp.model';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ToastService } from 'src/app/core/services/toast.service';
+import { LoggerService } from 'src/app/core/services/logger.service';
 
 @Component({
   selector: 'app-accesspoint-details',
@@ -47,7 +49,12 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
 
   public hasAdminPermission = false;
 
-  constructor(private modal: NgbActiveModal, private accessPointService: AccessPointService, private authService: AuthService) { }
+  constructor(
+    private modal: NgbActiveModal,
+    private accessPointService: AccessPointService,
+    private authService: AuthService,
+    private toastService: ToastService,
+    private loggerService: LoggerService) { }
   
   ngAfterViewInit(): void {
     this.initializeMap();
@@ -130,7 +137,7 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
           this.__selectedAccessPoint = accessPoint;
           this.swapVectorLayer(this.__selectedAccessPoint);
         },
-        error: (error) => console.error(error)
+        error: (error) => this.loggerService.logError(error)
       });
   }
 
@@ -140,7 +147,10 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
    * @returns 
    */
   private swapVectorLayer(accessPoint : AccessPoint | AccessPointStamp): void {
-    if (this.map === undefined) return;
+    if (this.map === undefined) {
+      this.loggerService.logError('Map object is not initialized.');
+      return;
+    }
     
     this.map.getLayers().forEach(layer => {
       if (layer && layer.get(this.featureLayerNameProp) === this.featureLayerName) {
@@ -245,11 +255,13 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
+          this.toastService.setInformation('Access point display status updated successful.');
           this.__selectedAccessPoint.displayStatus = !this.__selectedAccessPoint.displayStatus;
           this.accessPointUpdatedEvent.next(this.__selectedAccessPoint);
         },
         error: (error) => {
-          console.error(error)
+          this.loggerService.logError(error);
+          this.toastService.setError('Access point display status update failed.');
         }
       });
   }
@@ -262,6 +274,7 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
+          this.toastService.setInformation('Access point deleted successful.');
           if (this.singleAccessPoint) this.modal.close(undefined);
 
           this.accessPoints = this.accessPoints.filter(a => a.id !== this.__selectedAccessPoint.id);
@@ -270,7 +283,8 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
           this.accessPointSelectionForm.get('selectedAccessPointId').setValue(this.accessPoints[0].id);  
         },
         error: (error) => {
-          console.error(error);
+          this.loggerService.logError(error);
+          this.toastService.setError('Access point deletion failed.');
         }
       });
   }
@@ -283,6 +297,7 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
+          this.toastService.setInformation('Access point stamp deleted successful.');
           this.__selectedAccessPoint.stamps = this.__selectedAccessPoint.stamps.filter(s => s.id !== this.__selectedAccessPointStamp.id);
           
           const stamp = (this.__selectedAccessPoint.stamps.length)
@@ -292,7 +307,8 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
           this.accessPointStampSelectionForm.get('selectedStampId').setValue(stamp);
         },
         error: (error) => {
-          console.error(error);
+          this.loggerService.logError(error);
+          this.toastService.setError('Access point stamp deletion failed.');
         }
       });
   }
@@ -308,8 +324,14 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
       this.accessPointStampMergeForm.get('mergeSecurityData').value)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          complete: () => this.accessPointSelectionForm.get('selectedAccessPointId').setValue(this.__selectedAccessPoint.id),
-          error: (error) => console.error(error)
+          complete: () => {
+            this.toastService.setInformation('Access point stamp merged successful.');
+            this.accessPointSelectionForm.get('selectedAccessPointId').setValue(this.__selectedAccessPoint.id);
+          },
+          error: (error) => {
+            this.loggerService.logError(error);
+            this.toastService.setError('Access point stamp merge failed.');
+          }
         });
   }
 }

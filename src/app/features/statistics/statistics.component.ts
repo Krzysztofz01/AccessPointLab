@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
+import { LoggerService } from 'src/app/core/services/logger.service';
 import { ChartOptionGroup } from './chart-option-group.model';
 
 @Component({
@@ -26,7 +27,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
   public signalRangeChartOptions: ChartOptionGroup;
   public manufacturerChartOptions: ChartOptionGroup;
 
-  constructor(private accessPointService: AccessPointService) { }
+  constructor(private accessPointService: AccessPointService, private loggerService: LoggerService) { }
   
   ngOnInit(): void {
     this.initializeEncryptionChart();
@@ -84,7 +85,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
           };
         },
         error: (error) => {
-          console.error(error);
+          this.loggerService.logError(error);
         }
       });
   }
@@ -133,7 +134,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
           };
         },
         error: (error) => {
-          console.error(error);
+          this.loggerService.logError(error);
         }
       })
   }
@@ -178,7 +179,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
           };
         },
         error: (error) => {
-          console.error(error);
+          this.loggerService.logError(error);
         }
       });
   }
@@ -223,7 +224,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
           };
         },
         error: (error) => {
-          console.error(error);
+          this.loggerService.logError(error);
         }
       });
   }

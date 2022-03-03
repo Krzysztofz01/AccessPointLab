@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
+import { LoggerService } from 'src/app/core/services/logger.service';
 
 @Component({
   selector: 'app-accesspoint-list',
@@ -23,6 +24,8 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   public lastSearchKeyword: string = '';
   public key: string = 'id';
   public reverse: boolean = false;
+
+  constructor(private loggerService: LoggerService) { }
 
   ngOnInit(): void {
     this.enrichedAccessPoints = new Array<AccessPoint>();
@@ -47,7 +50,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
           this.accessPoints = accessPoints;
           this.applyFiltersToAccessPoint(this.accessPoints);
         },
-        error: (error) => console.error(error)
+        error: (error) => this.loggerService.logError(error)
       });
   }
 
