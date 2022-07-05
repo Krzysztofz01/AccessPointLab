@@ -2,10 +2,11 @@
 
 <div class="container-fluid mt-4">
     <div class="row justify-content-center my-4">
-        <div class="col-lg-5 col-md-12">
+        <div class="col-lg-3 col-md-12">
             <div class="upload-section">
-                <h2>Default</h2>
-                <p>Data in JSON format provided by the AccessPointMap scanner mobile application. The application is not currently being developed, but the data collected with its help is still compatible with the AccessPointMap platform.</p>
+                <h2>Default (.JSON)</h2>
+                <p><em>Vanilla AccessPointMap feature</em></p>
+                <p>Data in JSON format provided by the AccessPointMap scanner mobile application. The application is not currently being developed, but the data format is still compatible.</p>
                 <form [formGroup]="defaultUploadForm" (ngSubmit)="submitUploadDefault()">
                     <div>
                         <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
@@ -14,11 +15,11 @@
                 </form>
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center my-4">
-        <div class="col-lg-5 col-md-12">
+
+        <div class="col-lg-3 col-md-12">
             <div class="upload-section">
-                <h2>WiGLE</h2>
+                <h2>WiGLE (.CSV)</h2>
+                <p><em>Integration version: 1.0.0</em></p>
                 <p>Data in CSV format provided by the WiGLE Wifi mobile application. It is an application of the biggest war-driving platform. The application is very convenient to use.</p>
                 <form [formGroup]="wigleUploadForm" (ngSubmit)="submitUploadWigle()">
                     <div>
@@ -28,15 +29,46 @@
                 </form>
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center my-4">
-        <div class="col-lg-5 col-md-12">
+
+
+        <div class="col-lg-3 col-md-12">
             <div class="upload-section">
-                <h2>Aircrack-ng</h2>
+                <h2>Aircrack-ng (.CSV)</h2>
+                <p><em>Integration version: 1.0.0</em></p>
                 <p>Data in CSV format provided by the program airodump-ng (Aircrack-ng platform). It is a powerful wireless network audit platform. The collection data is very accurate and detailed.</p>
                 <form [formGroup]="aircrackngUploadForm" (ngSubmit)="submitUploadAircrackng()">
                     <div>
                         <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, aircrackngUploadForm)">
+                    </div>
+                    <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center my-4">
+        <div class="col-lg-3 col-md-12">
+            <div class="upload-section">
+                <h2>Aircrack-ng (.CAP)</h2>
+                <p><em>Integration version: 1.0.0</em></p>
+                <p>Network frames in CAP format provided by the program airodump-ng (Aircrack-ng platform). It is a powerful wireless network audit platform.</p>
+                <form [formGroup]="aircrackngCapUploadForm" (ngSubmit)="submitUploadAircrackngCap()">
+                    <div>
+                        <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
+                    </div>
+                    <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-12">
+            <div class="upload-section">
+                <h2>Wireshark (.PCAP)</h2>
+                <p><em>Integration version: 0.0.0-alpha</em></p>
+                <p>Network frames in PCAP format provided by the Wireshark suite. It is a powerful tool used for advanced network traffic analysis.</p>
+                <form [formGroup]="wiresharkPcapUploadForm" (ngSubmit)="submitUploadWiresharkPcap()">
+                    <div>
+                        <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>
