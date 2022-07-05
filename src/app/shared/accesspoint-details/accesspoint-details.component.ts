@@ -209,12 +209,12 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
   }
 
   /**
-   * Genereate description according to the access points encryption type
+   * Genereate description according to the access points security standard
    * @param accessPoint AccessPoint or AccessPointStamp entity
    * @returns Encryption description
    */
   public getSecurityText(accessPoint: AccessPoint | AccessPointStamp): string {
-    const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
+    const sd: Array<string> = JSON.parse(accessPoint.securityStandards);
 
     if(sd.includes('WPA3')) return 'WPA3 - It is the newest and safest standard available to all. It uses secure CCMP-128 / AES-256 encryption. Currently mainly used by companies and offices.';
     if(sd.includes('WPA2')) return 'WPA2 - One of the most popular standards. It uses secure CCMP / AES encryption. It is completely secure. If you have a strong password, you dont need to worry.';
@@ -225,12 +225,12 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
   }
 
   /**
-   * Generate CSS color according to the access points encryption type
+   * Generate CSS color according to the access points security standard
    * @param accessPoint AccessPoint or AccessPointStamp entity 
    * @returns CSS color variable string
    */
   public getSecurityColor(accessPoint: AccessPoint | AccessPointStamp): string {
-    const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
+    const sd: Array<string> = JSON.parse(accessPoint.securityStandards);
 
     if(sd.includes('WPA3')) return 'var(--apm-encryption-good)';
     if(sd.includes('WPA2')) return 'var(--apm-encryption-good)';
