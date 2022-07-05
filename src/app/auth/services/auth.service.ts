@@ -37,13 +37,7 @@ export class AuthService {
       if (server === null) return;
       
       this.server = server;
-
-      if (server.startsWith("http://")) {
-        this.serverPath = `${server}/api/v${this.authVersion}/auth`;
-        return;
-      }
-
-      this.serverPath = `http://${server}/api/v${this.authVersion}/auth`;
+      this.serverPath = `${server}/api/v${this.authVersion}/auth`;
     });
   }
 

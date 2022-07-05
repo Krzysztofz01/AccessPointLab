@@ -52,6 +52,6 @@ export class LoggerService {
    * @returns Formated log message
    */
   private prepareLogMessage(prefix: string, message: string): string {
-    return `[${prefix.toUpperCase()}] - ${message.trim()}`;
+    return `[${prefix.toUpperCase()}] - ${message}`;
   }
 }
