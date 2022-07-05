@@ -137,17 +137,31 @@ export class AccessPointService {
       : this.httpClient.get<[encryption: string, count: number]>(this.requestUrl(endpoint), { params });
   }
 
-  public postAccessPointsWigle(csvDatabaseFile: File): Observable<void> {
+  public postAccessPointsWigleCsv(scanCsvFile: File): Observable<void> {
     const formData = new FormData();
-    formData.append('csvDatabaseFile', csvDatabaseFile);
+    formData.append('scanCsvFile', scanCsvFile);
 
-    return this.httpClient.post<void>(this.requestUrl('wigle', true), formData);
+    return this.httpClient.post<void>(this.requestUrl('wigle/csv', true), formData);
   }
 
-  public postAccessPointsAircrackng(csvLogFile: File): Observable<void> {
+  public postAccessPointsAircrackngCsv(scanCsvFile: File): Observable<void> {
     const formData = new FormData();
-    formData.append('csvLogFile', csvLogFile);
+    formData.append('scanCsvFile', scanCsvFile);
 
-    return this.httpClient.post<void>(this.requestUrl('aircrackng', true), formData);
+    return this.httpClient.post<void>(this.requestUrl('aircrackng/csv', true), formData);
+  }
+
+  public postAccessPointsPacketsAircrackngCap(scanPcapFile : File): Observable<void> {
+    const formData = new FormData();
+    formData.append('scanPcapFile ', scanPcapFile);
+
+    return this.httpClient.post<void>(this.requestUrl('aircrackng/cap', true), formData);
+  }
+
+  public postAccessPointsPacketsWiresharkPcap(scanPcapFile: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('scanPcapFile ', scanPcapFile);
+
+    return this.httpClient.post<void>(this.requestUrl('wireshark/pcap', true), formData);
   }
 }
