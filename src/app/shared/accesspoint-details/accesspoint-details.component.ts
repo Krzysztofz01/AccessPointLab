@@ -334,4 +334,17 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
           }
         });
   }
+
+  /**
+   * Format array provided data
+   * @param serializedArray Array of string data
+   */
+  public formatSerialziedArrayData(serializedArray: string): string {
+    if (serializedArray === undefined) return '';
+
+    const arrayData = JSON.parse(serializedArray) as Array<string>;
+    if (arrayData === undefined || arrayData.length === 0) return '';
+
+    return arrayData.join(', ').toUpperCase();
+  }
 }

@@ -91,6 +91,8 @@ export class UploadComponent implements OnInit, OnDestroy {
       return;
     }
 
+    //TODO: Implement posting of serialzed command object
+
     const fileReader = new FileReader();
 
     fileReader.onload = () => {
@@ -137,6 +139,7 @@ export class UploadComponent implements OnInit, OnDestroy {
           this.wigleUploadForm.reset();
         },
         error: (error) => {
+          console.log(error);
           this.loggerService.logError(error);
           this.toastService.setError("Upload failed.");
         }
