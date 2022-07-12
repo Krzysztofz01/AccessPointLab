@@ -39,7 +39,6 @@
               "node_modules/chart.js/dist/chart.js"
             ],
             "allowedCommonJsDependencies": [
-              "xml-utils/find-tags-by-name",
               "lru-cache"
             ]
           },

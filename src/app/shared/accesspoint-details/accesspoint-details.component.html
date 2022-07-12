@@ -56,7 +56,8 @@
                     <h5><span class="property-name">Signal area:</span> {{ currentSelectedAcccessPointSnapshoot.signalArea }}m<sup>2</sup></h5>
                     <h5><span class="property-name">Frequency:</span> {{ currentSelectedAcccessPointSnapshoot.frequency }}</h5>
                     <h5><span class="property-name">Security:</span><span [style.color]="getSecurityColor(currentSelectedAcccessPointSnapshoot)"> {{ getSecurityText(currentSelectedAcccessPointSnapshoot) }}</span></h5>
-                    <h5><span class="property-name">Available encryption types:</span> {{ currentSelectedAcccessPointSnapshoot.serializedSecurityPayload }}</h5>
+                    <h5><span class="property-name">Available security standards:</span> {{ formatSerialziedArrayData(currentSelectedAcccessPointSnapshoot.securityStandards) }}</h5>
+                    <h5><span class="property-name">Available security protocols:</span> {{ formatSerialziedArrayData(currentSelectedAcccessPointSnapshoot.securityProtocols) }}</h5>
 
                     <div *ngIf="__selectedAccessPointStamp === undefined; else dataForStamp">
                         <h5><span class="property-name">First seen:</span> {{ __selectedAccessPoint.creationTimestamp }}</h5>

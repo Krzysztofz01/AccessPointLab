@@ -19,7 +19,8 @@ export interface AccessPoint {
     signalRadius: number;
     signalArea: number;
     rawSecurityPayload: string;
-    serializedSecurityPayload: string;
+    securityStandards: string;
+    securityProtocols: string;
     isSecure: boolean;
     note: string;
     displayStatus: boolean;

@@ -80,7 +80,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
     }
 
     return accessPoints.filter(ap => {
-      return query(ap.ssid) || query(ap.bssid) || query(ap.manufacturer) || query(ap.serializedSecurityPayload) || query(ap.deviceType);
+      return query(ap.ssid) || query(ap.bssid) || query(ap.manufacturer) || query(ap.securityStandards) || query(ap.securityProtocols) || query(ap.deviceType);
     });
   }
 
@@ -109,12 +109,12 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Generate a CSS color value based on the encryption type
+   * Generate a CSS color value based on the security standard
    * @param accessPoint AccessPoint entity
    * @returns CSS color param
    */
   private parseSecurityColor(accessPoint: AccessPoint): string {
-    const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
+    const sd: Array<string> = JSON.parse(accessPoint.securityStandards);
 
     if(sd.includes('WPA3')) return 'var(--apm-encryption-good)';
     if(sd.includes('WPA2')) return 'var(--apm-encryption-good)';
@@ -125,12 +125,12 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Generate a simplified encryption information
+   * Generate a simplified security standard information
    * @param accessPoint AccessPoint entity
    * @returns Simplified encryption information 
    */
   private parseSecurityName(accessPoint: AccessPoint): string {
-    const sd: Array<string> = JSON.parse(accessPoint.serializedSecurityPayload);
+    const sd: Array<string> = JSON.parse(accessPoint.securityStandards);
 
     if(sd.includes('WPA3')) return 'WPA3';
     if(sd.includes('WPA2')) return 'WPA2';

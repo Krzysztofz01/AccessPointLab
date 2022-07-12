@@ -17,6 +17,8 @@ export class UploadComponent implements OnInit, OnDestroy {
   public defaultUploadForm: FormGroup;
   public wigleUploadForm: FormGroup;
   public aircrackngUploadForm: FormGroup;
+  public aircrackngCapUploadForm: FormGroup;
+  public wiresharkPcapUploadForm: FormGroup;
 
   constructor(
     private accessPointService: AccessPointService,
@@ -45,6 +47,14 @@ export class UploadComponent implements OnInit, OnDestroy {
     });
 
     this.aircrackngUploadForm = new FormGroup({
+      file: new FormControl(null, [ Validators.required ])
+    });
+
+    this.aircrackngCapUploadForm = new FormGroup({
+      file: new FormControl(null, [ Validators.required ])
+    });
+
+    this.wiresharkPcapUploadForm = new FormGroup({
       file: new FormControl(null, [ Validators.required ])
     });
   }
@@ -80,6 +90,8 @@ export class UploadComponent implements OnInit, OnDestroy {
       this.defaultUploadForm.reset();
       return;
     }
+
+    //TODO: Implement posting of serialzed command object
 
     const fileReader = new FileReader();
 
@@ -119,7 +131,7 @@ export class UploadComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.accessPointService.postAccessPointsWigle(file)
+    this.accessPointService.postAccessPointsWigleCsv(file)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
@@ -127,6 +139,7 @@ export class UploadComponent implements OnInit, OnDestroy {
           this.wigleUploadForm.reset();
         },
         error: (error) => {
+          console.log(error);
           this.loggerService.logError(error);
           this.toastService.setError("Upload failed.");
         }
@@ -149,7 +162,67 @@ export class UploadComponent implements OnInit, OnDestroy {
       return;
     }
     
-    this.accessPointService.postAccessPointsAircrackng(file)
+    this.accessPointService.postAccessPointsAircrackngCsv(file)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          this.toastService.setInformation("Upload successful.");
+          this.aircrackngUploadForm.reset();
+        },
+        error: (error) => {
+          this.loggerService.logError(error);
+          this.toastService.setError("Upload failed.");
+        }
+      });
+  }
+
+  /**
+   * Submit the upload of the Aircrack-ng cap scan file
+   */
+  public submitUploadAircrackngCap(): void {
+    if (!this.aircrackngUploadForm.valid) {
+      this.toastService.setError("Select a file to upload it.");
+      return;
+    }
+    
+    const file = this.aircrackngUploadForm.get('file').value as File;
+    if (!this.isFileTypeValid(file, 'cap')) {
+      this.toastService.setError("Invalid file format.");
+      this.aircrackngUploadForm.reset();
+      return;
+    }
+    
+    this.accessPointService.postAccessPointsPacketsAircrackngCap(file)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          this.toastService.setInformation("Upload successful.");
+          this.aircrackngUploadForm.reset();
+        },
+        error: (error) => {
+          this.loggerService.logError(error);
+          this.toastService.setError("Upload failed.");
+        }
+      });
+  }
+
+  /**
+   * Submit the upload of the Wireshrak pcap scan file
+   */
+  public submitUploadWiresharkPcap(): void {
+    if (!this.aircrackngUploadForm.valid) {
+      this.toastService.setError("Select a file to upload it.");
+      return;
+    }
+    
+    const file = this.aircrackngUploadForm.get('file').value as File;
+    if (!this.isFileTypeValid(file, 'pcap')) {
+      this.toastService.setError("Invalid file format.");
+      this.aircrackngUploadForm.reset();
+      return;
+    }
+    
+    this.accessPointService.postAccessPointsPacketsWiresharkPcap(file)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {

@@ -180,7 +180,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
-   * Check if AccessPoint uses a ceratin encryption type
+   * Check if AccessPoint uses a ceratin security standard
    * @param type Encryption type used to check the AccessPoint entity
    * @param accessPoint AccessPoint entity
    * @return Boolean value representing if the AccessPoint entity is matching the requirements
@@ -188,7 +188,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   private filterByEncryptionType(type: EncryptionTypes, accessPoint: AccessPoint): boolean {
     if (Number(EncryptionTypes[type]) === Number(EncryptionTypes.All) || type === undefined) return true;
 
-    const encryptionTypes = JSON.parse(accessPoint.serializedSecurityPayload) as Array<string>;
+    const encryptionTypes = JSON.parse(accessPoint.securityStandards) as Array<string>;
     const selectedType = type.toString().toUpperCase();
 
     if (Number(EncryptionTypes[type]) !== Number(EncryptionTypes.None)) return encryptionTypes.includes(selectedType);
@@ -239,7 +239,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
-   * Get a pin url with the color defined by the encryption type
+   * Get a pin url with the color defined by the security standard
    * @param accessPoint AccessPoint entity
    * @returns Pin icon url as string
    */
@@ -250,7 +250,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
 
     if (accessPoint.ssid === environment.SSID_HIDDEN) return setPath(environment.PIN_ICON_UNKNOWN);
 
-    const encryptionTypes = (JSON.parse(accessPoint.serializedSecurityPayload) as Array<string>).map(type => type.toUpperCase());
+    const encryptionTypes = (JSON.parse(accessPoint.securityStandards) as Array<string>).map(type => type.toUpperCase());
 
     if(encryptionTypes.includes('WPA3')) return setPath(environment.PIN_ICON_WPA3);
     if(encryptionTypes.includes('WPA2')) return setPath(environment.PIN_ICON_WPA2);

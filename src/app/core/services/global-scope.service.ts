@@ -19,11 +19,16 @@ export class GlobalScopeService {
   * @param server Server url
   */
   public setServer(server: string): void {
-    this.serverSubject.next(server);
+    const protocolPart = "http://";
+
+    const serverWithProtocol = !server.startsWith(protocolPart) 
+      ? `${protocolPart}${server}` : server;
+
+    this.serverSubject.next(serverWithProtocol);
 
     this.localStorageService.set({
       key: environment.LSK_SERVER,
-      value: server,
+      value: serverWithProtocol,
       expirationMinutes: null
     });
   }

@@ -37,13 +37,7 @@ export class AuthService {
       if (server === null) return;
       
       this.server = server;
-
-      if (server.startsWith("http://")) {
-        this.serverPath = `${server}/api/v${this.authVersion}/auth`;
-        return;
-      }
-
-      this.serverPath = `http://${server}/api/v${this.authVersion}/auth`;
+      this.serverPath = `${server}/api/v${this.authVersion}/auth`;
     });
   }
 
@@ -129,18 +123,27 @@ export class AuthService {
 
     this.httpClient.post(`${ this.serverPath }/logout`, logoutRequest, { withCredentials: true }).subscribe({
       complete: () => {
-        this.stopRefreshTokenTimer();
-        this.userSubject.next(null);
-
-        this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
-        this.localStorageService.unset(environment.LSK_SERVER);
-
+        this.clientSideLogout();
         this.router.navigate(['/auth']);
       },
       error: (error) => {
         console.error(error);
+
+        this.clientSideLogout();
+        this.router.navigate(['/auth']);
       }
     });
+  }
+
+  /**
+   * Remove authentication related tokens and server from local storage
+   */
+  public clientSideLogout(): void {
+    this.stopRefreshTokenTimer();
+    this.userSubject.next(null);
+
+    this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
+    this.localStorageService.unset(environment.LSK_SERVER);
   }
 
   /**
