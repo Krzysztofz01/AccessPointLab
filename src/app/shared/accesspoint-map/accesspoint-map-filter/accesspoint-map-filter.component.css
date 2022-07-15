@@ -19,6 +19,7 @@
     color: var(--apm-light) !important;
 }
 
-input[type=text] {
+input[type=text],
+.datapicker-control {
     background-color: var(--apm-light) !important;
 }

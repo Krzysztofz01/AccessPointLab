@@ -20,18 +20,29 @@
             <div class="col-lg-3 col-md-12 px-5 text-center">
                 <p class="apm-ol-map-filter-form-header">Starting data</p>
                 <div class="input-group">
-                    <input class="form-control" placeholder="yyyy-mm-dd"
-                           name="startingData" [(ngModel)]="startingDate" (ngModelChange)="filterValuesChanged()" ngbDatepicker #startdatepicker="ngbDatepicker" placement="top">
-                    <button class="btn btn-outline-secondary calendar" (click)="startdatepicker.toggle()" type="button"></button>
+                    <input class="form-control datapicker-control"
+                           placeholder="yyyy-mm-dd"
+                           name="startingData"
+                           [(ngModel)]="startingDate"
+                           (ngModelChange)="filterValuesChanged()"
+                           ngbDatepicker #startdatepicker="ngbDatepicker"
+                           placement="top"
+                           (click)="startdatepicker.toggle()">
                 </div>
             </div>
 
             <div class="col-lg-3 col-md-12 px-5 text-center">
                 <p class="apm-ol-map-filter-form-header">Ending data</p>
                 <div class="input-group">
-                    <input class="form-control" placeholder="yyyy-mm-dd"
-                           name="startingData" [(ngModel)]="endingDate" (ngModelChange)="filterValuesChanged()" ngbDatepicker #enddatepicker="ngbDatepicker" placement="top">
-                    <button class="btn btn-outline-secondary calendar" (click)="enddatepicker.toggle()" type="button"></button>
+                    <input class="form-control datapicker-control"
+                           placeholder="yyyy-mm-dd"
+                           name="startingData"
+                           [(ngModel)]="endingDate"
+                           (ngModelChange)="filterValuesChanged()"
+                           ngbDatepicker
+                           #enddatepicker="ngbDatepicker"
+                           placement="top"
+                           (click)="enddatepicker.toggle()">
                 </div>
             </div>
 
