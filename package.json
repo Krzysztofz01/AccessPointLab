@@ -37,6 +37,7 @@
     "@angular-devkit/build-angular": "~13.3.3",
     "@angular/cli": "~13.3.3",
     "@angular/compiler-cli": "~13.3.4",
+    "@angular/localize": "13.3.4",
     "@types/chart.js": "^2.9.35",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
