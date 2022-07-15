@@ -1,0 +1,40 @@
+<div class="apm-ol-map-filter">
+    <div class="container-fluid">
+        <div class="row justify-content-center my-2">
+            <div class="col-lg-3 col-md-12 px-5 text-center">
+                <p class="apm-ol-map-filter-form-header">Keyword</p>
+                <form [formGroup]="keywordFilterForm">
+                    <input type="text" class="form-control" id="keyword-form-control" placeholder="Ssid, bssid, encryption..." formControlName="keyword">
+                </form>
+            </div>
+            
+            <div class="col-lg-3 col-md-12 px-5 text-center">
+                <p class="apm-ol-map-filter-form-header">Security standard</p>
+                <form [formGroup]="securityStandard">
+                    <select class="form-select" formControlName="selectedSecurityStandard">
+                        <option *ngFor="let type of encryptionTypesArray" [value]="type">{{ type }}</option>
+                    </select>
+                </form>
+            </div>
+
+            <div class="col-lg-3 col-md-12 px-5 text-center">
+                <p class="apm-ol-map-filter-form-header">Starting data</p>
+                <div class="input-group">
+                    <input class="form-control" placeholder="yyyy-mm-dd"
+                           name="startingData" [(ngModel)]="startingDate" (ngModelChange)="filterValuesChanged()" ngbDatepicker #startdatepicker="ngbDatepicker" placement="top">
+                    <button class="btn btn-outline-secondary calendar" (click)="startdatepicker.toggle()" type="button"></button>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-12 px-5 text-center">
+                <p class="apm-ol-map-filter-form-header">Ending data</p>
+                <div class="input-group">
+                    <input class="form-control" placeholder="yyyy-mm-dd"
+                           name="startingData" [(ngModel)]="endingDate" (ngModelChange)="filterValuesChanged()" ngbDatepicker #enddatepicker="ngbDatepicker" placement="top">
+                    <button class="btn btn-outline-secondary calendar" (click)="enddatepicker.toggle()" type="button"></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
