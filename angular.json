@@ -39,7 +39,8 @@
               "node_modules/chart.js/dist/chart.js"
             ],
             "allowedCommonJsDependencies": [
-              "lru-cache"
+              "lru-cache",
+              "xml-utils"
             ]
           },
           "configurations": {

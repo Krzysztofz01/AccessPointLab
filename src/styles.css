@@ -34,7 +34,8 @@ input[type=password],
 input[type=email],
 input[type=text],
 input[type=file],
-textarea {
+textarea,
+.datapicker-control {
     font-family: 'Montserrat', sans-serif !important;
     background: transparent !important;
     color: var(--apm-primary) !important;
@@ -47,7 +48,8 @@ input[type=password]:focus,
 input[type=email]:focus,
 input[type=text]:focus,
 input[type=file]:focus,
-textarea:focus {
+textarea:focus,
+datapicker-control {
     border-color: var(--apm-accent) !important;
     box-shadow: none;
 }
@@ -140,4 +142,13 @@ select:focus {
 /* Toast */
 .toast {
     display: block !important;
+}
+
+/* Datepicker */
+:root .ngb-dp-navigation-chevron {
+    color: var(--apm-primary) !important;
+}
+
+:root .ngb-dp-weekday {
+    color: var(--apm-accent) !important;
 }

@@ -5,22 +5,3 @@
     width: 100%;
     height: 100%;
 }
-
-.apm-ol-map-filter {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    height: auto;
-    width: 100%;
-    background-image: linear-gradient(135deg, var(--apm-primary), var(--apm-accent)) !important;
-    transition: .2s opacity ease-in-out !important;
-    opacity: 50%;
-}
-
-.apm-ol-map-filter:hover {
-    opacity: 100%;
-}
-
-input[type=text] {
-    background-color: var(--apm-light) !important;
-}
