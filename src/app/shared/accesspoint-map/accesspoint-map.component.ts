@@ -164,13 +164,13 @@ export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
    * @param accessPoint AccessPoint entity
    * @return Boolean value representing if the AccessPoint entity is matching the requirements
    */
-  private filterByEncryptionType(type: number, accessPoint: AccessPoint): boolean {
-    if (Number(EncryptionTypes[type]) === Number(EncryptionTypes.All) || type === undefined) return true;
+  private filterByEncryptionType(type: string, accessPoint: AccessPoint): boolean {
+    if (type === EncryptionTypes[EncryptionTypes.All] || type === undefined) return true;
 
     const encryptionTypes = JSON.parse(accessPoint.securityStandards) as Array<string>;
     const selectedType = type.toString().toUpperCase();
 
-    if (Number(EncryptionTypes[type]) !== Number(EncryptionTypes.None)) return encryptionTypes.includes(selectedType);
+    if (type !== EncryptionTypes[EncryptionTypes.None]) return encryptionTypes.includes(selectedType);
 
     const availableTypes = this.encryptionTypesArray.map(value => value.toUpperCase());
     return !encryptionTypes.some(type => availableTypes.includes(type));
@@ -210,8 +210,7 @@ export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
     accessPoints.forEach(ap => {
       if (filterResults !== undefined) {
         if (!this.filterByKeyword(filterResults.keyword, ap) ||
-            // TODO: Required fix for the type filter
-            // !this.filterByEncryptionType(parseInt(filterResults.securityStandard), ap) ||
+            !this.filterByEncryptionType(filterResults.securityStandard, ap) ||
             !this.filterByStartingDate(filterResults.startingDate, ap) ||
             !this.filterByEndingDate(filterResults.endingDate, ap)) return;
       }

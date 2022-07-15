@@ -55,7 +55,7 @@ export class AccesspointMapFilterComponent implements OnInit {
     
     const filterResults: AccessPointMapFilterResult = {
       keyword: this.keywordFilterForm.get('keyword').value,
-      securityStandard: EncryptionTypes[this.securityStandard.get('selectedSecurityStandard').value],
+      securityStandard: this.securityStandard.get('selectedSecurityStandard').value,
       startingDate: nativeStartingDate,
       endingDate: nativeEndingDate
     }
