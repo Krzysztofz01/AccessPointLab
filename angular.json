@@ -3,7 +3,8 @@
   "version": 1,
   "newProjectRoot": "projects",
   "cli": {
-    "packageManager": "yarn"
+    "packageManager": "yarn",
+    "analytics": false
   },
   "projects": {
     "AccessPointLab": {
@@ -40,7 +41,9 @@
             ],
             "allowedCommonJsDependencies": [
               "lru-cache",
-              "xml-utils"
+              "xml-utils",
+              "web-worker",
+              "rbush"
             ]
           },
           "configurations": {
@@ -118,6 +121,5 @@
         }
       }
     }
-  },
-  "defaultProject": "AccessPointLab"
+  }
 }
