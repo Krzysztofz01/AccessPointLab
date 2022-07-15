@@ -8,29 +8,26 @@ import Icon from 'ol/style/Icon';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import TileLayer from 'ol/layer/Tile';
 import * as olProj from 'ol/proj';
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { environment } from 'src/environments/environment';
 import { EncryptionTypes } from './encryption-types.enum';
-import { FormControl, FormGroup } from '@angular/forms';
 import { LoggerService } from 'src/app/core/services/logger.service';
+import { AccessPointMapFilterResult } from './accesspoint-map-filter-result.interface';
 
 @Component({
   selector: 'app-accesspoint-map',
   templateUrl: './accesspoint-map.component.html',
   styleUrls: ['./accesspoint-map.component.css']
 })
-export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Input() centerLatitude: number | undefined;
   @Input() centerLongitude: number | undefined;
   @Output() accessPointClick = new EventEmitter<Array<AccessPoint>>(false);
-
-  public keywordFilterForm: FormGroup;
-  public encryptionTypeFilterForm: FormGroup;
 
   public readonly mapId = "openlayers_accesspoints_map";
   private readonly initialZoom = 16;
@@ -41,7 +38,6 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   private readonly featureLayerName = "accesspoints_layer";
   
   public readonly encryptionTypesArray = Object.values(EncryptionTypes).filter(value => typeof value === 'string') as Array<String>;
-  public readonly defaultSelectedEncryptionType = EncryptionTypes[EncryptionTypes.All];
 
   private map: Map;
   private accessPoints: Array<AccessPoint>;
@@ -65,34 +61,17 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
       });
   }
 
-  ngOnInit(): void {
-    this.encryptionTypeFilterForm = new FormGroup({
-      selectedEncryption: new FormControl(this.defaultSelectedEncryptionType)
-    });
-
-    this.keywordFilterForm = new FormGroup({
-      keyword: new FormControl()
-    });
-
-    this.encryptionTypeFilterForm.get('selectedEncryption').valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(value => {
-        const type = EncryptionTypes[this.keywordFilterForm.get('keyword').value];
-        const features = this.generateAccessPointFeatures(this.accessPoints, type, value);
-        this.swapVectorLayer(features);
-      });
-
-    this.keywordFilterForm.get('keyword').valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(value => {
-        const features = this.generateAccessPointFeatures(this.accessPoints, value, this.encryptionTypeFilterForm.get('selectedEncryption').value);
-        this.swapVectorLayer(features);
-      });
-  }
-
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+  }
+
+  /**
+   * Handler for the event emitted from the AccessPointMapFilter component
+   */
+  public filterValuesChanged(filterResult: AccessPointMapFilterResult): void {
+    const features = this.generateAccessPointFeatures(this.accessPoints, filterResult);
+    this.swapVectorLayer(features);
   }
 
   /**
@@ -185,7 +164,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
    * @param accessPoint AccessPoint entity
    * @return Boolean value representing if the AccessPoint entity is matching the requirements
    */
-  private filterByEncryptionType(type: EncryptionTypes, accessPoint: AccessPoint): boolean {
+  private filterByEncryptionType(type: number, accessPoint: AccessPoint): boolean {
     if (Number(EncryptionTypes[type]) === Number(EncryptionTypes.All) || type === undefined) return true;
 
     const encryptionTypes = JSON.parse(accessPoint.securityStandards) as Array<string>;
@@ -198,22 +177,49 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
+   * Check if AccessPoint was spotted after ceratain date
+   * @param date Specified date
+   * @param accessPoint AccessPoint entity
+   * @returns Boolean value representing if the AccessPoint was spotted after ceratain date
+   */
+  private filterByStartingDate(date: Date | undefined, accessPoint: AccessPoint): boolean {
+    if (date === undefined) return true;
+    return accessPoint.creationTimestamp < date;
+  }
+
+  /**
+   * Check if AccessPoint was spotted before ceratain date
+   * @param date Specified date
+   * @param accessPoint AccessPoint entity
+   * @returns Boolean value representing if the AccessPoint was spotted before ceratain date 
+   */
+  private filterByEndingDate(date: Date | undefined, accessPoint: AccessPoint): boolean {
+    if (date === undefined) return true;
+    return accessPoint.creationTimestamp > date;
+  }
+
+  /**
    * Map a AccessPoint entity collection to OpenLayers point feature collection
-   * @param accessPoints AccessPoint entity collection
-   * @param filterKeyword Filter keyword
-   * @param filterType Filter encryption type
+   * @param accessPoints AccessPoint entity collection 
+   * @param filterResults Applied filters object
    * @returns Collection of OpenLayers point features representing AccessPoint entities
    */
-  private generateAccessPointFeatures(accessPoints: Array<AccessPoint>, filterKeyword: string = undefined, filterType: EncryptionTypes = undefined): Array<Feature<Point>> {
+  private generateAccessPointFeatures(accessPoints: Array<AccessPoint>, filterResults: AccessPointMapFilterResult = undefined): Array<Feature<Point>> { 
     const features = new Array<Feature<Point>>();
 
     accessPoints.forEach(ap => {
-      if (!this.filterByKeyword(filterKeyword, ap) || !this.filterByEncryptionType(filterType, ap)) return;
-
+      if (filterResults !== undefined) {
+        if (!this.filterByKeyword(filterResults.keyword, ap) ||
+            // TODO: Required fix for the type filter
+            // !this.filterByEncryptionType(parseInt(filterResults.securityStandard), ap) ||
+            !this.filterByStartingDate(filterResults.startingDate, ap) ||
+            !this.filterByEndingDate(filterResults.endingDate, ap)) return;
+      }
+      
       features.push(this.generateAccessPointFeature(ap));
     });
 
-    return features;
+    return features
   }
 
   /**
