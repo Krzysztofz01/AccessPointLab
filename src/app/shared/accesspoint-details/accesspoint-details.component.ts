@@ -15,7 +15,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Geometry from 'ol/geom/Geometry';
 import { Subject, takeUntil } from 'rxjs';
 import { AccessPointStamp } from 'src/app/core/models/access-point-stamp.model';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 
@@ -34,9 +34,9 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
   public __selectedAccessPointStamp: AccessPointStamp | undefined;
   public readonly _emptyStampSelection: string = "_none";
 
-  public accessPointSelectionForm: FormGroup;
-  public accessPointStampSelectionForm: FormGroup;
-  public accessPointStampMergeForm: FormGroup;
+  public accessPointSelectionForm: UntypedFormGroup;
+  public accessPointStampSelectionForm: UntypedFormGroup;
+  public accessPointStampMergeForm: UntypedFormGroup;
 
   @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
   @Output() accessPointDeletedEvent = new EventEmitter<AccessPoint>();
@@ -78,19 +78,19 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
     this.hasAdminPermission = (role === environment.ROLE_SUPPORT || role === environment.ROLE_ADMIN);
 
     // Initializing forms and form event listeners
-    this.accessPointSelectionForm = new FormGroup({
-      selectedAccessPointId: new FormControl(this.accessPoints[0].id)
+    this.accessPointSelectionForm = new UntypedFormGroup({
+      selectedAccessPointId: new UntypedFormControl(this.accessPoints[0].id)
     });
     
-    this.accessPointStampSelectionForm = new FormGroup({
-      selectedStampId: new FormControl(this._emptyStampSelection)
+    this.accessPointStampSelectionForm = new UntypedFormGroup({
+      selectedStampId: new UntypedFormControl(this._emptyStampSelection)
     });
 
-    this.accessPointStampMergeForm = new FormGroup({
-      mergeLowSignalLevel: new FormControl(false),
-      mergeHighSignalLevel: new FormControl(false),
-      mergeSsid: new FormControl(false),
-      mergeSecurityData: new FormControl(false)
+    this.accessPointStampMergeForm = new UntypedFormGroup({
+      mergeLowSignalLevel: new UntypedFormControl(false),
+      mergeHighSignalLevel: new UntypedFormControl(false),
+      mergeSsid: new UntypedFormControl(false),
+      mergeSecurityData: new UntypedFormControl(false)
     });
 
     this.accessPointSelectionForm.get('selectedAccessPointId').valueChanges
