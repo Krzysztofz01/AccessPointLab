@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject, takeUntil } from 'rxjs';
@@ -17,7 +17,7 @@ import { RegisterModalComponent } from './register-modal/register-modal.componen
 })
 export class LoginComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  public loginForm: FormGroup;
+  public loginForm: UntypedFormGroup;
 
   constructor(
     private authService: AuthService,
@@ -28,10 +28,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     private toastService: ToastService) { }
 
   ngOnInit(): void {
-    this.loginForm = new FormGroup({
-      server: new FormControl('', [ Validators.required ]),
-      email: new FormControl('', [ Validators.required, Validators.email ]),
-      password: new FormControl('', [ Validators.required, Validators.minLength(6) ])
+    this.loginForm = new UntypedFormGroup({
+      server: new UntypedFormControl('', [ Validators.required ]),
+      email: new UntypedFormControl('', [ Validators.required, Validators.email ]),
+      password: new UntypedFormControl('', [ Validators.required, Validators.minLength(6) ])
     });
 
     this.initializeRefreshToken();

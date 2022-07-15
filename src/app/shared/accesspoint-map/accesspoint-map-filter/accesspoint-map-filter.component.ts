@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { Subject, takeUntil } from 'rxjs';
 import { AccessPointMapFilterResult } from '../accesspoint-map-filter-result.interface';
@@ -15,8 +15,8 @@ export class AccesspointMapFilterComponent implements OnInit {
   
   @Output() filterChangedEvent = new EventEmitter<AccessPointMapFilterResult>();
   
-  public keywordFilterForm: FormGroup;
-  public securityStandard: FormGroup;
+  public keywordFilterForm: UntypedFormGroup;
+  public securityStandard: UntypedFormGroup;
   public startingDate: NgbDate | undefined;
   public endingDate: NgbDate | undefined;
 
@@ -24,12 +24,12 @@ export class AccesspointMapFilterComponent implements OnInit {
   public readonly defaultSelectedEncryptionType = EncryptionTypes[EncryptionTypes.All];
 
   ngOnInit(): void {
-    this.securityStandard = new FormGroup({
-      selectedSecurityStandard: new FormControl(this.defaultSelectedEncryptionType)
+    this.securityStandard = new UntypedFormGroup({
+      selectedSecurityStandard: new UntypedFormControl(this.defaultSelectedEncryptionType)
     });
 
-    this.keywordFilterForm = new FormGroup({
-      keyword: new FormControl("")
+    this.keywordFilterForm = new UntypedFormGroup({
+      keyword: new UntypedFormControl("")
     });
 
     this.securityStandard.get('selectedSecurityStandard').valueChanges

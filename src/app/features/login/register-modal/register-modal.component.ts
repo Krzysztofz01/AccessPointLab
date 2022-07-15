@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { RegisterRequest } from 'src/app/auth/contracts/register.request';
 import { GlobalScopeService } from 'src/app/core/services/global-scope.service';
@@ -11,7 +11,7 @@ import { ToastService } from 'src/app/core/services/toast.service';
   styleUrls: ['./register-modal.component.css']
 })
 export class RegisterModalComponent implements OnInit {
-  public registerForm: FormGroup;
+  public registerForm: UntypedFormGroup;
 
   constructor(
     private modal: NgbActiveModal,
@@ -19,12 +19,12 @@ export class RegisterModalComponent implements OnInit {
     private toastService: ToastService) { }
 
   ngOnInit(): void {
-    this.registerForm = new FormGroup({
-      server: new FormControl('', [ Validators.required ]),
-      email: new FormControl('', [ Validators.required, Validators.email ]),
-      name: new FormControl('', [ Validators.required ]),
-      password: new FormControl('', [ Validators.required, Validators.minLength(8) ]),
-      passwordRepeat: new FormControl('', [ Validators.required, Validators.minLength(8) ])
+    this.registerForm = new UntypedFormGroup({
+      server: new UntypedFormControl('', [ Validators.required ]),
+      email: new UntypedFormControl('', [ Validators.required, Validators.email ]),
+      name: new UntypedFormControl('', [ Validators.required ]),
+      password: new UntypedFormControl('', [ Validators.required, Validators.minLength(8) ]),
+      passwordRepeat: new UntypedFormControl('', [ Validators.required, Validators.minLength(8) ])
     });
   }
 
