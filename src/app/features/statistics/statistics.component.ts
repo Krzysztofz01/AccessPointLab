@@ -94,7 +94,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
    * Fetch frequency data and prepare chare options object
    */
   private initializeFrequencyChart(): void {
-    this.accessPointService.getStatisticsFrequency(undefined)
+    this.accessPointService.getStatisticsFrequency(10)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (frequency) => {
