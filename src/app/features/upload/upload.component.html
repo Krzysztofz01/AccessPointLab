@@ -9,7 +9,7 @@
                 <p>Data in JSON format provided by the AccessPointMap scanner mobile application. The application is not currently being developed, but the data format is still compatible.</p>
                 <form [formGroup]="defaultUploadForm" (ngSubmit)="submitUploadDefault()">
                     <div>
-                        <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
+                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>
@@ -23,7 +23,7 @@
                 <p>Data in CSV format provided by the WiGLE Wifi mobile application. It is an application of the biggest war-driving platform. The application is very convenient to use.</p>
                 <form [formGroup]="wigleUploadForm" (ngSubmit)="submitUploadWigle()">
                     <div>
-                        <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, wigleUploadForm)">
+                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, wigleUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>
@@ -38,7 +38,7 @@
                 <p>Data in CSV format provided by the program airodump-ng (Aircrack-ng platform). It is a powerful wireless network audit platform. The collection data is very accurate and detailed.</p>
                 <form [formGroup]="aircrackngUploadForm" (ngSubmit)="submitUploadAircrackng()">
                     <div>
-                        <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, aircrackngUploadForm)">
+                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, aircrackngUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>
@@ -54,7 +54,7 @@
                 <p>Network frames in CAP format provided by the program airodump-ng (Aircrack-ng platform). It is a powerful wireless network audit platform.</p>
                 <form [formGroup]="aircrackngCapUploadForm" (ngSubmit)="submitUploadAircrackngCap()">
                     <div>
-                        <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
+                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>
@@ -68,7 +68,7 @@
                 <p>Network frames in PCAP format provided by the Wireshark suite. It is a powerful tool used for advanced network traffic analysis.</p>
                 <form [formGroup]="wiresharkPcapUploadForm" (ngSubmit)="submitUploadWiresharkPcap()">
                     <div>
-                        <input class="form-control" type="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
+                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>

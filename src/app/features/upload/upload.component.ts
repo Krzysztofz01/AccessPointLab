@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
@@ -14,11 +14,11 @@ import { ToastService } from 'src/app/core/services/toast.service';
 export class UploadComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   
-  public defaultUploadForm: FormGroup;
-  public wigleUploadForm: FormGroup;
-  public aircrackngUploadForm: FormGroup;
-  public aircrackngCapUploadForm: FormGroup;
-  public wiresharkPcapUploadForm: FormGroup;
+  public defaultUploadForm: UntypedFormGroup;
+  public wigleUploadForm: UntypedFormGroup;
+  public aircrackngUploadForm: UntypedFormGroup;
+  public aircrackngCapUploadForm: UntypedFormGroup;
+  public wiresharkPcapUploadForm: UntypedFormGroup;
 
   constructor(
     private accessPointService: AccessPointService,
@@ -38,24 +38,24 @@ export class UploadComponent implements OnInit, OnDestroy {
    * Initialize scan data upload forms
    */
   private initializeForms(): void {
-    this.defaultUploadForm = new FormGroup({
-      file: new FormControl(null, [ Validators.required ])
+    this.defaultUploadForm = new UntypedFormGroup({
+      file: new UntypedFormControl(null, [ Validators.required ])
     });
 
-    this.wigleUploadForm = new FormGroup({
-      file: new FormControl(null, [ Validators.required ])
+    this.wigleUploadForm = new UntypedFormGroup({
+      file: new UntypedFormControl(null, [ Validators.required ])
     });
 
-    this.aircrackngUploadForm = new FormGroup({
-      file: new FormControl(null, [ Validators.required ])
+    this.aircrackngUploadForm = new UntypedFormGroup({
+      file: new UntypedFormControl(null, [ Validators.required ])
     });
 
-    this.aircrackngCapUploadForm = new FormGroup({
-      file: new FormControl(null, [ Validators.required ])
+    this.aircrackngCapUploadForm = new UntypedFormGroup({
+      file: new UntypedFormControl(null, [ Validators.required ])
     });
 
-    this.wiresharkPcapUploadForm = new FormGroup({
-      file: new FormControl(null, [ Validators.required ])
+    this.wiresharkPcapUploadForm = new UntypedFormGroup({
+      file: new UntypedFormControl(null, [ Validators.required ])
     });
   }
 
@@ -64,7 +64,7 @@ export class UploadComponent implements OnInit, OnDestroy {
    * @param e Event argument
    * @param form Target form-group
    */
-  public assignFileToControlOnChange(e: any, form: FormGroup): void {
+  public assignFileToControlOnChange(e: any, form: UntypedFormGroup): void {
     if (e === undefined || form === undefined) return;
     
     const input = e.target as HTMLInputElement;

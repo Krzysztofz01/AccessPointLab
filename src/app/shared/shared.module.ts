@@ -13,6 +13,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { OrderModule } from 'ngx-order-pipe';
 import { LoadingIndicatorComponent } from './loading-indicator/loading-indicator.component';
 import { ToastComponent } from './toast/toast.component';
+import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map-filter/accesspoint-map-filter.component';
 
 
 
@@ -24,7 +25,8 @@ import { ToastComponent } from './toast/toast.component';
     AccesspointDetailsComponent,
     AccesspointListComponent,
     LoadingIndicatorComponent,
-    ToastComponent
+    ToastComponent,
+    AccesspointMapFilterComponent
   ],
   imports: [
     CommonModule,
