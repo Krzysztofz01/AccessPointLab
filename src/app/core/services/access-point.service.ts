@@ -50,14 +50,14 @@ export class AccessPointService {
   }
 
   public changeAccessPointDisplayStatus(accessPointId: string, status: boolean) : Observable<void> {
-    return this.httpClient.put<void>(this.requestUrl(), {
+    return this.httpClient.put<void>(this.requestUrl("display"), {
       id: accessPointId,
       status: status
     });
   }
 
   public mergeAccessPoints(accessPointsId: string, accessPointStampId: string, mergeLowSignalLevel: boolean, mergeHighSignalLeve: boolean, mergeSsid: boolean, mergeSecurityData: boolean): Observable<void> {
-    return this.httpClient.put<void>(this.requestUrl(), {
+    return this.httpClient.put<void>(this.requestUrl("merge"), {
       id: accessPointsId,
       stampId: accessPointStampId,
       mergeLowSignalLevel,
@@ -68,7 +68,7 @@ export class AccessPointService {
   }
 
   public deleteAccessPointStamp(accessPointId: string, accessPointStampId: string): Observable<void> {
-    return this.httpClient.delete<void>(this.requestUrl(), { body: {
+    return this.httpClient.delete<void>(this.requestUrl("stamp"), { body: {
       id: accessPointId,
       stampId: accessPointStampId
     }});
