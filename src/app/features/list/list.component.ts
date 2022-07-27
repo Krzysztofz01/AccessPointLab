@@ -1,8 +1,8 @@
-import { Component, OnInit, SecurityContext } from '@angular/core';
+import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
@@ -15,7 +15,9 @@ import { environment } from 'src/environments/environment';
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.css']
 })
-export class ListComponent implements OnInit {
+export class ListComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+
   public accessPointsObservable: Observable<Array<AccessPoint>>;
   public listPage: number | undefined = undefined;
 
@@ -23,6 +25,8 @@ export class ListComponent implements OnInit {
   
   private readonly listPageParamName = 'page';
   private listPageParamValue: string;
+  private readonly accessPointIdParamName = 'id';
+  private accessPointIdParamValue: string;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -38,15 +42,38 @@ export class ListComponent implements OnInit {
 
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
 
-    const paramDirty = this.route.snapshot.paramMap.get(this.listPageParamName);
-    if (paramDirty !== null) {
+    const pageParamDirty = this.route.snapshot.queryParamMap.get(this.listPageParamName);
+    if (pageParamDirty !== null) {
       try {
-        this.listPageParamValue = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, paramDirty);
+        this.listPageParamValue = this.sanitizer.sanitize(SecurityContext.URL, pageParamDirty);
         this.listPage = parseInt(this.listPageParamValue, 10);
       } catch (error) {
         this.loggerService.logError(error as Error, "Invalid page argument.");
       }
     }
+
+    const idParamDirty = this.route.snapshot.queryParamMap.get(this.accessPointIdParamName);
+    if (idParamDirty !== null) {
+      try {
+        this.accessPointIdParamValue = this.sanitizer.sanitize(SecurityContext.URL, idParamDirty);
+        this.accessPointService.getAccessPointById(this.accessPointIdParamValue, this.hasFullPermission)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (accessPoint) => {
+              console.log(accessPoint);
+              this.createDetailsModalInstance(accessPoint);
+            },
+            error: (error) => this.loggerService.logError(error)
+          });
+      } catch (error) {
+        this.loggerService.logError(error as Error, "Invalid page argument.");
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   /**
