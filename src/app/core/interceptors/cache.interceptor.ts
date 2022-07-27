@@ -11,20 +11,14 @@ import { LocalStorageService } from '../services/local-storage.service';
 export class CacheInterceptor implements HttpInterceptor {
   private cache: Map<string, HttpResponse<unknown>> = new Map();
 
-  private readonly cacheExpirationMinutes = 20;
-
-  constructor(private localStorageService: LocalStorageService, private loggerService: LoggerService) {
-    this.cache = this.initializePersistantCache();
-  }
+  constructor(private localStorageService: LocalStorageService, private loggerService: LoggerService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const requestPath = request.urlWithParams;
+    const cachingHeaderPresent = request.headers.get(environment.HEADER_ALLOW_LOCAL_CACHE_NAME) !== null;
 
-    if (request.method !== 'GET' || requestPath === undefined)
-      return next.handle(request);
-      
-    if (request.headers.get(environment.HEADER_FLUSH_LOCAL_CACHE) !== null)
-      this.removeResponseFromCache(requestPath);
+    if (request.method !== 'GET' || requestPath === undefined || !cachingHeaderPresent)
+      return next.handle(request);   
      
     const cachedResponse = this.getResponseFromCache(requestPath);
     if (cachedResponse !== undefined) return of(cachedResponse);
@@ -34,16 +28,14 @@ export class CacheInterceptor implements HttpInterceptor {
   }
 
   /**
+   * @deprecated
    * Retrievie presisted cache lookup map from local storage or initializea fresh lookup map
    * @returns Stored or freshly initialzied cache lookup map
    */
   private initializePersistantCache(): Map<string, HttpResponse<unknown>> {
     if (!this.localStorageService.test()) return new Map();
 
-    const storedCache = this.localStorageService.get(environment.LSK_CACHE);
-    if (storedCache === null) return new Map();
-
-    return new Map(storedCache);
+    return new Map();
   }
 
   /**
@@ -51,32 +43,21 @@ export class CacheInterceptor implements HttpInterceptor {
    * @param requestPath Request identifier
    * @param event HTTP event object which is representing the response
    */
-  private addResponseToCache(requestPath: string, event: HttpEvent<unknown>): void {
+   private addResponseToCache(requestPath: string, event: HttpEvent<unknown>): void {
     if (!(event instanceof HttpResponse)) return;
     
     this.cache.set(requestPath, event);
 
-    this.localStorageService.unset(environment.LSK_CACHE);
-    this.localStorageService.set({
-      value: null,
-      key: environment.LSK_CACHE,
-      expirationMinutes: this.cacheExpirationMinutes
-    });
+    this.loggerService.logInformation(`Requested response from: ${requestPath} cached.`);
   }
 
   /**
+   * @deprecated
    * Remove cached element from cache
    * @param requestPath Request identifier
    */
   private removeResponseFromCache(requestPath: string): void {
     this.cache.delete(requestPath);
-
-    this.localStorageService.unset(environment.LSK_CACHE);
-    this.localStorageService.set({
-      value: null,
-      key: environment.LSK_CACHE,
-      expirationMinutes: this.cacheExpirationMinutes
-    });
 
     this.loggerService.logInformation(`Requested response from: ${requestPath} removed from cache.`);
   }
