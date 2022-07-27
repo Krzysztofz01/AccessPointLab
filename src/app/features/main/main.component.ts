@@ -74,11 +74,11 @@ export class MainComponent implements OnInit {
     (modalReference.componentInstance as AccesspointDetailsComponent).accessPoints = accessPointIds;
 
     const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
-      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission)
+      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
     }) as Subscription;
 
     const deleteSubscription = modalReference.componentInstance.accessPointDeletedEvent.subscribe({
-      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission)
+      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
     }) as Subscription;
 
     const unsubscribe = () => {

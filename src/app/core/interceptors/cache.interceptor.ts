@@ -15,13 +15,18 @@ export class CacheInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const requestPath = request.urlWithParams;
-    const cachingHeaderPresent = request.headers.get(environment.HEADER_ALLOW_LOCAL_CACHE_NAME) !== null;
 
-    if (request.method !== 'GET' || requestPath === undefined || !cachingHeaderPresent)
-      return next.handle(request);   
-     
-    const cachedResponse = this.getResponseFromCache(requestPath);
-    if (cachedResponse !== undefined) return of(cachedResponse);
+    if (request.method !== 'GET' || requestPath === undefined)
+      return next.handle(request);
+
+    const cachingHeaderPresent = request.headers.get(environment.HEADER_ALLOW_LOCAL_CACHE_NAME) !== null;
+    const responseIsCached = this.isResponseInCache(requestPath);
+
+    if (cachingHeaderPresent && responseIsCached)
+      return of(this.getResponseFromCache(requestPath));
+
+    if (!cachingHeaderPresent && !responseIsCached)
+      return next.handle(request);
 
     return next.handle(request)
       .pipe(tap(event => this.addResponseToCache(requestPath, event)));
@@ -76,5 +81,14 @@ export class CacheInterceptor implements HttpInterceptor {
     
     this.loggerService.logInformation(`Requested response from: ${requestPath} not found in local cache.`);
     return undefined;
+  }
+
+  /**
+   * Check if a response represented by given identifier it currently cached
+   * @param requestPath Request identifier
+   * @returns Boolean value representing if the request response is cached
+   */
+  private isResponseInCache(requestPath: string): boolean {
+    return this.cache.has(requestPath);
   }
 }
