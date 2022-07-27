@@ -17,5 +17,7 @@ export interface AccessPointStamp {
     securityStandards: string;
     securityProtocols: string;
     isSecure: boolean;
+    isPresent: boolean;
+    runIdentifier: string; 
     status: boolean;
 }

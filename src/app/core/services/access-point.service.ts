@@ -171,4 +171,13 @@ export class AccessPointService {
 
     return this.httpClient.post<void>(this.requestUrl('wireshark/pcap', true), formData);
   }
+
+  public getAccessPointsInKmlFile(full: boolean) : Observable<Blob> {
+    const path = full ? 'kml/full' : 'kml';
+    return this.httpClient.get(this.requestUrl(path), { responseType: 'blob' })
+  }
+
+  public getAccessPointsWigleCsv(): Observable<Blob> {
+    return this.httpClient.get(this.requestUrl('wigle/csv', true), { responseType: 'blob' });
+  }
 }
