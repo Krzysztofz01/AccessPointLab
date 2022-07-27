@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { GlobalScopeService } from './global-scope.service';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AccessPoint } from '../models/access-points.model';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -24,11 +25,11 @@ export class AccessPointService {
       : `${this.serverAddress}/api/v${version.toString()}/${this.basePathAccessPoints}/${endpoint}`;
   }
 
-  /**
-   * Post a collection of collected accesspoints
-   * @param accessPoints Collection of collected accesspoints
-   * @returns Observable of void
-   */
+  private getLocalCachingHeaders(): HttpHeaders {
+    return new HttpHeaders()
+      .append(environment.HEADER_ALLOW_LOCAL_CACHE_NAME, environment.HEADER_ALLOW_LOCAL_CACHE_VALUE);
+  }
+
   public postAccessPoints(accessPoints: Array<AccessPoint>): Observable<void> {
     return this.httpClient.post<void>(this.requestUrl(), {
       accessPoints: accessPoints,
@@ -74,10 +75,12 @@ export class AccessPointService {
     }});
   }
 
-  public getAllAccessPoints(full: boolean): Observable<Array<AccessPoint>> {
-    return full
-      ? this.httpClient.get<Array<AccessPoint>>(this.requestUrl('full'))
-      : this.httpClient.get<Array<AccessPoint>>(this.requestUrl());
+  public getAllAccessPoints(full: boolean, allowLocalCaching: boolean = true): Observable<Array<AccessPoint>> {  
+    const path = full ? 'full' : '';
+
+    return allowLocalCaching
+      ? this.httpClient.get<Array<AccessPoint>>(this.requestUrl(path), { headers: this.getLocalCachingHeaders() })
+      : this.httpClient.get<Array<AccessPoint>>(this.requestUrl(path));
   }
 
   public getAccessPointById(accessPointId: string, full: boolean): Observable<AccessPoint> {
@@ -93,47 +96,51 @@ export class AccessPointService {
     return this.httpClient.get<Array<AccessPoint>>(this.requestUrl('search'), { params });
   }
 
-  public getStatisticsGreatestSignalRange(limit: number|undefined = undefined): Observable<Array<AccessPoint>> {
-    const params = new HttpParams()
-      .set('limit', limit);
-
+  public getStatisticsGreatestSignalRange(limit: number|undefined = undefined, allowLocalCaching: boolean = true): Observable<Array<AccessPoint>> {
     const endpoint = 'statistics/signal';
-
-    return (limit === undefined)
-      ? this.httpClient.get<Array<AccessPoint>>(this.requestUrl(endpoint))
+    
+    const headers = this.getLocalCachingHeaders();
+    const params = new HttpParams();
+    if (limit !== undefined) params.set('limit', limit);
+    
+    return allowLocalCaching
+      ? this.httpClient.get<Array<AccessPoint>>(this.requestUrl(endpoint), { params, headers })
       : this.httpClient.get<Array<AccessPoint>>(this.requestUrl(endpoint), { params });
   }
 
-  public getStatisticsFrequency(limit: number|undefined = undefined): Observable<[frequency: number, count: number]> {
-    const params = new HttpParams()
-      .set('limit', limit);
-
+  public getStatisticsFrequency(limit: number|undefined = undefined, allowLocalCaching: boolean = true): Observable<[frequency: number, count: number]> {
     const endpoint = 'statistics/frequency';
+    
+    const headers = this.getLocalCachingHeaders();
+    const params = new HttpParams();
+    if (limit !== undefined) params.set('limit', limit);
 
-    return (limit === undefined)
-      ? this.httpClient.get<[frequency: number, count: number]>(this.requestUrl(endpoint))
+    return allowLocalCaching
+      ? this.httpClient.get<[frequency: number, count: number]>(this.requestUrl(endpoint), { params, headers })
       : this.httpClient.get<[frequency: number, count: number]>(this.requestUrl(endpoint), { params });
   }
 
-  public getStatisticsMostCommonManufacturer(limit: number|undefined = undefined): Observable<[manufacturer: string, count: number]> {
-    const params = new HttpParams()
-      .set('limit', limit);
-
+  public getStatisticsMostCommonManufacturer(limit: number|undefined = undefined, allowLocalCaching: boolean = true): Observable<[manufacturer: string, count: number]> {
     const endpoint = 'statistics/manufacturer';
 
-    return (limit === undefined)
-      ? this.httpClient.get<[manufacturer: string, count: number]>(this.requestUrl(endpoint))
+    const headers = this.getLocalCachingHeaders();
+    const params = new HttpParams();
+    if (limit !== undefined) params.set('limit', limit);
+
+    return allowLocalCaching
+      ? this.httpClient.get<[manufacturer: string, count: number]>(this.requestUrl(endpoint), { params, headers })
       : this.httpClient.get<[manufacturer: string, count: number]>(this.requestUrl(endpoint), { params });
   }
 
-  public getStatisticsMostCommonEncryption(limit: number|undefined = undefined): Observable<[encryption: string, count: number]> {
-    const params = new HttpParams()
-      .set('limit', limit);
-
+  public getStatisticsMostCommonEncryption(limit: number|undefined = undefined, allowLocalCaching: boolean = true): Observable<[encryption: string, count: number]> {
     const endpoint = 'statistics/encryption';
 
-    return (limit === undefined)
-      ? this.httpClient.get<[encryption: string, count: number]>(this.requestUrl(endpoint))
+    const headers = this.getLocalCachingHeaders();
+    const params = new HttpParams();
+    if (limit !== undefined) params.set('limit', limit);
+
+    return allowLocalCaching
+      ? this.httpClient.get<[encryption: string, count: number]>(this.requestUrl(endpoint), { params, headers })
       : this.httpClient.get<[encryption: string, count: number]>(this.requestUrl(endpoint), { params });
   }
 

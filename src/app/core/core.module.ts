@@ -6,6 +6,7 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
 import { LocalStorageService } from './services/local-storage.service';
 import { AccessPointService } from './services/access-point.service';
 import { LoadingIndicatorInterceptor } from './interceptors/loading-indicator.interceptor';
+import { CacheInterceptor } from './interceptors/cache.interceptor';
 import { appInitializer } from './initializers/app-initializer';
 import { AuthService } from '../auth/services/auth.service';
 
@@ -19,6 +20,7 @@ import { AuthService } from '../auth/services/auth.service';
     
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: LoadingIndicatorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
     
     GlobalScopeService,
     LocalStorageService,
