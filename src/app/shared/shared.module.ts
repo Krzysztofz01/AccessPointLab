@@ -14,6 +14,7 @@ import { OrderModule } from 'ngx-order-pipe';
 import { LoadingIndicatorComponent } from './loading-indicator/loading-indicator.component';
 import { ToastComponent } from './toast/toast.component';
 import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map-filter/accesspoint-map-filter.component';
+import { AccesspointDetailsV2Component } from './accesspoint-details-v2/accesspoint-details-v2.component';
 
 
 
@@ -26,7 +27,8 @@ import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map
     AccesspointListComponent,
     LoadingIndicatorComponent,
     ToastComponent,
-    AccesspointMapFilterComponent
+    AccesspointMapFilterComponent,
+    AccesspointDetailsV2Component
   ],
   imports: [
     CommonModule,
@@ -45,7 +47,8 @@ import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map
     AccesspointDetailsComponent,
     AccesspointListComponent,
     LoadingIndicatorComponent,
-    ToastComponent
+    ToastComponent,
+    AccesspointDetailsV2Component
   ]
 })
 export class SharedModule { }

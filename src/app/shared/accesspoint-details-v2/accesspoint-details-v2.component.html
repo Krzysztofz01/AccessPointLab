@@ -1,0 +1,52 @@
+<div class="modal-body">
+    <div class="container-fluid">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div *ngIf="selectedAccessPoint !== undefined">
+                    <div *ngIf="singleAccessPoint; else multipleAccessPoints">
+                        <h4 class="ssid-title">{{ selectedAccessPoint.ssid }}</h4>
+                    </div>
+                    <ng-template #multipleAccessPoints>
+                        <form [formGroup]="accessPointSelectionForm">
+                            <select class="form-select" formControlName="selectedAccessPointId">
+                                <option *ngFor="let accessPoint of accessPoints" [value]="accessPoint.id">{{ accessPoint.ssid }}</option>
+                            </select>
+                        </form>
+                    </ng-template>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <button (click)="closeModal()" type="button" class="btn-close float-end"></button>
+            </div>
+        </div>
+        
+        <div class="row">
+            <nav ngbNav #nav="ngbNav" class="nav-tabs">
+                <ng-container ngbNavItem>
+                    <a ngbNavLink>General</a>
+                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement general view</p></div></ng-template>
+                </ng-container>
+                <ng-container ngbNavItem>
+                    <a ngbNavLink>Details</a>
+                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement details view</p></div></ng-template>
+                </ng-container>
+                <ng-container ngbNavItem>
+                    <a ngbNavLink>Map</a>
+                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement map view</p></div></ng-template>
+                </ng-container>
+                <ng-container ngbNavItem>
+                    <a ngbNavLink>Stamps</a>
+                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement stamps view</p></div></ng-template>
+                </ng-container>
+                <ng-container ngbNavItem [disabled]="!hasAdminPermission">
+                    <a ngbNavLink>Management</a>
+                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement management view</p></div></ng-template>
+                </ng-container>
+            </nav>
+        </div>
+
+        <div class="row">
+            <div class="nav-display-target my-3" [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+</div>
