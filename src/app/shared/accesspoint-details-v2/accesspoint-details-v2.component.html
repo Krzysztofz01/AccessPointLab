@@ -20,33 +20,36 @@
             </div>
         </div>
         
-        <div class="row">
-            <nav ngbNav #nav="ngbNav" class="nav-tabs">
-                <ng-container ngbNavItem>
-                    <a ngbNavLink>General</a>
-                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement general view</p></div></ng-template>
-                </ng-container>
-                <ng-container ngbNavItem>
-                    <a ngbNavLink>Details</a>
-                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement details view</p></div></ng-template>
-                </ng-container>
-                <ng-container ngbNavItem>
-                    <a ngbNavLink>Map</a>
-                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement map view</p></div></ng-template>
-                </ng-container>
-                <ng-container ngbNavItem>
-                    <a ngbNavLink>Stamps</a>
-                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement stamps view</p></div></ng-template>
-                </ng-container>
-                <ng-container ngbNavItem [disabled]="!hasAdminPermission">
-                    <a ngbNavLink>Management</a>
-                    <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement management view</p></div></ng-template>
-                </ng-container>
-            </nav>
-        </div>
+        <!-- Nav fix required -->
+        <div *ngIf="selectedAccessPoint !== undefined">
+            <div class="row">
+                <nav ngbNav #nav="ngbNav" class="nav-tabs">
+                    <ng-container ngbNavItem>
+                        <a ngbNavLink>General</a>
+                        <ng-template ngbNavContent><div class="nav-view-container"><app-accesspoint-details-v2-general [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-general></div></ng-template>
+                    </ng-container>
+                    <ng-container ngbNavItem>
+                        <a ngbNavLink>Details</a>
+                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement details view</p></div></ng-template>
+                    </ng-container>
+                    <ng-container ngbNavItem>
+                        <a ngbNavLink>Map</a>
+                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement map view</p></div></ng-template>
+                    </ng-container>
+                    <ng-container ngbNavItem>
+                        <a ngbNavLink>Stamps</a>
+                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement stamps view</p></div></ng-template>
+                    </ng-container>
+                    <ng-container ngbNavItem [disabled]="!hasAdminPermission">
+                        <a ngbNavLink>Management</a>
+                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement management view</p></div></ng-template>
+                    </ng-container>
+                </nav>
+            </div>
 
-        <div class="row">
-            <div class="nav-display-target my-3" [ngbNavOutlet]="nav"></div>
+            <div class="row">
+                <div class="nav-display-target my-3" [ngbNavOutlet]="nav"></div>
+            </div>
         </div>
     </div>
 </div>

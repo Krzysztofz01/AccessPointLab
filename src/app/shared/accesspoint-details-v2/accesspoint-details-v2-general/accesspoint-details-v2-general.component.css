@@ -1,0 +1,17 @@
+.access-point-details-v2-map-general {
+    height: 70vh;
+    border: 1px solid var(--apm-primary);
+}
+
+.property-name {
+    color: var(--apm-primary);
+}
+
+.property-value {
+    color: var(--apm-accent);
+}
+
+.property-caption {
+    color: var(--apm-primary);
+    font-weight: bold;
+}

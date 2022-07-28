@@ -1,0 +1,27 @@
+<div class="container-fluid">
+    <div *ngIf="accessPoint !== undefined">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-12">
+                <div class="access-point-details-v2-map-general" [id]="mapId"></div>
+            </div>
+    
+            <div class="col-lg-7 col-md-12">
+                <div class="mb-2">
+                    <h3 class="property-caption">SSID: {{ accessPoint.ssid }}</h3>
+                    <h3 class="property-caption">BSSID: {{ accessPoint.bssid }}</h3>
+                </div>
+                <div class="properties-details-section">
+                    <h4 class="my-4"><span class="property-name">Manufacturer: </span> <span class="property-value">{{ accessPoint.manufacturer }}</span></h4>
+                    <h4 class="my-4"><span class="property-name">Device type: </span> <span class="property-value">{{ accessPoint.deviceType }}</span></h4>
+                    <h4 class="my-4"><span class="property-name">Signal area: </span> <span class="property-value">{{ accessPoint.signalArea }}m<sup>2</sup></span></h4>
+                    <h4 class="my-4"><span class="property-name">Frequency: </span> <span class="property-value">{{ accessPoint.frequency }}</span></h4>
+                    <h4 class="my-4"><span class="property-name">Presence: </span> <span class="property-value">{{ accessPoint.isPresent ? "Present" : "Missing" }}</span></h4>
+                    <h4 class="my-4"><span class="property-name">Security: </span> <span [style.color]="getSecurityColor(accessPoint)">{{ getSecurityText(accessPoint) }}</span></h4>
+                    <h4 class="my-4"><span class="property-name">Available security standards: </span> <span class="property-value">{{ formatSerialziedArrayData(accessPoint.securityStandards) }}</span></h4>
+                    <h4 class="my-4"><span class="property-name">Available security protocols: </span> <span class="property-value">{{ formatSerialziedArrayData(accessPoint.securityProtocols) }}</span></h4>
+                    <h4 class="my-4"><span class="property-name">Run id: </span> <span class="property-value">{{ accessPoint.runIdentifier ?? "Undefined" }}</span></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
