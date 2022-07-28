@@ -14,7 +14,7 @@ import { LoggerService } from 'src/app/core/services/logger.service';
 export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterContentInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  @Output() accessPointUpdateEvent = new EventEmitter<AccessPoint>();
+  @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
   @Output() accessPointDeletedEvent = new EventEmitter<AccessPoint>();
 
   public accessPointSelectionForm: UntypedFormGroup;
@@ -94,12 +94,12 @@ export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterCo
   }
 
   /**
-   * AccessPointUpdate event handler to use in child components
+   * AccessPointUpdated event handler to use in child components
    * @param _ Discarded event object
    */
-  public accessPointUpdateEventHandler(_: Event): void {
+  public accessPointUpdatedEventHandler(_: Event): void {
     this.loggerService.logInformation("Raised access point update event arrived to modal root.");
-    this.accessPointUpdateEvent.next(this.selectedAccessPoint);
+    this.accessPointUpdatedEvent.next(this.selectedAccessPoint);
   }
 
   /**
