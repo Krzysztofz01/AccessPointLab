@@ -52,7 +52,7 @@
                     <div class="tab-view-container" [ngSwitch]="currentTabView">
                         <app-accesspoint-details-v2-general @fadeIn *ngSwitchCase="'general'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-general>
                         <p @fadeIn *ngSwitchCase="'details'">TODO: Implement</p>
-                        <p @fadeIn *ngSwitchCase="'map'">TODO: Implement</p>
+                        <app-accesspoint-details-v2-map @fadeIn *ngSwitchCase="'map'" [accessPoint]="selectedAccessPoint"></app-accesspoint-details-v2-map>
                         <p @fadeIn *ngSwitchCase="'stamps'">TODO: Implement</p>
                         <p @fadeIn *ngSwitchCase="'manage'">TODO: Implement</p>
                     </div>

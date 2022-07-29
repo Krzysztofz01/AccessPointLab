@@ -16,6 +16,7 @@ import { ToastComponent } from './toast/toast.component';
 import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map-filter/accesspoint-map-filter.component';
 import { AccesspointDetailsV2Component } from './accesspoint-details-v2/accesspoint-details-v2.component';
 import { AccesspointDetailsV2GeneralComponent } from './accesspoint-details-v2/accesspoint-details-v2-general/accesspoint-details-v2-general.component';
+import { AccesspointDetailsV2MapComponent } from './accesspoint-details-v2/accesspoint-details-v2-map/accesspoint-details-v2-map.component';
 
 
 
@@ -30,7 +31,8 @@ import { AccesspointDetailsV2GeneralComponent } from './accesspoint-details-v2/a
     ToastComponent,
     AccesspointMapFilterComponent,
     AccesspointDetailsV2Component,
-    AccesspointDetailsV2GeneralComponent
+    AccesspointDetailsV2GeneralComponent,
+    AccesspointDetailsV2MapComponent
   ],
   imports: [
     CommonModule,
