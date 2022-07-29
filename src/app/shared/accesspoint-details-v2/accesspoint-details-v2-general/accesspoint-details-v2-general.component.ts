@@ -1,13 +1,15 @@
 import { AfterViewInit, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Feature, Map, View } from 'ol';
-import { Circle, Geometry } from 'ol/geom';
-import TileLayer from 'ol/layer/Tile';
+import { Feature, Map } from 'ol';
+import { Geometry } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import * as olProj from 'ol/proj';
-import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { LoggerService } from 'src/app/core/services/logger.service';
+import { AccessPointDetailsV2Utilities } from '../accesspoint-details-v2.utilities';
 
 @Component({
   selector: 'app-accesspoint-details-v2-general',
@@ -38,22 +40,11 @@ export class AccesspointDetailsV2GeneralComponent implements AfterViewInit, OnCh
   }
 
   /**
-   * Initialize the map object
+   * Initialize the map object. Method is using the utility class
    */
   private initializeMap(): void {
-    this.map = new Map({
-      controls: [],
-      target: this.mapId,
-      layers: [
-        new TileLayer({
-          source: new OSM()
-        })
-      ],
-      view: new View({
-        center: olProj.fromLonLat([0, 0]),
-        zoom: 17
-      })
-    });
+    this.map = AccessPointDetailsV2Utilities
+      .createOpenLayersMap(this.mapId, 18);
   }
 
   /**
@@ -87,16 +78,22 @@ export class AccesspointDetailsV2GeneralComponent implements AfterViewInit, OnCh
    * @returns OpenLayers vector layer
    */
   private generateVector(accessPoint : AccessPoint): VectorLayer<VectorSource<Geometry>> {
-    const longitude = accessPoint.highSignalLongitude;
-    const latitude = accessPoint.highSignalLatitude;
-    const radius = accessPoint.signalRadius;
+    const circle = AccessPointDetailsV2Utilities
+      .getOpenLayersAccessPointRadiusCircle(accessPoint);
 
-    const circle = new Circle(olProj.fromLonLat([ longitude, latitude ]),
-      (radius < 16) ? 16 : radius);
+    const fillColor = AccessPointDetailsV2Utilities
+      .getOpenLayersColorBySecurityStandard(accessPoint, 0.3);
+
+    const strokeColor = AccessPointDetailsV2Utilities
+    .getOpenLayersColorBySecurityStandard(accessPoint, 1);
 
     const vector = new VectorLayer({
       source: new VectorSource({
         features: [ new Feature(circle) ]
+      }),
+      style: new Style({
+        fill: new Fill({ color: fillColor }),
+        stroke: new Stroke({ color: strokeColor })
       })
     });
   
@@ -121,31 +118,19 @@ export class AccesspointDetailsV2GeneralComponent implements AfterViewInit, OnCh
   }
 
   /**
-   * Generate CSS color according to the access points security standard
+   * Generate CSS color according to the access points security standard. Method is using the utility class
    * @param accessPoint Access point entity 
    * @returns CSS color variable string
    */
   public getSecurityColor(accessPoint: AccessPoint): string {
-    const sd: Array<string> = JSON.parse(accessPoint.securityStandards);
-
-    if(sd.includes('WPA3')) return 'var(--apm-encryption-good)';
-    if(sd.includes('WPA2')) return 'var(--apm-encryption-good)';
-    if(sd.includes('WPA')) return 'var(--apm-encryption-good)';
-    if(sd.includes('WPS')) return 'var(--apm-encryption-medium)';
-    if(sd.includes('WEP')) return 'var(--apm-encryption-medium)';
-    return 'var(--apm-encryption-bad)';
+    return AccessPointDetailsV2Utilities.getCssColorBySecurityStandard(accessPoint);
   }
 
   /**
-   * Format array provided data
+   * Format array provided data. Method is using the utility class
    * @param serializedArray Array of string data
    */
   public formatSerialziedArrayData(serializedArray: string): string {
-    if (serializedArray === undefined) return 'None';
-
-    const arrayData = JSON.parse(serializedArray) as Array<string>;
-    if (arrayData === undefined || arrayData.length === 0) return 'None';
-
-    return arrayData.join(', ').toUpperCase();
+    return AccessPointDetailsV2Utilities.formatSerialziedArrayData(serializedArray);
   }
 }
