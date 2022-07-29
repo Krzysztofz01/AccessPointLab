@@ -7,6 +7,10 @@
     color: var(--apm-primary) !important;
 }
 
+.nav-item {
+    cursor: pointer;
+}
+
 .nav-link {
     color: var(--apm-accent) !important;
 }

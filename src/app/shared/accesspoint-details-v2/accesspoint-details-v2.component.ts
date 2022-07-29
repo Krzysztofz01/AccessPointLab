@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterContentInit, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -9,7 +10,15 @@ import { LoggerService } from 'src/app/core/services/logger.service';
 @Component({
   selector: 'app-accesspoint-details-v2',
   templateUrl: './accesspoint-details-v2.component.html',
-  styleUrls: ['./accesspoint-details-v2.component.css']
+  styleUrls: ['./accesspoint-details-v2.component.css'],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('250ms', style({ opacity: 1 }))
+      ])
+    ])
+  ]
 })
 export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterContentInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -25,6 +34,9 @@ export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterCo
 
   public hasAdminPermission: boolean;
 
+  private defaultTabView = 'general';
+  public currentTabView: string;
+
   private modalDataPassed = false;
 
   constructor(
@@ -38,6 +50,8 @@ export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterCo
       this.closeModal();
       return;
     }
+
+    this.currentTabView = this.defaultTabView;
 
     this.accessPointSelectionForm = new UntypedFormGroup({
       selectedAccessPointId: new UntypedFormControl(this.accessPoints[0].id)
@@ -111,6 +125,20 @@ export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterCo
     this.accessPointDeletedEvent.next(this.selectedAccessPoint);
     this.closeModal();
   }
+
+  /**
+   * Switch the current tab view
+   * @param tabViewName Requested tab view name
+   */
+  public switchCurrentTabView(tabViewName: string): void {
+    if(tabViewName === undefined || tabViewName.length === 0) {
+      this.loggerService.logError("Invalid tab view requested.");
+      this.currentTabView = this.defaultTabView;
+      return;
+    }
+
+    this.currentTabView = tabViewName;
+  } 
 
   /**
    * Dismiss the current modal instance

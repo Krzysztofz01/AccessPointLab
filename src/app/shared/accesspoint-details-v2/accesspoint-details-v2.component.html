@@ -20,36 +20,45 @@
             </div>
         </div>
         
-        <!-- Nav fix required -->
-        <div *ngIf="selectedAccessPoint !== undefined">
-            <div class="row">
-                <nav ngbNav #nav="ngbNav" class="nav-tabs">
-                    <ng-container ngbNavItem>
-                        <a ngbNavLink>General</a>
-                        <ng-template ngbNavContent><div class="nav-view-container"><app-accesspoint-details-v2-general [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-general></div></ng-template>
-                    </ng-container>
-                    <ng-container ngbNavItem>
-                        <a ngbNavLink>Details</a>
-                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement details view</p></div></ng-template>
-                    </ng-container>
-                    <ng-container ngbNavItem>
-                        <a ngbNavLink>Map</a>
-                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement map view</p></div></ng-template>
-                    </ng-container>
-                    <ng-container ngbNavItem>
-                        <a ngbNavLink>Stamps</a>
-                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement stamps view</p></div></ng-template>
-                    </ng-container>
-                    <ng-container ngbNavItem [disabled]="!hasAdminPermission">
-                        <a ngbNavLink>Management</a>
-                        <ng-template ngbNavContent><div class="nav-view-container"><p>TODO: Implement management view</p></div></ng-template>
-                    </ng-container>
-                </nav>
-            </div>
-
-            <div class="row">
-                <div class="nav-display-target my-3" [ngbNavOutlet]="nav"></div>
+        <!-- 
+          -- The NgbNav is not used beacuse it is causing problems displaying on the nav.
+          -- The custom nav can be extracted into a separate shared component in the future.
+          -->
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item" (click)="switchCurrentTabView('general')">
+                        <a class="nav-link" [ngClass]="{ 'active': ('general' === currentTabView) }">General</a>
+                    </li>
+                    <li class="nav-item" (click)="switchCurrentTabView('details')">
+                        <a class="nav-link" [ngClass]="{ 'active': ('details' === currentTabView) }">Details</a>
+                    </li>
+                    <li class="nav-item" (click)="switchCurrentTabView('map')">
+                        <a class="nav-link" [ngClass]="{ 'active': ('map' === currentTabView) }">Map</a>
+                    </li>
+                    <li class="nav-item" (click)="switchCurrentTabView('stamps')">
+                        <a class="nav-link" [ngClass]="{ 'active': ('stamps' === currentTabView) }">Stamps</a>
+                    </li>
+                    <li class="nav-item" (click)="switchCurrentTabView('manage')">
+                        <a class="nav-link" [ngClass]="{ 'active': ('manage' === currentTabView) }" [ngClass]="{ 'disabled': !hasAdminPermission }">Manage</a>
+                    </li>
+                </ul>
             </div>
         </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div *ngIf="selectedAccessPoint !== undefined">
+                    <div class="tab-view-container" [ngSwitch]="currentTabView">
+                        <app-accesspoint-details-v2-general @fadeIn *ngSwitchCase="'general'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-general>
+                        <p @fadeIn *ngSwitchCase="'details'">TODO: Implement</p>
+                        <p @fadeIn *ngSwitchCase="'map'">TODO: Implement</p>
+                        <p @fadeIn *ngSwitchCase="'stamps'">TODO: Implement</p>
+                        <p @fadeIn *ngSwitchCase="'manage'">TODO: Implement</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>

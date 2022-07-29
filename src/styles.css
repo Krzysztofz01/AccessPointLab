@@ -123,7 +123,7 @@ select:focus {
 
 .modal-content {
     border-radius: 2em !important;
-    height: 90vh !important;
+    /* max-height: 90vh !important; */
 }
 
 .btn-close:focus {
