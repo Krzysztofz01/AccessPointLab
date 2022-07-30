@@ -30,7 +30,6 @@ export class AccesspointDetailsV2GeneralComponent implements AfterViewInit, OnCh
     private loggerService: LoggerService) { }
 
   ngAfterViewInit(): void {
-    console.log(this.accessPoint);
     this.initializeMap();
     this.swapVectorLayer(this.accessPoint);
   }

@@ -1,3 +1,4 @@
+import { AccessPointAdnnotation } from "./access-point-adnnotation.model";
 import { AccessPointStamp } from "./access-point-stamp.model";
 
 export interface AccessPoint {
@@ -27,4 +28,5 @@ export interface AccessPoint {
     note: string;
     displayStatus: boolean;
     stamps: Array<AccessPointStamp>;
+    adnnotations: Array<AccessPointAdnnotation> 
 }
