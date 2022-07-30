@@ -18,6 +18,7 @@ import { AccesspointDetailsV2Component } from './accesspoint-details-v2/accesspo
 import { AccesspointDetailsV2GeneralComponent } from './accesspoint-details-v2/accesspoint-details-v2-general/accesspoint-details-v2-general.component';
 import { AccesspointDetailsV2MapComponent } from './accesspoint-details-v2/accesspoint-details-v2-map/accesspoint-details-v2-map.component';
 import { AccesspointDetailsV2DetailsComponent } from './accesspoint-details-v2/accesspoint-details-v2-details/accesspoint-details-v2-details.component';
+import { AccesspointDetailsV2StampsComponent } from './accesspoint-details-v2/accesspoint-details-v2-stamps/accesspoint-details-v2-stamps.component';
 
 
 
@@ -34,7 +35,8 @@ import { AccesspointDetailsV2DetailsComponent } from './accesspoint-details-v2/a
     AccesspointDetailsV2Component,
     AccesspointDetailsV2GeneralComponent,
     AccesspointDetailsV2MapComponent,
-    AccesspointDetailsV2DetailsComponent
+    AccesspointDetailsV2DetailsComponent,
+    AccesspointDetailsV2StampsComponent
   ],
   imports: [
     CommonModule,

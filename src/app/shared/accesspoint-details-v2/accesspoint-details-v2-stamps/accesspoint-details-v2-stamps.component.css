@@ -1,0 +1,25 @@
+.access-point-details-v2-map-stamps {
+    height: 70vh;
+    border: 1px solid var(--apm-primary);
+}
+
+th {
+    color: var(--apm-primary);
+    font-weight: bold;
+}
+
+td {
+    color: var(--apm-accent);
+}
+
+.table-hover > tbody > tr:hover > * {
+    color: var(--apm-primary);
+}
+
+label {
+    color: var(--apm-accent);
+}
+
+.form-check {
+    cursor: pointer;
+}

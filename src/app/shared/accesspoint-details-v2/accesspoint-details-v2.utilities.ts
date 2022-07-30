@@ -3,6 +3,7 @@ import { Circle } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import * as olProj from 'ol/proj';
 import { OSM } from 'ol/source';
+import { AccessPointStamp } from 'src/app/core/models/access-point-stamp.model';
 import { AccessPoint } from "src/app/core/models/access-points.model";
 
 export class AccessPointDetailsV2Utilities {
@@ -44,7 +45,7 @@ export class AccessPointDetailsV2Utilities {
      * @param accessPoint Access point entity
      * @returns OpenLayers Circle object
      */
-    public static getOpenLayersAccessPointRadiusCircle(accessPoint: AccessPoint, minimalRadius: number = 16): Circle {
+    public static getOpenLayersAccessPointRadiusCircle(accessPoint: AccessPoint | AccessPointStamp, minimalRadius: number = 16): Circle {
         const longitude = accessPoint.highSignalLongitude;
         const latitude = accessPoint.highSignalLatitude;
         const radius = accessPoint.signalRadius;
