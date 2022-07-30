@@ -34,7 +34,9 @@ export class AccesspointDetailsV2MapComponent implements AfterViewInit, OnChange
   }
 
   ngOnChanges(_: SimpleChanges): void {
-    this.swapVectorLayer(this.accessPoint);
+    if (this.map !== undefined) {
+      this.swapVectorLayer(this.accessPoint);
+    }
   }
 
   /**
