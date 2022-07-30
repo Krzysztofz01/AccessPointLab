@@ -57,12 +57,12 @@ export class AccessPointService {
     });
   }
 
-  public mergeAccessPoints(accessPointsId: string, accessPointStampId: string, mergeLowSignalLevel: boolean, mergeHighSignalLeve: boolean, mergeSsid: boolean, mergeSecurityData: boolean): Observable<void> {
+  public mergeAccessPoints(accessPointsId: string, accessPointStampId: string, mergeLowSignalLevel: boolean, mergeHighSignalLevel: boolean, mergeSsid: boolean, mergeSecurityData: boolean): Observable<void> {
     return this.httpClient.put<void>(this.requestUrl("merge"), {
       id: accessPointsId,
       stampId: accessPointStampId,
       mergeLowSignalLevel,
-      mergeHighSignalLeve,
+      mergeHighSignalLevel,
       mergeSsid,
       mergeSecurityData
     });
