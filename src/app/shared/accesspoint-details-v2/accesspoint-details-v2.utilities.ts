@@ -88,4 +88,17 @@ export class AccessPointDetailsV2Utilities {
     
         return arrayData.join(', ').toUpperCase();
     }
+
+    /**
+     * Determine if a given object is an instance of AccessPoint or AccessPointStamp
+     * @param object AccessPoint or AccessPointStamp entity object
+     * @returns Boolean value indicating if the object is a AccessPoint
+     */
+    public static isAccessPointInstance(object: AccessPoint | AccessPointStamp): boolean {
+        return (
+            (object instanceof Object) &&
+            (!('status' in object)) &&
+            ('displayStatus' in object)
+        );
+    }
 }

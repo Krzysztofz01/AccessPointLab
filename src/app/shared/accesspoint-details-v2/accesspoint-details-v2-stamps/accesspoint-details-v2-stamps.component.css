@@ -20,6 +20,15 @@ label {
     color: var(--apm-accent);
 }
 
+h4 {
+    color: var(--apm-primary);
+}
+
 .form-check {
     cursor: pointer;
+}
+
+.ssid-compare-click {
+    cursor: pointer;
+    font-style: italic;
 }

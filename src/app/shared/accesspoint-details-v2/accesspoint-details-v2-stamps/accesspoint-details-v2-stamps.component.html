@@ -1,114 +1,78 @@
 <div *ngIf="accessPoint !== undefined">
-    <div *ngIf="accessPoint.stamps.length > 0; noStamps">
-        <div class="row">
-            <div class="col-lg-5 col-md-12">
-                <div class="access-point-details-v2-map-stamps" [id]="mapId"></div>
-            </div>
-                
-            <div class="col-lg-7 col-md-12">
+    <div class="row">
+        <div class="col-lg-5 col-md-12">
+            <div class="access-point-details-v2-map-stamps" [id]="mapId"></div>
+        </div>
+            
+        <div class="col-lg-7 col-md-12">
+            <div *ngIf="accessPoint.stamps.length > 0; else noStamps">
                 <div class="row">
                     <div class="col-12">
-                        <form [formGroup]="accessPointStampSelectionForm">
-                            <select class="form-select" formControlName="selectedStampId" place>
-                                <option *ngFor="let accessPointStamp of accessPoint.stamps" [value]="accessPointStamp.id">{{ accessPointStamp.id }}</option>
-                            </select>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">SSID</th>
+                                        <th scope="col">Range</th>
+                                        <th scope="col">Capabilities</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>{{ accessPoint.ssid }}</th>
+                                        <th>{{ accessPoint.signalArea }}</th>
+                                        <th>{{ accessPoint.rawSecurityPayload }}</th>
+                                        <th>-</th>
+                                        <th>-</th>
+                                    </tr>
+                                    <tr *ngFor="let stamp of accessPoint.stamps">
+                                        <td><span class="ssid-compare-click" (click)="previewAccessPointStamp(stamp)">{{ stamp.ssid }}</span></td>
+                                        <td>{{ stamp.signalArea }}</td>
+                                        <td>{{ stamp.rawSecurityPayload }}</td>
+                                        <td>{{ stamp.status ? 'Merged' : 'Pending' }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary mx-1" (click)="mergeAccessPointStamp(stamp)" [disabled]="stamp.status">Merge</button>
+                                            <button type="button" class="btn btn-primary mx-1" (click)="deleteAccessPointStamp(stamp)">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <form [formGroup]="accessPointStampsMergeOptionsForm">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" formControlName="mergeLowSignalLevel" id="mergeLowSignalLevel"> 
+                                <label class="form-check-label" for="mergeLowSignalLevel">Merge the lowest signal location</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" formControlName="mergeHighSignalLevel" id="mergeHighSignalLevel"> 
+                                <label class="form-check-label" for="mergeHighSignalLevel">Merge the highest signal location</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" formControlName="mergeSsid" id="mergeSsid"> 
+                                <label class="form-check-label" for="mergeSsid">Merge name and type</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" formControlName="mergeSecurityData" id="mergeSecurityData"> 
+                                <label class="form-check-label" for="mergeSecurityData">Merge security data</label>
+                            </div>
                         </form>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12" *ngIf="selectedAccessPointStamp !== undefined">
-                        <div class="row">
-                            <div class="col-12">
-                                <table class="table table-hover table-sm text-center">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Property</th>
-                                            <th scope="col">Base</th>
-                                            <th scope="col">Stamp</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>SSID</td>
-                                            <td>{{ accessPoint.ssid }}</td>
-                                            <td>{{ selectedAccessPointStamp.ssid }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Capabilities</td>
-                                            <td>{{ accessPoint.rawSecurityPayload }}</td>
-                                            <td>{{ selectedAccessPointStamp.rawSecurityPayload }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Signal area</td>
-                                            <td>{{ accessPoint.signalArea }}m<sub>2</sub></td>
-                                            <td>{{ selectedAccessPointStamp.signalArea }}m<sub>2</sub></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Run identifier</td>
-                                            <td>{{ accessPoint.runIdentifier === undefined ? 'None' : accessPoint.runIdentifier }}</td>
-                                            <td>{{ selectedAccessPointStamp.runIdentifier === undefined ? 'None' : selectedAccessPointStamp.runIdentifier }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Creation timestamp</td>
-                                            <td>{{ accessPoint.creationTimestamp }}</td>
-                                            <td>{{ selectedAccessPointStamp.creationTimestamp }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Version timestamp</td>
-                                            <td>{{ accessPoint.versionTimestamp }}</td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Presence</td>
-                                            <td>{{ accessPoint.isPresent ? 'Present' : 'Missing' }}</td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Merge status</td>
-                                            <td>-</td>
-                                            <td>{{ selectedAccessPointStamp.status ? 'Merged' : 'Pending' }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div *ngIf="hasAdminPermission">
-                            <div class="row justify-content-center mt-3">
-                                <div class="col-12">
-                                    <form [formGroup]="accessPointStampsMergeOptionsForm">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" formControlName="mergeLowSignalLevel" id="mergeLowSignalLevel"> 
-                                            <label class="form-check-label" for="mergeLowSignalLevel">Merge the lowest signal location</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" formControlName="mergeHighSignalLevel" id="mergeHighSignalLevel"> 
-                                            <label class="form-check-label" for="mergeHighSignalLevel">Merge the highest signal location</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" formControlName="mergeSsid" id="mergeSsid"> 
-                                            <label class="form-check-label" for="mergeSsid">Merge name and type</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" formControlName="mergeSecurityData" id="mergeSecurityData"> 
-                                            <label class="form-check-label" for="mergeSecurityData">Merge security data</label>
-                                        </div>
-                                    </form>
-                                    <button type="button" class="btn btn-primary col-8 mt-2" (click)="mergeAccessPointStamp()">Merge stamp</button>
-                                    <button type="button" class="btn btn-primary col-8 mt-3" (click)="deleteAccessPointStamp()">Delete stamp</button>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            <ng-template #noStamps>
+                <div class="row text-center">
+                    <div class="col-12">
+                        <h4>No stamps</h4>
                     </div>
                 </div>
-            </div>
+            </ng-template>
         </div>
     </div>
-    <ng-template #noStamps>
-        <div class="row">
-            <div class="col-12">
-                <h4>No stamps present</h4>
-            </div>
-        </div>
-    </ng-template>
 </div>

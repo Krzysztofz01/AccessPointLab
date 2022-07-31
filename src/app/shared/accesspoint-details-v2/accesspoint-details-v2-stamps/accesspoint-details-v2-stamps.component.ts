@@ -15,15 +15,7 @@ import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { AccessPointDetailsV2Utilities } from '../accesspoint-details-v2.utilities';
-
-//TODO:
-//
-// Verfiy local changes on update
-// Implment handling for the event emitter
-// Check behavour for multiple and no stamps
-// Update circle colors
-// Add comments
-
+import { MergeOptions } from './merge-options.model';
 
 @Component({
   selector: 'app-accesspoint-details-v2-stamps',
@@ -35,24 +27,19 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
   
   @Input() accessPoint: AccessPoint;
   @Input() hasAdminPermission: boolean;
-
   @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
 
-  public accessPointStampSelectionForm: UntypedFormGroup;
   public accessPointStampsMergeOptionsForm: UntypedFormGroup;
-
-  public selectedAccessPointStamp: AccessPointStamp;
 
   private map: Map;
   public readonly mapId = "ol_ap_details_v2_map_stamps";
 
-  private readonly baseCircleFeatureLayerNameProperty = "apm_base_layer_name";
-  private readonly baseCircleFeatureLayerNameValue = "apm_feature_base_layer_stamps";
-  private readonly stampCircleFeatureLayerNameProperty = "apm_stamp_layer_name";
-  private readonly stampCircleFeatureLayerNameValue = "apm_feature_stamp_layer_stamps"
+  private readonly featureLayerNameProperty = "apm_layer_name";
+  private readonly baseFeatureLayerNameValue = "apm_feature_layer_stamps_base";
+  private readonly stampFeatureLayerNameValue = "apm_feature_layer_stamps_stamp";
 
-  private readonly baseCircleColor = { r: 0, g: 0, b: 0 };
-  private readonly stampCircleColor = { r: 0, g: 0, b: 0 };
+  private readonly baseCircleColor = { r: 95, g: 10, b: 135 };
+  private readonly stampCircleColor = { r: 164, g: 80, b: 139 };
 
   constructor(
     private loggerService: LoggerService,
@@ -60,39 +47,25 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
     private accessPointService: AccessPointService) { }
 
   ngOnInit(): void {
-    this.accessPointStampSelectionForm = new UntypedFormGroup({
-      selectedStampId: new UntypedFormControl()
-    });
-
     this.accessPointStampsMergeOptionsForm = new UntypedFormGroup({
       mergeLowSignalLevel: new UntypedFormControl(false),
       mergeHighSignalLevel: new UntypedFormControl(false),
       mergeSsid: new UntypedFormControl(false),
       mergeSecurityData: new UntypedFormControl(false)
-    })
-
-    this.accessPointStampSelectionForm.get('selectedStampId').valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(accessPointStampId => {
-        this.loggerService.logInformation(`Selected access point stamp changed to entity with id: ${accessPointStampId}`);
-        this.switchSelectedAccessPointStamp(accessPointStampId);
-      });
+    });
   }
 
   ngAfterViewInit(): void {
     this.initializeMap();
-    this.swapBaseVectorLayer(this.accessPoint);
+    this.swapVectorLayer(this.accessPoint, this.baseFeatureLayerNameValue);
   }
   
   ngOnChanges(_: SimpleChanges): void {
-    if (this.map !== undefined)
-      this.swapBaseVectorLayer(this.accessPoint);
-
-    if (this.accessPointStampSelectionForm !== undefined)
-      this.accessPointStampSelectionForm.reset();
-
-    if (this.accessPointStampsMergeOptionsForm !== undefined)
-      this.accessPointStampsMergeOptionsForm.reset();
+    if (this.map !== undefined) {
+      // TODO: Method bellow is not reseting all the layers
+      this.removeCustomVectorLayers();
+      this.swapVectorLayer(this.accessPoint, this.baseFeatureLayerNameValue);
+    }
   }
 
   ngOnDestroy(): void {
@@ -108,38 +81,24 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
       .createOpenLayersMap(this.mapId, 18);
   }
 
-  private switchSelectedAccessPointStamp(accessPointStampId: string): void {
-    if (accessPointStampId === undefined) {
-      this.loggerService.logError("Invalid stampd id provided.");
-      return;
-    }
-    
-    const targetStamp = this.accessPoint.stamps.find(stamp =>
-      stamp.id == accessPointStampId);
-
-    if (targetStamp === undefined) {
-      this.loggerService.logError("Invalid stamp id result.");
-      return;
-    }
-
-    this.selectedAccessPointStamp = targetStamp;
-    this.swapStampVectorLayer(this.selectedAccessPointStamp);
-  }
-
-
-  private swapBaseVectorLayer(accessPoint: AccessPoint): void {
+  /**
+   * Swap the OpenLayers vector layers containing the access point circles
+   * @param accessPoint AccessPoint or AccessPointStamp entity
+   * @param layerName Target layer name
+   */
+  private swapVectorLayer(accessPoint: AccessPoint | AccessPointStamp, layerName: string): void {
     if (this.map === undefined) {
       this.loggerService.logError('The map object is not initialized.');
       return;
     }
 
     this.map.getLayers().forEach(layer => {
-      if (layer && layer.get(this.baseCircleFeatureLayerNameProperty) === this.baseCircleFeatureLayerNameValue) {
+      if (layer && layer.get(this.featureLayerNameProperty) === layerName) {
         this.map.removeLayer(layer);
       }
     });
 
-    this.map.addLayer(this.generateBaseVector(accessPoint));
+    this.map.addLayer(this.generateVector(accessPoint, layerName));
 
     this.map.getView().setCenter(olProj.fromLonLat([
       accessPoint.highSignalLongitude,
@@ -147,12 +106,21 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
     ]));
   }
 
-  private generateBaseVector(accessPoint: AccessPoint): VectorLayer<VectorSource<Geometry>> {
+  /**
+   * Generate a OpenLayres vector layer containing the access point circles 
+   * @param accessPoint AccessPoint or AccessPointStamp entity
+   * @param layerName Target layer name 
+   * @returns OpenLayers vector layer
+   */
+  private generateVector(accessPoint: AccessPoint | AccessPointStamp, layerName: string): VectorLayer<VectorSource<Geometry>> {
     const circle = AccessPointDetailsV2Utilities
       .getOpenLayersAccessPointRadiusCircle(accessPoint);
 
-    const fillColor = `rgba(${this.baseCircleColor.r}, ${this.baseCircleColor.g}, ${this.baseCircleColor.b}, 0.3)`
-    const strokeColor = `rgba(${this.baseCircleColor.r}, ${this.baseCircleColor.g}, ${this.baseCircleColor.b}, 1)`
+    const color = (AccessPointDetailsV2Utilities.isAccessPointInstance(accessPoint))
+      ? this.baseCircleColor : this.stampCircleColor;
+
+    const fillColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`
+    const strokeColor = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`
 
     const vector = new VectorLayer({
       source: new VectorSource({
@@ -164,71 +132,62 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
       })
     });
   
-    vector.set(this.baseCircleFeatureLayerNameProperty, this.baseCircleFeatureLayerNameValue);
+    vector.set(this.featureLayerNameProperty, layerName);
     return vector;
   }
 
-  
-  private swapStampVectorLayer(accessPointStamp: AccessPointStamp): void {
+  /**
+   * Remove all custom added vector layers from the map object
+   */
+  private removeCustomVectorLayers(): void {
     if (this.map === undefined) {
       this.loggerService.logError('The map object is not initialized.');
       return;
     }
 
+    const ruleMatch = (layer: any): boolean => {
+      if (!layer) return false;
+      const layerName = layer.get(this.featureLayerNameProperty);
+
+      if (layerName === this.baseFeatureLayerNameValue) return true;
+      if (layerName === this.stampFeatureLayerNameValue) return true;
+      return false;
+    };
+
     this.map.getLayers().forEach(layer => {
-      if (layer && layer.get(this.stampCircleFeatureLayerNameProperty) === this.stampCircleFeatureLayerNameValue) {
+      if (ruleMatch(layer)) {
         this.map.removeLayer(layer);
       }
     });
-
-    this.map.addLayer(this.generateStampVector(accessPointStamp));
-
-    this.map.getView().setCenter(olProj.fromLonLat([
-      accessPointStamp.highSignalLongitude,
-      accessPointStamp.highSignalLatitude
-    ]));
-  }
-
-  private generateStampVector(accessPointStamp: AccessPointStamp): VectorLayer<VectorSource<Geometry>> {
-    const circle = AccessPointDetailsV2Utilities
-      .getOpenLayersAccessPointRadiusCircle(accessPointStamp);
-
-    const fillColor = `rgba(${this.stampCircleColor.r}, ${this.stampCircleColor.g}, ${this.stampCircleColor.b}, 0.3)`
-    const strokeColor = `rgba(${this.stampCircleColor.r}, ${this.stampCircleColor.g}, ${this.stampCircleColor.b}, 1)`
-
-    const vector = new VectorLayer({
-      source: new VectorSource({
-        features: [ new Feature(circle) ]
-      }),
-      style: new Style({
-        fill: new Fill({ color: fillColor }),
-        stroke: new Stroke({ color: strokeColor })
-      })
-    });
-  
-    vector.set(this.stampCircleFeatureLayerNameProperty, this.stampCircleFeatureLayerNameValue);
-    return vector;
   }
 
   /**
-   * Merge the currently selected AccessPointStamp entity
+   * Switch the currently displayed stamp on map
+   * @param accessPointStamp AccessPointStamp entity
    */
-  public mergeAccessPointStamp(): void {
-    this.accessPointService.mergeAccessPoints(this.accessPoint.id, this.selectedAccessPointStamp.id,
-      this.accessPointStampsMergeOptionsForm.get('mergeLowSignalLevel').value,
-      this.accessPointStampsMergeOptionsForm.get('mergeHighSignalLevel').value,
-      this.accessPointStampsMergeOptionsForm.get('mergeSsid').value,
-      this.accessPointStampsMergeOptionsForm.get('mergeSecurityData').value)
+  public previewAccessPointStamp(accessPointStamp: AccessPointStamp): void {
+    this.swapVectorLayer(accessPointStamp, this.stampFeatureLayerNameValue);
+  }
+
+  /**
+   * Send a request to the AccessPointMap backend to merge a certain stamp
+   * @param accessPointStamp Target AccessPointStamp entity
+   */
+  public mergeAccessPointStamp(accessPointStamp: AccessPointStamp): void {
+    const mergeOptions = this.getMergeOptions();
+
+    this.accessPointService.mergeAccessPoints(this.accessPoint.id, accessPointStamp.id,
+      mergeOptions.mergeLowSignalLevel,
+      mergeOptions.mergeHighSignalLevel,
+      mergeOptions.mergeSsid,
+      mergeOptions.mergeSecurityData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           complete: () => {
             this.loggerService.logInformation('Access point stamp merged successful.');
             this.toastService.setInformation('Access point stamp merged successful.');
             
-            //TODO: Verify if is working
-            this.accessPoint.stamps.find(stamp => stamp.id === this.selectedAccessPointStamp.id).status = true;
-            this.accessPointStampSelectionForm.get('selectedAccessPointId').setValue(this.selectedAccessPointStamp.id);
-            
+            // TODO: Handle update (pass realod to parent)
             this.accessPointUpdatedEvent.next(this.accessPoint);
           },
           error: (error) => {
@@ -236,22 +195,22 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
             this.toastService.setError('Access point stamp merge failed.');
           }
         });
-      }
+  }
 
   /**
-   * Delete the currently selected AccessPointStamp entity
+   * Send a request to the AccessPointMap backend to delete a certain stamp
+   * @param accessPointStamp Target AccessPointStamp entity
    */
-  public deleteAccessPointStamp(): void {
-    this.accessPointService.deleteAccessPointStamp(this.accessPoint.id, this.selectedAccessPointStamp.id)
+  public deleteAccessPointStamp(accessPointStamp: AccessPointStamp): void {
+    this.accessPointService.deleteAccessPointStamp(this.accessPoint.id, accessPointStamp.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
           this.loggerService.logInformation('Access point stamp deleted successful.');
           this.toastService.setInformation('Access point stamp deleted successful.');
           
-          this.accessPoint.stamps = this.accessPoint.stamps.filter(stamp => stamp.id !== this.selectedAccessPointStamp.id);
-          
-          this.setFirstStampSelected();
+          // TODO: Handle update (pass realod to parent)
+          this.accessPointUpdatedEvent.next(this.accessPoint);
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -260,18 +219,16 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
       });
   }
 
-
-
-  private setFirstStampSelected(): void {
-    if (this.accessPointStampSelectionForm === undefined) return;
-    if (this.accessPoint.stamps.length === 0) return;
-
-    const firstStampId = (this.accessPoint.stamps.length > 0)
-      ? this.accessPoint.stamps[0].id
-      : undefined;
-
-    this.accessPointStampSelectionForm.get('selectedStampId').setValue(firstStampId);
+  /**
+   * Get the merge settings from the form
+   * @returns Merge options object
+   */
+  private getMergeOptions(): MergeOptions {
+    return {
+      mergeLowSignalLevel: this.accessPointStampsMergeOptionsForm.get('mergeLowSignalLevel').value,
+      mergeHighSignalLevel: this.accessPointStampsMergeOptionsForm.get('mergeHighSignalLevel').value,
+      mergeSsid: this.accessPointStampsMergeOptionsForm.get('mergeSsid').value,
+      mergeSecurityData: this.accessPointStampsMergeOptionsForm.get('mergeSecurityData').value
+    }
   }
-
-
 }
