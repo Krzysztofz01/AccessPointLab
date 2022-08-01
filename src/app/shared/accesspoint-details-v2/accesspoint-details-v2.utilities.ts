@@ -58,17 +58,21 @@ export class AccessPointDetailsV2Utilities {
      * Generate the plain OpenLayers map with OSM tile layer
      * @param mapId Globaly unique map container indentifier
      * @param zoomLevel Initial map zoom level
+     * @param layerNameKey The key of the layer name. Undefined by default, so the layer has no name
      * @returns 
      */
-    public static createOpenLayersMap(mapId: string, zoomLevel: number): Map {
+    public static createOpenLayersMap(mapId: string, zoomLevel: number, layerNameKey: string | undefined = undefined): Map {
+        const tileLayer = new TileLayer({
+            source: new OSM()
+        });
+        
+        if (layerNameKey !== undefined)
+            tileLayer.set(layerNameKey, mapId);
+
         return new Map({
             controls: [],
             target: mapId,
-            layers: [
-                new TileLayer({
-                    source: new OSM()
-                })
-            ],
+            layers: [ tileLayer ],
             view: new View({
                 center: olProj.fromLonLat([0, 0]),
                 zoom: zoomLevel

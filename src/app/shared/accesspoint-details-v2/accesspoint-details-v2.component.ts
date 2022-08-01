@@ -6,6 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
+import { AccessPointDetailsV2Event } from './accesspoint-details-v2-event.model';
 
 @Component({
   selector: 'app-accesspoint-details-v2',
@@ -23,8 +24,8 @@ import { LoggerService } from 'src/app/core/services/logger.service';
 export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterContentInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
-  @Output() accessPointDeletedEvent = new EventEmitter<AccessPoint>();
+  @Output() accessPointUpdatedEvent = new EventEmitter<AccessPointDetailsV2Event>();
+  @Output() accessPointDeletedEvent = new EventEmitter<AccessPointDetailsV2Event>();
 
   public accessPointSelectionForm: UntypedFormGroup;
 
@@ -109,20 +110,27 @@ export class AccesspointDetailsV2Component implements OnInit, OnDestroy, AfterCo
 
   /**
    * AccessPointUpdated event handler to use in child components
-   * @param _ Discarded event object
+   * @param event Event object
    */
-  public accessPointUpdatedEventHandler(_: Event): void {
+  public accessPointUpdatedEventHandler(event: AccessPointDetailsV2Event): void {
     this.loggerService.logInformation("Raised access point update event arrived to modal root.");
-    this.accessPointUpdatedEvent.next(this.selectedAccessPoint);
+
+    if (event.reloadEntity) {
+      this.loggerService.logInformation("Reloading entity after update event");   
+      this.accessPointSelectionForm.get('selectedAccessPointId').setValue(this.selectedAccessPoint.id);
+      this.currentTabView = event.targetViewName;
+    }
+
+    this.accessPointUpdatedEvent.next(event);
   }
 
   /**
    * AccessPointDeleted event handler to use in child components
-   * @param _ Discarded event object
+   * @param event Discarded event object
    */
-  public accessPointDeletedEventHandler(_: Event): void {
+  public accessPointDeletedEventHandler(event: AccessPointDetailsV2Event): void {
     this.loggerService.logInformation("Raised access point delete event arrived to modal root. Closing the modal.");
-    this.accessPointDeletedEvent.next(this.selectedAccessPoint);
+    this.accessPointDeletedEvent.next(event);
     this.closeModal();
   }
 

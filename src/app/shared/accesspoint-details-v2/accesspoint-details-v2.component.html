@@ -53,7 +53,7 @@
                         <app-accesspoint-details-v2-general @fadeIn *ngSwitchCase="'general'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-general>
                         <app-accesspoint-details-v2-details @fadeIn *ngSwitchCase="'details'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-details>
                         <app-accesspoint-details-v2-map @fadeIn *ngSwitchCase="'map'" [accessPoint]="selectedAccessPoint"></app-accesspoint-details-v2-map>
-                        <app-accesspoint-details-v2-stamps @fadeIn *ngSwitchCase="'stamps'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-stamps>
+                        <app-accesspoint-details-v2-stamps @fadeIn *ngSwitchCase="'stamps'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission" (accessPointUpdatedEvent)="accessPointUpdatedEventHandler($event)"></app-accesspoint-details-v2-stamps>
                         <p @fadeIn *ngSwitchCase="'manage'">TODO: Implement</p>
                     </div>
                 </div>

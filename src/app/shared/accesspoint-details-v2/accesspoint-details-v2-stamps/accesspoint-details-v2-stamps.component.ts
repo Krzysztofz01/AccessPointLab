@@ -14,6 +14,7 @@ import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
+import { AccessPointDetailsV2Event } from '../accesspoint-details-v2-event.model';
 import { AccessPointDetailsV2Utilities } from '../accesspoint-details-v2.utilities';
 import { MergeOptions } from './merge-options.model';
 
@@ -27,7 +28,7 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
   
   @Input() accessPoint: AccessPoint;
   @Input() hasAdminPermission: boolean;
-  @Output() accessPointUpdatedEvent = new EventEmitter<AccessPoint>();
+  @Output() accessPointUpdatedEvent = new EventEmitter<AccessPointDetailsV2Event>();
 
   public accessPointStampsMergeOptionsForm: UntypedFormGroup;
 
@@ -62,13 +63,13 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
   
   ngOnChanges(_: SimpleChanges): void {
     if (this.map !== undefined) {
-      // TODO: Method bellow is not reseting all the layers
       this.removeCustomVectorLayers();
       this.swapVectorLayer(this.accessPoint, this.baseFeatureLayerNameValue);
     }
   }
 
   ngOnDestroy(): void {
+    this.removeCustomVectorLayers();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
@@ -78,7 +79,7 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
    */
   private initializeMap(): void {
     this.map = AccessPointDetailsV2Utilities
-      .createOpenLayersMap(this.mapId, 18);
+      .createOpenLayersMap(this.mapId, 18, this.featureLayerNameProperty);
   }
 
   /**
@@ -145,19 +146,9 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
       return;
     }
 
-    const ruleMatch = (layer: any): boolean => {
-      if (!layer) return false;
-      const layerName = layer.get(this.featureLayerNameProperty);
-
-      if (layerName === this.baseFeatureLayerNameValue) return true;
-      if (layerName === this.stampFeatureLayerNameValue) return true;
-      return false;
-    };
-
-    this.map.getLayers().forEach(layer => {
-      if (ruleMatch(layer)) {
+    this.map.getAllLayers().forEach(layer => {
+      if (layer && layer.get(this.featureLayerNameProperty) !== this.mapId)
         this.map.removeLayer(layer);
-      }
     });
   }
 
@@ -186,9 +177,11 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
           complete: () => {
             this.loggerService.logInformation('Access point stamp merged successful.');
             this.toastService.setInformation('Access point stamp merged successful.');
-            
-            // TODO: Handle update (pass realod to parent)
-            this.accessPointUpdatedEvent.next(this.accessPoint);
+
+            this.accessPointUpdatedEvent.next({
+              accessPoint: this.accessPoint,
+              targetViewName: 'stamps',
+              reloadEntity: true});
           },
           error: (error) => {
             this.loggerService.logError(error);
@@ -208,9 +201,11 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
         complete: () => {
           this.loggerService.logInformation('Access point stamp deleted successful.');
           this.toastService.setInformation('Access point stamp deleted successful.');
-          
-          // TODO: Handle update (pass realod to parent)
-          this.accessPointUpdatedEvent.next(this.accessPoint);
+
+          this.accessPointUpdatedEvent.next({
+            accessPoint: this.accessPoint,
+            targetViewName: 'stamps',
+            reloadEntity: true});
         },
         error: (error) => {
           this.loggerService.logError(error);
