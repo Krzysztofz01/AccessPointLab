@@ -1,12 +1,10 @@
-<div class="toast-overlay">
-    <div class="toast-container">
-        <div *ngFor="let toast of toasts" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header" [ngClass]="getToastHeaderClass(toast)">
-                <strong class="me-auto">{{ getToastHeader(toast) }}</strong>
-                <small class="text-muted">{{ getToastTime(toast) }}</small>
-                <button type="button" class="btn-close" aria-label="Close" (click)="dissmisToast(toast)"></button>
-            </div>
-            <div class="toast-body">{{ toast.message }}</div>
+<div class="position-fixed bottom-0 end-0 p-2 toast-overlay" style="z-index: 1900;">
+    <div *ngFor="let toast of toasts" class="toast my-2" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" [ngClass]="getToastHeaderClass(toast)">
+            <strong class="me-auto">{{ getToastHeader(toast) }}</strong>
+            <small class="text-muted">{{ getToastTime(toast) }}</small>
+            <button type="button" class="btn-close" aria-label="Close" (click)="dissmisToast(toast)"></button>
         </div>
+        <div class="toast-body">{{ toast.message }}</div>
     </div>
 </div>
