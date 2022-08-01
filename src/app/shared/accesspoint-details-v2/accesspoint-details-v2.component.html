@@ -50,11 +50,42 @@
             <div class="col-md-12">
                 <div *ngIf="selectedAccessPoint !== undefined">
                     <div class="tab-view-container" [ngSwitch]="currentTabView">
-                        <app-accesspoint-details-v2-general @fadeIn *ngSwitchCase="'general'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-general>
-                        <app-accesspoint-details-v2-details @fadeIn *ngSwitchCase="'details'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission"></app-accesspoint-details-v2-details>
-                        <app-accesspoint-details-v2-map @fadeIn *ngSwitchCase="'map'" [accessPoint]="selectedAccessPoint"></app-accesspoint-details-v2-map>
-                        <app-accesspoint-details-v2-stamps @fadeIn *ngSwitchCase="'stamps'" [accessPoint]="selectedAccessPoint" [hasAdminPermission]="hasAdminPermission" (accessPointUpdatedEvent)="accessPointUpdatedEventHandler($event)"></app-accesspoint-details-v2-stamps>
-                        <p @fadeIn *ngSwitchCase="'manage'">TODO: Implement</p>
+                        <app-accesspoint-details-v2-general 
+                            @fadeIn
+                            *ngSwitchCase="'general'"
+                            [accessPoint]="selectedAccessPoint"
+                            [hasAdminPermission]="hasAdminPermission">
+                        </app-accesspoint-details-v2-general>
+                        
+                        <app-accesspoint-details-v2-details
+                            @fadeIn
+                            *ngSwitchCase="'details'"
+                            [accessPoint]="selectedAccessPoint"
+                            [hasAdminPermission]="hasAdminPermission">
+                        </app-accesspoint-details-v2-details>
+
+                        <app-accesspoint-details-v2-map
+                            @fadeIn
+                            *ngSwitchCase="'map'"
+                            [accessPoint]="selectedAccessPoint">
+                        </app-accesspoint-details-v2-map>
+
+                        <app-accesspoint-details-v2-stamps
+                            @fadeIn
+                            *ngSwitchCase="'stamps'"
+                            [accessPoint]="selectedAccessPoint"
+                            [hasAdminPermission]="hasAdminPermission"
+                            (accessPointUpdatedEvent)="accessPointUpdatedEventHandler($event)">
+                        </app-accesspoint-details-v2-stamps>
+
+                        <app-accesspoint-details-v2-manage
+                            @fadeIn
+                            *ngSwitchCase="'manage'"
+                            [accessPoint]="selectedAccessPoint"
+                            [hasAdminPermission]="hasAdminPermission"
+                            (accessPointUpdatedEvent)="accessPointUpdatedEventHandler($event)"
+                            (accessPointDeletedEvent)="accessPointDeletedEventHandler($event)">
+                        </app-accesspoint-details-v2-manage>
                     </div>
                 </div>
             </div>
