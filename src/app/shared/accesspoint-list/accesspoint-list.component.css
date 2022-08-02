@@ -2,8 +2,18 @@
     cursor: pointer !important;
 }
 
+.clickable-title {
+    color: var(--apm-primary);
+    font-weight: bold;
+}
+
 .clickable-title:hover {
-    color: var(--apm-primary)
+    color: var(--apm-accent);
+}
+
+.scrollable-table {
+    overflow-y: scroll;
+    height: 82vh;
 }
 
 thead {
