@@ -49,7 +49,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (accessPoints) => {
           this.accessPoints = accessPoints;
-          this.applyFiltersToAccessPoint(this.accessPoints);
+          this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
         },
         error: (error) => this.loggerService.logError(error)
       });
@@ -59,7 +59,18 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
    * Apply filters on the access point collection and store it into the filtered access point collection
    * @param accessPoints AccessPoint entity collection
    */
-  private applyFiltersToAccessPoint(accessPoints: Array<AccessPoint>): void {
+  private applyKeywordFilterToAccessPointCollection(accessPoints: Array<AccessPoint>): void {
+    if (!this.filteredAccessPoints || this.searchKeyword.length === 0) {
+      this.filteredAccessPoints = accessPoints.map((accessPoint) => ({
+        simplifiedSecurityStandard: this.parseSecurityName(accessPoint),
+        ...accessPoint
+      }));
+
+      return;
+    }
+
+    if (!this.searchKeyword || this.searchKeyword.length < 3) return;
+    
     this.filteredAccessPoints = this.filterAccessPointByKeyword(accessPoints).map((accessPoint) => ({
       simplifiedSecurityStandard: this.parseSecurityName(accessPoint),
       ...accessPoint
@@ -92,7 +103,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
    * Reinitialize AccessPoint entity collection with keyword. Method used by the ng2-search-filter dependency
    */
   public searchAccessPoints(): void {
-    this.applyFiltersToAccessPoint(this.accessPoints);
+    this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
   }
 
   /**
