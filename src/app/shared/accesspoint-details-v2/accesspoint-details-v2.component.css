@@ -1,0 +1,20 @@
+.ssid-title {
+    color: var(--apm-primary);
+    font-weight: bold;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: var(--apm-primary) !important;
+}
+
+.nav-item {
+    cursor: pointer;
+}
+
+.nav-link {
+    color: var(--apm-accent) !important;
+}
+
+.nav-view-container {
+    background-color: var(--apm-light);
+}

@@ -9,7 +9,8 @@ import { LoggerService } from './logger.service';
 export class PreferencesService {
   private readonly defaultPreferences: Preferences = {
     mapCenterLatitude: null,
-    mapCenterLongitude: null
+    mapCenterLongitude: null,
+    useLegacyDetailsView: false
   };
 
   constructor(
@@ -78,4 +79,5 @@ export class PreferencesService {
 export interface Preferences {
   mapCenterLatitude: string | undefined;
   mapCenterLongitude: string | undefined;
+  useLegacyDetailsView: boolean | undefined;
 }
