@@ -4823,11 +4823,6 @@ ng2-charts@^3.0.9:
     lodash-es "^4.17.15"
     tslib "^2.3.0"
 
-ng2-search-filter@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/ng2-search-filter/-/ng2-search-filter-0.5.1.tgz#6d5f4e26bd2b2c8c8cc4aad658aabae6a33fb4af"
-  integrity sha512-noN8R+Gyxo5ZuboEOvq+u0zKio6pEf1IVYQTCZfAfXm6ONmzWu/M2xK0di9oVUprDbPBQXCGUuvD5i2GD+35HA==
-
 ngx-order-pipe@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/ngx-order-pipe/-/ngx-order-pipe-2.2.0.tgz#14ab50dfe0a679e5216138ff9a0820a83173a4fe"

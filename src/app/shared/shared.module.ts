@@ -8,7 +8,6 @@ import { AccesspointDetailsComponent } from './accesspoint-details/accesspoint-d
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { AccesspointListComponent } from './accesspoint-list/accesspoint-list.component';
-import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { OrderModule } from 'ngx-order-pipe';
 import { LoadingIndicatorComponent } from './loading-indicator/loading-indicator.component';
 import { ToastComponent } from './toast/toast.component';
@@ -45,7 +44,6 @@ import { AccesspointDetailsV2ManageComponent } from './accesspoint-details-v2/ac
     FormsModule,
     NgbModule,
     RouterModule,
-    Ng2SearchPipeModule,
     OrderModule
   ],
   exports: [
