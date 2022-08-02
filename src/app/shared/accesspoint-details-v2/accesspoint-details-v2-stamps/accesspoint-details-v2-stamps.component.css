@@ -24,7 +24,9 @@ h4 {
     color: var(--apm-primary);
 }
 
-.form-check {
+.form-check,
+.form-check-input,
+.form-check-label {
     cursor: pointer;
 }
 

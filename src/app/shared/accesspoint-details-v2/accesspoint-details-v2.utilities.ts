@@ -1,3 +1,4 @@
+import { format, parseISO } from 'date-fns';
 import { Map, View } from 'ol';
 import { Circle } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
@@ -104,5 +105,17 @@ export class AccessPointDetailsV2Utilities {
             (!('status' in object)) &&
             ('displayStatus' in object)
         );
+    }
+
+    /**
+     * Format the date to more user friendly format
+     * @param date Date object
+     * @returns Formated date as string
+     */
+    public static formatDate(date: Date | string): string {
+        const dateFormat = 'dd-MM-yyyy HH:mm:ss';
+        return (date instanceof Date)
+            ? format(new Date(date), dateFormat)
+            : format(parseISO(date), dateFormat);
     }
 }

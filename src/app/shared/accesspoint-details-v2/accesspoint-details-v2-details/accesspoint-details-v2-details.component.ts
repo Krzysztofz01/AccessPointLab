@@ -18,4 +18,12 @@ export class AccesspointDetailsV2DetailsComponent {
    public formatSerialziedArrayData(serializedArray: string): string {
     return AccessPointDetailsV2Utilities.formatSerialziedArrayData(serializedArray);
   }
+
+  /**
+   * Format the date. Method is using the utility class
+   * @param date 
+   */
+  public formatDate(date: Date): string {
+    return AccessPointDetailsV2Utilities.formatDate(date);
+  }
 }

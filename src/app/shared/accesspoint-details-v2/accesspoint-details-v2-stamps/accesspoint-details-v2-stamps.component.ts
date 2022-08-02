@@ -226,4 +226,12 @@ export class AccesspointDetailsV2StampsComponent implements OnInit, AfterViewIni
       mergeSecurityData: this.accessPointStampsMergeOptionsForm.get('mergeSecurityData').value
     }
   }
+
+  /**
+   * Format the date. Method is using the utility class
+   * @param date 
+   */
+   public formatDate(date: Date): string {
+    return AccessPointDetailsV2Utilities.formatDate(date);
+  }
 }

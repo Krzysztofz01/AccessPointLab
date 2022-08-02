@@ -1,10 +1,10 @@
 <div *ngIf="accessPoint !== undefined">
     <div class="row">
-        <div class="col-lg-5 col-md-12">
+        <div class="col-lg-4 col-md-12">
             <div class="access-point-details-v2-map-stamps" [id]="mapId"></div>
         </div>
             
-        <div class="col-lg-7 col-md-12">
+        <div class="col-lg-8 col-md-12">
             <div *ngIf="accessPoint.stamps.length > 0; else noStamps">
                 <div class="row">
                     <div class="col-12">
@@ -16,6 +16,7 @@
                                         <th scope="col">Range</th>
                                         <th scope="col">Capabilities</th>
                                         <th scope="col">Status</th>
+                                        <th scope="col">Timestamp</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
@@ -24,6 +25,7 @@
                                         <th>{{ accessPoint.ssid }}</th>
                                         <th>{{ accessPoint.signalArea }}</th>
                                         <th>{{ accessPoint.rawSecurityPayload }}</th>
+                                        <th>{{ formatDate(accessPoint.creationTimestamp) }}</th>
                                         <th>-</th>
                                         <th>-</th>
                                     </tr>
@@ -31,6 +33,7 @@
                                         <td><span class="ssid-compare-click" (click)="previewAccessPointStamp(stamp)">{{ stamp.ssid }}</span></td>
                                         <td>{{ stamp.signalArea }}</td>
                                         <td>{{ stamp.rawSecurityPayload }}</td>
+                                        <td>{{ formatDate(stamp.creationTimestamp) }}</td>
                                         <td>{{ stamp.status ? 'Merged' : 'Pending' }}</td>
                                         <td>
                                             <button type="button" class="btn btn-primary mx-1" (click)="mergeAccessPointStamp(stamp)" [disabled]="stamp.status">Merge</button>

@@ -7,6 +7,7 @@ import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { AccessPointDetailsV2Event } from '../accesspoint-details-v2-event.model';
+import { AccessPointDetailsV2Utilities } from '../accesspoint-details-v2.utilities';
 
 @Component({
   selector: 'app-accesspoint-details-v2-manage',
@@ -147,5 +148,13 @@ export class AccesspointDetailsV2ManageComponent implements OnInit, OnChanges {
           this.toastService.setError('Access point note update failed.');
         }
       });
+  }
+
+  /**
+   * Format the date. Method is using the utility class
+   * @param date 
+   */
+   public formatDate(date: Date): string {
+    return AccessPointDetailsV2Utilities.formatDate(date);
   }
 }

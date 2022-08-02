@@ -30,7 +30,7 @@
                         <tr *ngFor="let annotation of getAdnnotations()">
                             <th scope="row">{{ annotation.title }}</th>
                             <td>{{ annotation.content }}</td>
-                            <td>{{ annotation.timestamp }}</td>
+                            <td>{{ formatDate(annotation.timestamp) }}</td>
                         </tr>
                     </tbody>
                 </table>
