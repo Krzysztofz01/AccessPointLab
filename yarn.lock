@@ -4835,11 +4835,6 @@ ngx-order-pipe@^2.2.0:
   dependencies:
     tslib "^2.0.0"
 
-ngx-pagination@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/ngx-pagination/-/ngx-pagination-5.1.1.tgz#f8494da1e5eb0665382349a4d926c13a491bed21"
-  integrity sha512-KxHES+Dn6pbetytO9ng2GAdclmo4UcwzFmQyVPWh2xRPbAlv5/ezL2xnDVBFMqCoJQaZagvdQ+ZZFbqGWqAvCQ==
-
 nice-napi@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/nice-napi/-/nice-napi-1.0.2.tgz#dc0ab5a1eac20ce548802fc5686eaa6bc654927b"

@@ -9,7 +9,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { AccesspointListComponent } from './accesspoint-list/accesspoint-list.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { OrderModule } from 'ngx-order-pipe';
 import { LoadingIndicatorComponent } from './loading-indicator/loading-indicator.component';
 import { ToastComponent } from './toast/toast.component';
@@ -47,7 +46,6 @@ import { AccesspointDetailsV2ManageComponent } from './accesspoint-details-v2/ac
     NgbModule,
     RouterModule,
     Ng2SearchPipeModule,
-    NgxPaginationModule,
     OrderModule
   ],
   exports: [
