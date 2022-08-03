@@ -65,7 +65,6 @@ export class ListComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (accessPoint) => {
-              console.log(accessPoint);
               this.createDetailsModalInstance(accessPoint);
             },
             error: (error) => this.loggerService.logError(error)

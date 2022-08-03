@@ -139,7 +139,6 @@ export class UploadComponent implements OnInit, OnDestroy {
           this.wigleUploadForm.reset();
         },
         error: (error) => {
-          console.log(error);
           this.loggerService.logError(error);
           this.toastService.setError("Upload failed.");
         }
