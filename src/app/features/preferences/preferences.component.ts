@@ -1,6 +1,7 @@
 import { Component, OnInit, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoggerService } from 'src/app/core/services/logger.service';
 import { PreferencesService } from 'src/app/core/services/preferences.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 
@@ -17,6 +18,7 @@ export class PreferencesComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private route: ActivatedRoute,
     private toastService: ToastService,
+    private loggerService: LoggerService,
     private preferencesService: PreferencesService) { }
 
   ngOnInit(): void {
@@ -44,8 +46,8 @@ export class PreferencesComponent implements OnInit {
 
     try {
       return this.sanitizer.sanitize(SecurityContext.NONE, paramDirty);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      this.loggerService.logError(error);
       throw error;
     }
   }

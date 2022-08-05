@@ -6,6 +6,7 @@ import { ListModule } from './list/list.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { UploadModule } from './upload/upload.module';
 import { PreferencesModule } from './preferences/preferences.module';
+import { DownloadModule } from './download/download.module';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { PreferencesModule } from './preferences/preferences.module';
     ListModule,
     StatisticsModule,
     UploadModule,
-    PreferencesModule
+    PreferencesModule,
+    DownloadModule
   ],
   exports: [
     MainModule,
@@ -25,7 +27,8 @@ import { PreferencesModule } from './preferences/preferences.module';
     ListModule,
     StatisticsModule,
     UploadModule,
-    PreferencesModule
+    PreferencesModule,
+    DownloadModule
   ]
 })
 export class FeaturesModule { }

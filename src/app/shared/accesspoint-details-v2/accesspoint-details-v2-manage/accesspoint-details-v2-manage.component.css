@@ -1,0 +1,16 @@
+th {
+    color: var(--apm-primary);
+    font-weight: bold;
+}
+
+td {
+    color: var(--apm-accent);
+}
+
+.table-hover > tbody > tr:hover > * {
+    color: var(--apm-primary);
+}
+
+h3 {
+    color: var(--apm-primary);
+}

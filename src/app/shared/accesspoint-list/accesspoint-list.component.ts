@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { format, parseISO } from 'date-fns';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { LoggerService } from 'src/app/core/services/logger.service';
@@ -11,26 +12,26 @@ import { LoggerService } from 'src/app/core/services/logger.service';
 export class AccesspointListComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
+  /**
+   * @deprecated Pagination was scraped from the list feature. The page property isnt doing anything and will be removed soon.
+   */
+  @Input() page: number | undefined = undefined;
+
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
-  @Input() page: number | undefined;
   @Output() accessPointClick = new EventEmitter<AccessPoint>(false);
 
-  public readonly pageSize = 18; 
-
   private accessPoints: Array<AccessPoint>;
+  public filteredAccessPoints: Array<AccessPoint>;
 
-  public enrichedAccessPoints: Array<AccessPoint>;
   public searchKeyword: string = '';
   public lastSearchKeyword: string = '';
   public key: string = 'id';
   public reverse: boolean = false;
 
-  constructor(private loggerService: LoggerService) { }
+  constructor(
+    private loggerService: LoggerService) { }
 
   ngOnInit(): void {
-    this.enrichedAccessPoints = new Array<AccessPoint>();
-    if (this.page === undefined) this.page = 1;
-
     this.initializeAccessPoints();
   }
 
@@ -48,22 +49,30 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (accessPoints) => {
           this.accessPoints = accessPoints;
-          this.applyFiltersToAccessPoint(this.accessPoints);
+          this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
         },
         error: (error) => this.loggerService.logError(error)
       });
   }
 
   /**
-   * Filter out AccessPoints and prepare aditional data
+   * Apply filters on the access point collection and store it into the filtered access point collection
    * @param accessPoints AccessPoint entity collection
    */
-  private applyFiltersToAccessPoint(accessPoints: Array<AccessPoint>): void {
-    this.enrichedAccessPoints = this.filterAccessPointByKeyword(accessPoints).map((accessPoint) => ({
-      parsedId: this.parseId(accessPoint),
-      parsedColorValue: this.parseSecurityColor(accessPoint),
-      parsedEncryptionType: this.parseSecurityName(accessPoint),
-      parsedManufacturer: this.parseManufacturer(accessPoint),
+  private applyKeywordFilterToAccessPointCollection(accessPoints: Array<AccessPoint>): void {
+    if (!this.filteredAccessPoints || this.searchKeyword.length === 0) {
+      this.filteredAccessPoints = accessPoints.map((accessPoint) => ({
+        simplifiedSecurityStandard: this.parseSecurityName(accessPoint),
+        ...accessPoint
+      }));
+
+      return;
+    }
+
+    if (!this.searchKeyword || this.searchKeyword.length < 3) return;
+    
+    this.filteredAccessPoints = this.filterAccessPointByKeyword(accessPoints).map((accessPoint) => ({
+      simplifiedSecurityStandard: this.parseSecurityName(accessPoint),
       ...accessPoint
     }));
   }
@@ -73,14 +82,20 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
    * @param accessPoints Collection of AccessPoint Entities
    * @returns Collection of AccessPoint Entities
    */
-  public filterAccessPointByKeyword(accessPoints: Array<AccessPoint>): Array<AccessPoint> {
-    const cKw = this.searchKeyword.trim().toLocaleLowerCase();
-    const query = (param: string) => {
-      return (param !== undefined) ? param.trim().toLocaleLowerCase().match(cKw) : ''.match(cKw);
-    }
+  private filterAccessPointByKeyword(accessPoints: Array<AccessPoint>): Array<AccessPoint> {
+    const searchKeyword = this.searchKeyword
+      .trim().toLowerCase();
 
     return accessPoints.filter(ap => {
-      return query(ap.ssid) || query(ap.bssid) || query(ap.manufacturer) || query(ap.securityStandards) || query(ap.securityProtocols) || query(ap.deviceType);
+      const searchLookup = ''.concat(
+        ap.ssid,
+        ap.bssid,
+        ap.manufacturer,
+        ap.rawSecurityPayload,
+        ap.deviceType
+      ).toLowerCase();
+
+      return searchLookup.includes(searchKeyword);
     });
   }
 
@@ -88,7 +103,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
    * Reinitialize AccessPoint entity collection with keyword. Method used by the ng2-search-filter dependency
    */
   public searchAccessPoints(): void {
-    this.applyFiltersToAccessPoint(this.accessPoints);
+    this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
   }
 
   /**
@@ -109,11 +124,11 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Generate a CSS color value based on the security standard
+   * Get the corresponding CSS color value based on the security standard
    * @param accessPoint AccessPoint entity
    * @returns CSS color param
    */
-  private parseSecurityColor(accessPoint: AccessPoint): string {
+  public getCssSecurityColor(accessPoint: AccessPoint): string {
     const sd: Array<string> = JSON.parse(accessPoint.securityStandards);
 
     if(sd.includes('WPA3')) return 'var(--apm-encryption-good)';
@@ -141,19 +156,24 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Generate a universal representation of the AccessPoints manufacturer
+   * Generate a table and user friendly representation of the AccessPoints manufacturer
    * @param accessPoint AccessPoint entity
    * @returns Manufacturer name
    */
-  private parseManufacturer(accessPoint: AccessPoint): string {
+  public getManufacturerName(accessPoint: AccessPoint): string {
     return (accessPoint.manufacturer === undefined || accessPoint.manufacturer === '') ? 'Unknown' : accessPoint.manufacturer;
   }
 
   /**
-   * Generate a shorter version of the identifier
-   * @param accessPoint AccessPoint entity
+   * Format the date to more user friendly format
+   * @param date Date object
+   * @returns Formated date as string
    */
-  private parseId(accessPoint: AccessPoint): string {
-    return `${accessPoint.id.slice(0, 6)}...`;
+  public formatDate(date: Date | string): string {
+    if (date === undefined) return 'Unknown';
+    const dateFormat = 'dd-MM-yyyy HH:mm:ss';
+    return (date instanceof Date)
+        ? format(new Date(date), dateFormat)
+        : format(parseISO(date), dateFormat);
   }
 }

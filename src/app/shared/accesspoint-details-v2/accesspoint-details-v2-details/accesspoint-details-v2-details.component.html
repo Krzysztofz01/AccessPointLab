@@ -1,0 +1,119 @@
+<div *ngIf="accessPoint !== undefined">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Property name</th>
+                            <th scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>AccessPointMap Id</td>
+                            <td>{{ accessPoint.id }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Bssid</td>
+                            <td>{{ accessPoint.bssid }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>Ssid</td>
+                            <td>{{ accessPoint.ssid }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">4</th>
+                            <td>Manufacturer</td>
+                            <td>{{ accessPoint.manufacturer.length === 0 ? 'Unknown' : accessPoint.manufacturer }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">5</th>
+                            <td>Frequency</td>
+                            <td>{{ accessPoint.frequency }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">6</th>
+                            <td>AccessPointMap Id</td>
+                            <td>{{ accessPoint.deviceType }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">7</th>
+                            <td>First seen contributor id</td>
+                            <td>{{ accessPoint.contributorId }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">8</th>
+                            <td>Creation timestamp (first seen)</td>
+                            <td>{{ formatDate(accessPoint.creationTimestamp) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">9</th>
+                            <td>Version timestmap (recent run)</td>
+                            <td>{{ formatDate(accessPoint.versionTimestamp) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">10</th>
+                            <td>Position with lowest signal level</td>
+                            <td>RSSI: {{ accessPoint.lowSignalLevel }} - Lat: {{ accessPoint.lowSignalLatitude }} / Lon: {{ accessPoint.lowSignalLongitude }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">11</th>
+                            <td>Position with highest signal level</td>
+                            <td>RSSI: {{ accessPoint.highSignalLevel }} - Lat: {{ accessPoint.highSignalLatitude }} / Lon: {{ accessPoint.highSignalLongitude }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">12</th>
+                            <td>Signal range</td>
+                            <td>{{ accessPoint.signalArea }}m<sup>2</sup> (distance between lowest and highest signal: {{ accessPoint.signalRadius }})</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">13</th>
+                            <td>Security standards</td>
+                            <td>{{ formatSerialziedArrayData(accessPoint.securityStandards) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">14</th>
+                            <td>Security protocols</td>
+                            <td>{{ formatSerialziedArrayData(accessPoint.securityProtocols) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">15</th>
+                            <td>Raw capabilities payload</td>
+                            <td>{{ accessPoint.rawSecurityPayload }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">16</th>
+                            <td>Presence</td>
+                            <td>{{ accessPoint.isPresent ? 'Present' : 'Missing' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">17</th>
+                            <td>Run identifier</td>
+                            <td>{{ accessPoint.runIdentifier === undefined ? 'None' : accessPoint.runIdentifier }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">18</th>
+                            <td>Stamps count</td>
+                            <td>{{ accessPoint.stamps.length }}</td>
+                        </tr>
+                        <tr *ngIf="hasAdminPermission">
+                            <th scope="row">19</th>
+                            <td>Annotations count</td>
+                            <td>{{ accessPoint.adnnotations.length }}</td>
+                        </tr>
+                        <tr *ngIf="hasAdminPermission">
+                            <th scope="row">20</th>
+                            <td>Display status</td>
+                            <td>{{ accessPoint.displayStatus ? 'Public' : 'Hidden' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

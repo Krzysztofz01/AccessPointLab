@@ -6,6 +6,8 @@ export const environment = {
   LSK_REFRESH_TOKEN: 'apm-refresh-token',
   LSK_SERVER: 'apm-server',
   LSK_PREFERENCES: 'apm-client-preferences',
+  HEADER_ALLOW_LOCAL_CACHE_NAME: 'Apm-Allow-Local-Cache',
+  HEADER_ALLOW_LOCAL_CACHE_VALUE: 'Allow',
   PIN_ICON_WPA3: 'PIN_WPA3.png',
   PIN_ICON_WPA2: 'PIN_WPA2.png',
   PIN_ICON_WPA: 'PIN_WPA.png',

@@ -1,13 +1,14 @@
-import { Component, OnInit, SecurityContext } from '@angular/core';
+import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { PreferencesService } from 'src/app/core/services/preferences.service';
+import { AccesspointDetailsV2Component } from 'src/app/shared/accesspoint-details-v2/accesspoint-details-v2.component';
 import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/accesspoint-details.component';
 import { environment } from 'src/environments/environment';
 
@@ -16,10 +17,14 @@ import { environment } from 'src/environments/environment';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+
   public accessPointsObservable: Observable<Array<AccessPoint>>;
   public mapCenterLatitude: number | undefined;
   public mapCenterLongitude: number | undefined;
+
+  public useLegacyDetailsView: boolean = false;
 
   private hasFullPermission: boolean;
   
@@ -42,18 +47,28 @@ export class MainComponent implements OnInit {
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
     this.applyPreferences();
 
-    const paramDirty = this.route.snapshot.paramMap.get(this.accessPointIdParamName);
+    
+    const paramDirty = this.route.snapshot.queryParamMap.get(this.accessPointIdParamName);
     if (paramDirty !== null) {
       try {
-        this.accessPointIdParamValue = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, paramDirty);
-        this.accessPointService.getAccessPointById(this.accessPointIdParamValue, this.hasFullPermission).subscribe({
-          next: (accessPoint) => this.createDetailsModalInstance([ accessPoint ]),
-          error: (error) => this.loggerService.logError(error)
-        });
+        this.accessPointIdParamValue = this.sanitizer.sanitize(SecurityContext.URL, paramDirty);
+        this.accessPointService.getAccessPointById(this.accessPointIdParamValue, this.hasFullPermission)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (accessPoint) => {
+              this.createDetailsModalInstance([ accessPoint ]);
+            },
+            error: (error) => this.loggerService.logError(error)
+          });
       } catch (error) {
         this.loggerService.logError(error as Error, "Invalid page argument.");
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   /**
@@ -66,27 +81,49 @@ export class MainComponent implements OnInit {
 
   /**
    * Create a new modal with details about one or many AccessPoint entites
-   * @param accessPointIds Collection of AccessPoint entity ids
+   * @param accessPoints Collection of AccessPoint entities
    */
-  private createDetailsModalInstance(accessPointIds: Array<AccessPoint>): void {
-    const modalReference = this.modalService.open(AccesspointDetailsComponent, { modalDialogClass: 'modal-xl' });
+  private createDetailsModalInstance(accessPoints: Array<AccessPoint>): void {
+    if (this.useLegacyDetailsView) {
+      this.loggerService.logInformation("Using leagacy deprecated access points details view.");
+      const modalReference = this.modalService.open(AccesspointDetailsComponent, { modalDialogClass: 'modal-xl' });
     
-    (modalReference.componentInstance as AccesspointDetailsComponent).accessPoints = accessPointIds;
+      (modalReference.componentInstance as AccesspointDetailsComponent).accessPoints = accessPoints;
 
-    const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
-      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission)
-    }) as Subscription;
+      const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
+        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
+      }) as Subscription;
 
-    const deleteSubscription = modalReference.componentInstance.accessPointDeletedEvent.subscribe({
-      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission)
-    }) as Subscription;
+      const deleteSubscription = modalReference.componentInstance.accessPointDeletedEvent.subscribe({
+        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
+      }) as Subscription;
 
-    const unsubscribe = () => {
-      changesSubscription.unsubscribe();
-      deleteSubscription.unsubscribe();
-    };
+      const unsubscribe = () => {
+        changesSubscription.unsubscribe();
+        deleteSubscription.unsubscribe();
+      };
 
-    modalReference.result.then(() => unsubscribe(), () => unsubscribe());
+      modalReference.result.then(() => unsubscribe(), () => unsubscribe());
+    } else {
+      const modalReference = this.modalService.open(AccesspointDetailsV2Component, { modalDialogClass: 'modal-xl' });
+    
+      (modalReference.componentInstance as AccesspointDetailsV2Component).initializeModalData(accessPoints, this.hasFullPermission);
+
+      const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
+        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
+      }) as Subscription;
+
+      const deleteSubscription = modalReference.componentInstance.accessPointDeletedEvent.subscribe({
+        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
+      }) as Subscription;
+
+      const unsubscribe = () => {
+        changesSubscription.unsubscribe();
+        deleteSubscription.unsubscribe();
+      };
+
+      modalReference.result.then(() => unsubscribe(), () => unsubscribe());
+    }
   }
 
   /**
@@ -99,6 +136,20 @@ export class MainComponent implements OnInit {
     if (centerLatitude !== null && centerLongitude !== null) {
       this.mapCenterLatitude = parseFloat(centerLatitude);
       this.mapCenterLongitude = parseFloat(centerLongitude);
+    }
+
+    const useLegacyDetailsView = this.preferencesService.getPreference("useLegacyDetailsView");
+
+    if (useLegacyDetailsView !== null) {
+      const stringToBoolean = (value: string): boolean => {
+        try {
+          return JSON.parse(value);
+        } catch {
+          return false;
+        }
+      };
+
+      this.useLegacyDetailsView = stringToBoolean(useLegacyDetailsView);
     }
   }
 }

@@ -19,6 +19,9 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 
+/**
+ * @deprecated The AccessPointDetailsComponent is not longer supported. Consider using the AccessPointDetailsV2Component
+ */
 @Component({
   selector: 'app-accesspoint-details',
   templateUrl: './accesspoint-details.component.html',

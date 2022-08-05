@@ -123,10 +123,15 @@ select:focus {
 
 .modal-content {
     border-radius: 2em !important;
+    /* max-height: 90vh !important; */
 }
 
 .btn-close:focus {
     box-shadow: none !important;
+}
+
+.modal-xl {
+    max-width: 95% !important;
 }
 
 /* Custom ngx-pagination menu */

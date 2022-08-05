@@ -8,12 +8,16 @@ import { AccesspointDetailsComponent } from './accesspoint-details/accesspoint-d
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { AccesspointListComponent } from './accesspoint-list/accesspoint-list.component';
-import { Ng2SearchPipeModule } from 'ng2-search-filter';
-import { NgxPaginationModule } from 'ngx-pagination';
-import { OrderModule } from 'ngx-order-pipe';
 import { LoadingIndicatorComponent } from './loading-indicator/loading-indicator.component';
 import { ToastComponent } from './toast/toast.component';
 import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map-filter/accesspoint-map-filter.component';
+import { AccesspointDetailsV2Component } from './accesspoint-details-v2/accesspoint-details-v2.component';
+import { AccesspointDetailsV2GeneralComponent } from './accesspoint-details-v2/accesspoint-details-v2-general/accesspoint-details-v2-general.component';
+import { AccesspointDetailsV2MapComponent } from './accesspoint-details-v2/accesspoint-details-v2-map/accesspoint-details-v2-map.component';
+import { AccesspointDetailsV2DetailsComponent } from './accesspoint-details-v2/accesspoint-details-v2-details/accesspoint-details-v2-details.component';
+import { AccesspointDetailsV2StampsComponent } from './accesspoint-details-v2/accesspoint-details-v2-stamps/accesspoint-details-v2-stamps.component';
+import { AccesspointDetailsV2ManageComponent } from './accesspoint-details-v2/accesspoint-details-v2-manage/accesspoint-details-v2-manage.component';
+import { OrderByPipe } from './accesspoint-list/order-by.pipe';
 
 
 
@@ -26,17 +30,21 @@ import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map
     AccesspointListComponent,
     LoadingIndicatorComponent,
     ToastComponent,
-    AccesspointMapFilterComponent
+    AccesspointMapFilterComponent,
+    AccesspointDetailsV2Component,
+    AccesspointDetailsV2GeneralComponent,
+    AccesspointDetailsV2MapComponent,
+    AccesspointDetailsV2DetailsComponent,
+    AccesspointDetailsV2StampsComponent,
+    AccesspointDetailsV2ManageComponent,
+    OrderByPipe
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
     NgbModule,
-    RouterModule,
-    Ng2SearchPipeModule,
-    NgxPaginationModule,
-    OrderModule
+    RouterModule
   ],
   exports: [
     AlertComponent,
@@ -45,7 +53,8 @@ import { AccesspointMapFilterComponent } from './accesspoint-map/accesspoint-map
     AccesspointDetailsComponent,
     AccesspointListComponent,
     LoadingIndicatorComponent,
-    ToastComponent
+    ToastComponent,
+    AccesspointDetailsV2Component
   ]
 })
 export class SharedModule { }

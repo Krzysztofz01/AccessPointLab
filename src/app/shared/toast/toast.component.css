@@ -1,11 +1,3 @@
-.toast-overlay {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    padding: 1em;
-    z-index: 1900 !important;
-}
-
 .toast-color-error {
     color: var(--apm-status-bad) !important;
     background-color: var(--apm-status-bad-accent) !important;

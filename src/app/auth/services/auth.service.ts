@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { RefreshRequest } from '../contracts/refresh.request';
 import { LogoutRequest } from '../contracts/logout.request';
+import { LoggerService } from 'src/app/core/services/logger.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,13 @@ export class AuthService {
 
   private refreshTokenTimeout: any;
 
-  constructor(private router: Router, private httpClient: HttpClient, private globalScopeService: GlobalScopeService, private localStorageService: LocalStorageService) {
+  constructor(
+    private router: Router,
+    private httpClient: HttpClient,
+    private globalScopeService: GlobalScopeService,
+    private localStorageService: LocalStorageService,
+    private loggerService: LoggerService) {
+
     this.userSubject = new BehaviorSubject<AuthUser>(undefined);
     this.user = this.userSubject.asObservable();
     
@@ -127,7 +134,7 @@ export class AuthService {
         this.router.navigate(['/auth']);
       },
       error: (error) => {
-        console.error(error);
+        this.loggerService.logError(error);
 
         this.clientSideLogout();
         this.router.navigate(['/auth']);
@@ -169,7 +176,7 @@ export class AuthService {
         this.router.navigate(['/login']);
       },
       error: (error) => {
-        console.error(error);
+        this.loggerService.logError(error);
       }
     });
   }
