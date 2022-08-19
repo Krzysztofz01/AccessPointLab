@@ -4,7 +4,7 @@ services:
   container_name: access-point-lab
   build: . #Change to use the prebuild version
   ports:
-   - "6003:80"
+   - "6005:80"
   volumes:
    - ./apl-log:/tmp/tmplog
   restart: unless-stopped
