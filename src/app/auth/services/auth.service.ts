@@ -91,6 +91,8 @@ export class AuthService {
   * @returns Refresh response as a observable
   */
    public refreshToken(): Observable<RefreshResponse> {
+    if (this.serverPath === undefined) throw Error('No server insance specified.');
+    
     const refreshRequest: RefreshRequest = {
       refreshToken: this.localStorageService.get(environment.LSK_REFRESH_TOKEN)
     };
