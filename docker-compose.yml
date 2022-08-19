@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+ apl:
+  container_name: access-point-lab
+  build: . #Change to use the prebuild version
+  ports:
+   - "6005:80"
+  volumes:
+   - ./apl-log:/tmp/tmplog
+  restart: unless-stopped
+volumes:
+ apl-log:
