@@ -16,10 +16,13 @@ import { environment } from 'src/environments/environment';
 export class RunComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
+  public readonly mapId = 'run';
+  public readonly useFilters = false;
+
   public runIdentifierForm: UntypedFormGroup;
 
-  private runIdentifiers: Array<string>;
-  private runAccessPoints: Observable<Array<AccessPoint>>;
+  public runIdentifiers: Array<string>;
+  public runAccessPoints: Observable<Array<AccessPoint>>;
 
   private hasFullPermission: boolean;
 
@@ -50,9 +53,9 @@ export class RunComponent implements OnInit, OnDestroy {
             this.runIdentifierForm.get('selectedRunId').setValue(this.runIdentifiers[0])
           }
         },
-        error: (error) => {
+        error: (error: Error) => {
           this.loggerService.logError(error);
-          this.toastService.setError("Retriving run identifiers failed.")
+          this.toastService.setError(error.message);
         }
       });
   }
@@ -60,6 +63,10 @@ export class RunComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+  }
+
+  public showDetailsClick($event: Array<AccessPoint>): void {
+    // TODO: Implementation
   }
 
   /**

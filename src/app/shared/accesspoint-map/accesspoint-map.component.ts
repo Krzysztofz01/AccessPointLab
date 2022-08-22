@@ -8,7 +8,7 @@ import Icon from 'ol/style/Icon';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import TileLayer from 'ol/layer/Tile';
 import * as olProj from 'ol/proj';
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { environment } from 'src/environments/environment';
@@ -21,15 +21,17 @@ import { AccessPointMapFilterResult } from './accesspoint-map-filter-result.inte
   templateUrl: './accesspoint-map.component.html',
   styleUrls: ['./accesspoint-map.component.css']
 })
-export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
+export class AccesspointMapComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Input() centerLatitude: number | undefined;
   @Input() centerLongitude: number | undefined;
+  @Input() identifier: string;
+  @Input() useFilters: boolean | undefined;
   @Output() accessPointClick = new EventEmitter<Array<AccessPoint>>(false);
 
-  public readonly mapId = "openlayers_accesspoints_map";
+  public mapId: string;
   private readonly initialZoom = 16;
   private readonly initialCenterLatitude = 51;
   private readonly initialCenterLongitude = 19;
@@ -43,6 +45,18 @@ export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
   private accessPoints: Array<AccessPoint>;
 
   constructor(private loggerService: LoggerService) { }
+  
+  ngOnInit(): void {
+    if (this.identifier === undefined) {
+      const errorMessage = "The map component requires a unique identifier.";
+      this.loggerService.logError(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    this.mapId = `openlayers_accesspoints_map_${this.identifier}`;
+
+    if (this.useFilters === undefined) this.useFilters = true;
+  }
 
   ngAfterViewInit(): void {
     this.accessPointObservable
