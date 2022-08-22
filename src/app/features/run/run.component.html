@@ -1,3 +1,18 @@
 <app-navbar></app-navbar>
 
 <app-accesspoint-map [identifier]="mapId" [useFilters]="useFilters" [accessPointObservable]="runAccessPoints" (accessPointClick)="showDetailsClick($event)"></app-accesspoint-map>
+
+<div *ngIf="runIdentifiers !== undefined" class="run-selection-container">
+    <div class="container-fluid">
+        <div class="row justify-content-center my-2">
+            <div class="col-lg-3 col-md-12 px-5 text-center">
+                <p class="run-selection-form-header">Run</p>
+                <form [formGroup]="runIdentifierForm">
+                    <select class="form-select" formControlName="selectedRunId">
+                        <option *ngFor="let runIdentifier of runIdentifiers" [value]="runIdentifier">{{ runIdentifier }}</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
