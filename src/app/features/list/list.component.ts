@@ -8,6 +8,7 @@ import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { PreferencesService } from 'src/app/core/services/preferences.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 import { AccesspointDetailsV2Component } from 'src/app/shared/accesspoint-details-v2/accesspoint-details-v2.component';
 import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/accesspoint-details.component';
 import { environment } from 'src/environments/environment';
@@ -38,6 +39,7 @@ export class ListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private authService: AuthService,
     private accessPointService: AccessPointService,
+    private toastService: ToastService,
     private loggerService: LoggerService,
     private preferencesService: PreferencesService) { }
 
@@ -133,6 +135,57 @@ export class ListComponent implements OnInit, OnDestroy {
 
       modalReference.result.then(() => unsubscribe(), () => unsubscribe());
     }
+  }
+
+  /**
+   * Access point range deleted event handler
+   * @param accessPoints Target access point entities
+   */
+  public deleteAccessPointRange(accessPoints: Array<AccessPoint>): void {
+    if (accessPoints === undefined || accessPoints.length === 0) return;
+
+    const targetIds = accessPoints.map((accessPoint) => {
+      return accessPoint.id
+    });
+
+    this.accessPointService.deleteAccessPointRange(targetIds)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          this.loggerService.logInformation('Access points deleted successful.');
+          this.toastService.setInformation('Access points deleted successful.');
+        },
+        error: (error) => {
+          this.loggerService.logError(error);
+          this.toastService.setError('Access points deletion failed.');
+        }
+      });
+  }
+
+  /**
+   * Access point range display status changed event handler
+   * @param accessPoints Target access point entites
+   */
+  public changeAccessPointRangeDisplayStatus(accessPoints: Array<AccessPoint>): void {
+    if (accessPoints === undefined || accessPoints.length === 0) return;
+
+    const targetStatus = !accessPoints[0].displayStatus;
+    const targetIds = accessPoints.map((accessPoint) => {
+      return accessPoint.id
+    });
+
+    this.accessPointService.changeAccessPointRangeDisplayStatus(targetIds, targetStatus)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          this.loggerService.logInformation('Access points display status changed successful.');
+          this.toastService.setInformation('Access points display status changed successful.');
+        },
+        error: (error) => {
+          this.loggerService.logError(error);
+          this.toastService.setError('Access points display status change failed.');
+        }
+      });
   }
 
   /**
