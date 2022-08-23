@@ -19,9 +19,13 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
 
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Output() accessPointClick = new EventEmitter<AccessPoint>(false);
+  @Output() accessPointRangeDeletedClick = new EventEmitter<Array<AccessPoint>>(undefined);
+  @Output() accessPointRangeDisplayStatusClick = new EventEmitter<Array<AccessPoint>>(undefined);
 
   private accessPoints: Array<AccessPoint>;
   public filteredAccessPoints: Array<AccessPoint>;
+
+  public checkedAll: boolean = false;
 
   public searchKeyword: string = '';
   public lastSearchKeyword: string = '';
@@ -56,13 +60,14 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Apply filters on the access point collection and store it into the filtered access point collection
+   * Apply filters on the access point collection, add check-value and store it into the filtered access point collection
    * @param accessPoints AccessPoint entity collection
    */
   private applyKeywordFilterToAccessPointCollection(accessPoints: Array<AccessPoint>): void {
     if (!this.filteredAccessPoints || this.searchKeyword.length === 0) {
       this.filteredAccessPoints = accessPoints.map((accessPoint) => ({
         simplifiedSecurityStandard: this.parseSecurityName(accessPoint),
+        checked: false,
         ...accessPoint
       }));
 
@@ -73,6 +78,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
     
     this.filteredAccessPoints = this.filterAccessPointByKeyword(accessPoints).map((accessPoint) => ({
       simplifiedSecurityStandard: this.parseSecurityName(accessPoint),
+      checked: false,
       ...accessPoint
     }));
   }
@@ -92,11 +98,49 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
         ap.bssid,
         ap.manufacturer,
         ap.rawSecurityPayload,
-        ap.deviceType
+        ap.deviceType,
+        ap.runIdentifier
       ).toLowerCase();
 
       return searchLookup.includes(searchKeyword);
     });
+  }
+
+  /**
+   * Mark all entities as checked or unchecked depending of the checkedAll value
+   */
+  public checkedAllChanged(): void {
+    this.filteredAccessPoints.forEach((accessPoint) => {
+      (accessPoint as any).checked = this.checkedAll;
+    })
+  }
+
+  /**
+   * Emitt the event of clicking the delete button to parent
+   */
+  public deleteAccessPointRange(): void {
+    const targetAccessPoints = this.filteredAccessPoints.filter((accessPoint) => {
+      return (accessPoint as any).checked
+    });
+
+    this.accessPointRangeDeletedClick.next(targetAccessPoints);
+
+    // TODO: Verify if changes are visible
+    this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
+  }
+
+  /**
+   * Emitt the event of clicking the display status change button to parent
+   */
+  public changeAccessPointDisplayStatusRange(): void {
+    const targetAccessPoints = this.filteredAccessPoints.filter((accessPoint) => {
+      return (accessPoint as any).checked
+    });
+
+    this.accessPointRangeDisplayStatusClick.next(targetAccessPoints);
+
+    // TODO: Verify if changes are visible
+    this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
   }
 
   /**
