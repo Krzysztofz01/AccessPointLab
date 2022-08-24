@@ -1,5 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { map, Observable, Subject, takeUntil, zip } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
@@ -29,7 +31,11 @@ export class RunComponent implements OnInit, OnDestroy {
 
   private hasFullPermission: boolean;
 
+  private readonly accessPointRunIdParamName = 'runId';
+
   constructor(
+    private sanitizer: DomSanitizer,
+    private route: ActivatedRoute,
     private accessPointService: AccessPointService,
     private authService: AuthService,
     private toastService: ToastService,
@@ -52,6 +58,9 @@ export class RunComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (runIdentifiers) => {
           this.runIdentifiers = runIdentifiers;
+
+          if (this.resolvRunSelectionFromParam()) return;
+
           if (this.runIdentifiers.length > 0) {
             this.runIdentifierForm.get('selectedRunId').setValue(this.runIdentifiers[0])
           }
@@ -99,5 +108,26 @@ export class RunComponent implements OnInit, OnDestroy {
 
     return zip(accessPointsObservable, accessPointStampsObservable)
       .pipe(map(c => [].concat(...c)));
+  }
+
+  /**
+   * Set the currenlty selected run to selected via GET param
+   * @returns Boolean value indicating if the operation was successful
+   */
+  private resolvRunSelectionFromParam(): boolean {
+    const paramDirty = this.route.snapshot.queryParamMap.get(this.accessPointRunIdParamName);
+    if (paramDirty !== null) {
+      try {
+        const sanitizedParamValue = this.sanitizer.sanitize(SecurityContext.URL, paramDirty);
+        this.runIdentifierForm.get('selectedRunId').setValue(sanitizedParamValue);
+        return true;
+      } catch (error) {
+        const errorMessage = (error as Error).message;
+        this.loggerService.logError(errorMessage);
+        this.toastService.setError(errorMessage);
+      }
+    }
+
+    return false
   }
 }
