@@ -1,5 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { Map, View } from 'ol';
+import Attribution from 'ol/control/Attribution';
 import { Circle } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import * as olProj from 'ol/proj';
@@ -71,7 +72,7 @@ export class AccessPointDetailsV2Utilities {
             tileLayer.set(layerNameKey, mapId);
 
         return new Map({
-            controls: [],
+            controls: [ new Attribution() ],
             target: mapId,
             layers: [ tileLayer ],
             view: new View({

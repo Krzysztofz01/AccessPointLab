@@ -2,6 +2,7 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import VectorLayer from 'ol/layer/Vector';
 import Feature from 'ol/Feature';
+import Attribution from 'ol/control/Attribution';
 import Point from 'ol/geom/Point';
 import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
@@ -129,7 +130,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges
 
     // Map initialization
     this.map = new Map({
-      controls: [],
+      controls: [ new Attribution() ],
       target: this.mapId,
       layers: [
         new TileLayer({
