@@ -7,6 +7,7 @@ import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { environment } from 'src/environments/environment';
+import { mapStampToAccessPoint } from './stamp-mapper';
 
 @Component({
   selector: 'app-run',
@@ -18,6 +19,7 @@ export class RunComponent implements OnInit, OnDestroy {
 
   public readonly mapId = 'run';
   public readonly useFilters = false;
+  public readonly allowReloading = true;
 
   public runIdentifierForm: UntypedFormGroup;
 
@@ -65,10 +67,6 @@ export class RunComponent implements OnInit, OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  public showDetailsClick($event: Array<AccessPoint>): void {
-    // TODO: Implementation
-  }
-
   /**
    * Handle the assignment of combined accesspoint data after form values change
    */
@@ -87,47 +85,18 @@ export class RunComponent implements OnInit, OnDestroy {
   private combineRunAccessPoints(runIdentifier: string): Observable<Array<AccessPoint>> {
     const accessPointsObservable = this.accessPointService.getAccessPointsByRunId(runIdentifier, this.hasFullPermission)
       .pipe(map((accessPoints) => {
-        accessPoints.map((accessPoint) => ({
+        return accessPoints.map((accessPoint) => ({
           isStamp: false,
           ...accessPoint
-        }))
-      }));
-    
-    const stampsObservable = this.accessPointService.getAccessPointStampsByRunId(runIdentifier, this.hasFullPermission)
-      .pipe(map((stamps) => {
-        stamps.map((stamp) => ({
-          id: stamp.id,
-          bssid: undefined,
-          manufacturer: undefined,
-          ssid: stamp.ssid,
-          frequency: stamp.frequency,
-          deviceType: stamp.deviceType,
-          contributorId: stamp.contributorId,
-          creationTimestamp: stamp.creationTimestamp,
-          versionTimestamp: undefined,
-          lowSignalLevel: stamp.lowSignalLevel,
-          lowSignalLatitude: stamp.lowSignalLatitude,
-          lowSignalLongitude: stamp.lowSignalLongitude,
-          highSignalLevel: stamp.highSignalLevel,
-          highSignalLatitude: stamp.highSignalLatitude,
-          highSignalLongitude: stamp.highSignalLongitude,
-          signalRadius: stamp.signalRadius,
-          signalArea: stamp.signalArea,
-          rawSecurityPayload: stamp.rawSecurityPayload,
-          securityStandards: stamp.securityStandards,
-          securityProtocols: stamp.securityProtocols,
-          isSecure: stamp.isSecure,
-          isPresent: stamp.isPresent,
-          runIdentifier: stamp.runIdentifier,
-          note: undefined,
-          displayStatus: undefined,
-          stamps: undefined,
-          adnnotations: undefined,
-          isStamp: true,
-        } as AccessPoint))
+        }));
       }));
 
-      return zip(accessPointsObservable, stampsObservable)
-        .pipe(map(c => [].concat(...c)));
+    const accessPointStampsObservable = this.accessPointService.getAccessPointStampsByRunId(runIdentifier, this.hasFullPermission)
+      .pipe(map((accessPointStamps) => {
+        return accessPointStamps.map((accessPointStamp) => mapStampToAccessPoint(accessPointStamp));
+      }));
+
+    return zip(accessPointsObservable, accessPointStampsObservable)
+      .pipe(map(c => [].concat(...c)));
   }
 }
