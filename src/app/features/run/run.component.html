@@ -1,7 +1,7 @@
 <app-navbar [animatedBackground]="true"></app-navbar>
 
 <div *ngIf="runAccessPoints !== undefined">
-    <app-accesspoint-map [identifier]="mapId" [allowReloading]="allowReloading" [useFilters]="useFilters" [accessPointObservable]="runAccessPoints"></app-accesspoint-map>
+    <app-accesspoint-map [identifier]="mapId" [centerAuto]="centerAuto" [allowReloading]="allowReloading" [useFilters]="useFilters" [accessPointObservable]="runAccessPoints"></app-accesspoint-map>
 </div>
 
 <div *ngIf="runIdentifiers !== undefined" class="run-selection-container">

@@ -20,6 +20,7 @@ export class RunComponent implements OnInit, OnDestroy {
   public readonly mapId = 'run';
   public readonly useFilters = false;
   public readonly allowReloading = true;
+  public readonly centerAuto = true;
 
   public runIdentifierForm: UntypedFormGroup;
 
