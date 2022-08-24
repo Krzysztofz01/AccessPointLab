@@ -16,6 +16,7 @@ export class UploadComponent implements OnInit, OnDestroy {
   
   public defaultUploadForm: UntypedFormGroup;
   public wigleUploadForm: UntypedFormGroup;
+  public wigleUploadCsvGzForm: UntypedFormGroup
   public aircrackngUploadForm: UntypedFormGroup;
   public aircrackngCapUploadForm: UntypedFormGroup;
   public wiresharkPcapUploadForm: UntypedFormGroup;
@@ -44,6 +45,10 @@ export class UploadComponent implements OnInit, OnDestroy {
 
     this.wigleUploadForm = new UntypedFormGroup({
       file: new UntypedFormControl(null, [ Validators.required ])
+    });
+
+    this.wigleUploadCsvGzForm = new UntypedFormGroup({
+      file: new UntypedFormControl(null, [Validators.required])
     });
 
     this.aircrackngUploadForm = new UntypedFormGroup({
@@ -137,6 +142,36 @@ export class UploadComponent implements OnInit, OnDestroy {
         complete: () => {
           this.toastService.setInformation("Upload successful.");
           this.wigleUploadForm.reset();
+        },
+        error: (error) => {
+          this.loggerService.logError(error);
+          this.toastService.setError("Upload failed.");
+        }
+      });
+  }
+
+  /**
+   * Submit the upload of the WiGLE CSV.GZ scan file
+   */
+  public submitUploadWigleCsvGz(): void {
+    if (!this.wigleUploadCsvGzForm.valid) {
+      this.toastService.setError("Select a file to upload it.");
+      return;
+    }
+
+    const file = this.wigleUploadCsvGzForm.get('file').value as File;
+    if (!this.isFileTypeValid(file, 'csv')) {
+      this.toastService.setError("Invalid file format.");
+      this.wigleUploadForm.reset();
+      return;
+    }
+
+    this.accessPointService.postAccessPointsWigleCsvGz(file)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        complete: () => {
+          this.toastService.setInformation("Upload successful.");
+          this.wigleUploadCsvGzForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);

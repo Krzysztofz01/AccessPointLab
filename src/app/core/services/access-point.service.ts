@@ -183,6 +183,13 @@ export class AccessPointService {
     return this.httpClient.post<void>(this.requestUrl('wigle/csv', true), formData);
   }
 
+  public postAccessPointsWigleCsvGz(scanCsvFile: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('scanCsvGzFile', scanCsvFile);
+
+    return this.httpClient.post<void>(this.requestUrl('wigle/csvgz', true), formData);
+  }
+
   public postAccessPointsAircrackngCsv(scanCsvFile: File): Observable<void> {
     const formData = new FormData();
     formData.append('scanCsvFile', scanCsvFile);
