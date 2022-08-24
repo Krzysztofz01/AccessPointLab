@@ -43,6 +43,12 @@ export class AccessPointService {
     }});
   }
 
+  public deleteAccessPointRange(accessPointIds: Array<string>): Observable<void> {
+    return this.httpClient.delete<void>(this.requestUrl('range'), { body: {
+      ids: accessPointIds
+    }});
+  }
+
   public updateAccessPoint(accessPointId: string, note: string): Observable<void> {
     return this.httpClient.put<void>(this.requestUrl(), {
       id: accessPointId,
@@ -53,6 +59,13 @@ export class AccessPointService {
   public changeAccessPointDisplayStatus(accessPointId: string, status: boolean) : Observable<void> {
     return this.httpClient.put<void>(this.requestUrl("display"), {
       id: accessPointId,
+      status: status
+    });
+  }
+
+  public changeAccessPointRangeDisplayStatus(accessPointIds: Array<string>, status: boolean): Observable<void> {
+    return this.httpClient.put<void>(this.requestUrl('range/display'), {
+      ids: accessPointIds,
       status: status
     });
   }

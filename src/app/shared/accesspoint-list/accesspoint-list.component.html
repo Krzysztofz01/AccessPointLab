@@ -1,8 +1,15 @@
 <div class="container-fluid">
     <div class="row mt-3 mx-2 justify-content-center">
-        <div class="col-lg-4 col-md-12">
+        <div class="col-lg-6 col-md-12">
             <div class="search-bar-container">
                 <input class="form-control custom-input-filed" type="text" name="searchKeyword" [(ngModel)]="searchKeyword" (ngModelChange)="searchAccessPoints()" placeholder="Search be keyword (ssid, bssid, manufacturer, device type etc.)">
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="manage-buttons-container">
+                <button class="btn btn-primary col-2 mx-1" (click)="deleteAccessPointRange()">Delete</button>
+                <button class="btn btn-primary col-2 mx-1" (click)="changeAccessPointDisplayStatusRangeDisplay()">Display</button>
+                <button class="btn btn-primary col-2 mx-1" (click)="changeAccessPointDisplayStatusRangeHide()">Hide</button>
             </div>
         </div>
     </div>
@@ -14,11 +21,16 @@
                     <table class="table table-hover table-sm">
                         <thead>
                             <tr>
+                                <th scope="col">
+                                    <input type="checkbox" [(ngModel)]="checkedAll" (change)="checkedAllChanged()"/>
+                                </th>
+                                
                                 <th scope="col" class="col-sortable" (click)="sortAccessPoints('bssid')">BSSID ↕</th>
                                 <th scope="col" class="col-sortable" (click)="sortAccessPoints('ssid')">SSID ↕</th>
-                                <th scope="col" class="col-sortable" (click)="sortAccessPoints('deviceType')">Device type ↕</th>
+                                <th scope="col" class="col-sortable" (click)="sortAccessPoints('deviceType')">Device ↕</th>
                                 <th scope="col" class="col-sortable" (click)="sortAccessPoints('creationTimestamp')">Creation timestamp ↕</th>
                                 <th scope="col" class="col-sortable" (click)="sortAccessPoints('isPresent')">Presence ↕</th>
+                                <th scope="col" class="col-sortable" (click)="sortAccessPoints('displayStatus')">Display ↕</th>
                                 <th scope="col" class="col-sortable" (click)="sortAccessPoints('runIdentifier')">Run id ↕</th>
                                 <th scope="col" class="col-sortable" (click)="sortAccessPoints('simplifiedSecurityStandard')">Security ↕</th>
                                 <th scope="col" class="col-sortable" (click)="sortAccessPoints('manufacturer')">Manufacturer ↕</th>
@@ -26,11 +38,13 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let ap of filteredAccessPoints | orderBy: key: reverse">
-                                <td><span class="clickable-title"(click)="accessPointShowDetails(ap)">{{ ap.bssid }}</span></td>
+                                <td><input type="checkbox" [(ngModel)]="ap.checked"/></td>                       
+                                <td><span class="clickable-title" (click)="accessPointShowDetails(ap)">{{ ap.bssid }}</span></td>
                                 <td>{{ ap.ssid }}</td>
                                 <td>{{ ap.deviceType }}</td>
                                 <td>{{ formatDate(ap.creationTimestamp) }}</td>
                                 <td>{{ ap.isPresent ? 'Present' : 'Missing' }}</td>
+                                <td>{{ ap.displayStatus ? 'Public' : 'Hidden' }}</td>
                                 <td>{{ ap.runIdentifier ? ap.runIdentifier.substring(0, 6) : 'Unknown' }}</td>
                                 <td [style.color]="getCssSecurityColor(ap)">{{ ap.simplifiedSecurityStandard }}</td>
                                 <td>{{ getManufacturerName(ap) }}</td>
