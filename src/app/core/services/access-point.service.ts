@@ -64,10 +64,10 @@ export class AccessPointService {
   }
 
   public changeAccessPointRangeDisplayStatus(accessPointIds: Array<string>, status: boolean): Observable<void> {
-    return this.httpClient.put<void>(this.requestUrl('range/display'), { body: {
+    return this.httpClient.put<void>(this.requestUrl('range/display'), {
       ids: accessPointIds,
       status: status
-    }});
+    });
   }
 
   public mergeAccessPoints(accessPointsId: string, accessPointStampId: string, mergeLowSignalLevel: boolean, mergeHighSignalLevel: boolean, mergeSsid: boolean, mergeSecurityData: boolean): Observable<void> {
