@@ -1,8 +1,13 @@
-import { firstValueFrom } from "rxjs";
 import { AuthService } from "src/app/auth/services/auth.service";
 
 export function appInitializer(authService: AuthService) {
-    return (authService.getServerName() !== undefined)
-        ? () => firstValueFrom(authService.refreshToken())
-        : () => Promise<null>;
+    try {
+        authService.refreshToken().subscribe({
+            error: () => authService.clientSideLogout()
+        });
+
+        return () => Promise<null>;
+    } catch {
+        return () => Promise<null>;
+    }
 }
