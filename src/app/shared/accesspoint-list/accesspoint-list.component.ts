@@ -3,6 +3,7 @@ import { format, parseISO } from 'date-fns';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { LoggerService } from 'src/app/core/services/logger.service';
+import { AccessPointRangeDisplayStatusEvent } from './accesspoint-range-display-status-event.interface';
 
 @Component({
   selector: 'app-accesspoint-list',
@@ -20,7 +21,7 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Output() accessPointClick = new EventEmitter<AccessPoint>(false);
   @Output() accessPointRangeDeletedClick = new EventEmitter<Array<AccessPoint>>(undefined);
-  @Output() accessPointRangeDisplayStatusClick = new EventEmitter<Array<AccessPoint>>(undefined);
+  @Output() accessPointRangeDisplayStatusClick = new EventEmitter<AccessPointRangeDisplayStatusEvent>(undefined);
 
   private accessPoints: Array<AccessPoint>;
   public filteredAccessPoints: Array<AccessPoint>;
@@ -125,21 +126,54 @@ export class AccesspointListComponent implements OnInit, OnDestroy {
 
     this.accessPointRangeDeletedClick.next(targetAccessPoints);
 
-    // TODO: Verify if changes are visible
+    this.accessPoints = this.accessPoints.filter((accessPoint) => {
+      return !targetAccessPoints.some((target) => target.id === accessPoint.id);
+    });
+
     this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
   }
 
   /**
-   * Emitt the event of clicking the display status change button to parent
+   * Emitt the event of clicking the display status change (to display) button to parent
    */
-  public changeAccessPointDisplayStatusRange(): void {
+  public changeAccessPointDisplayStatusRangeDisplay(): void {
     const targetAccessPoints = this.filteredAccessPoints.filter((accessPoint) => {
       return (accessPoint as any).checked
     });
 
-    this.accessPointRangeDisplayStatusClick.next(targetAccessPoints);
+    this.accessPointRangeDisplayStatusClick.next({
+      accessPoints: targetAccessPoints,
+      targetStatus: true
+    });
 
-    // TODO: Verify if changes are visible
+    this.accessPoints.forEach((accessPoint) => {
+      if (targetAccessPoints.some((target) => target.id === accessPoint.id)) {
+        accessPoint.displayStatus = true;
+      }
+    });
+
+    this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
+  }
+
+  /**
+   * Emitt the event of clicking the display status change (to hide) button to parent
+   */
+  public changeAccessPointDisplayStatusRangeHide(): void {
+    const targetAccessPoints = this.filteredAccessPoints.filter((accessPoint) => {
+      return (accessPoint as any).checked
+    });
+
+    this.accessPointRangeDisplayStatusClick.next({
+      accessPoints: targetAccessPoints,
+      targetStatus: false
+    });
+
+    this.accessPoints.forEach((accessPoint) => {
+      if (targetAccessPoints.some((target) => target.id === accessPoint.id)) {
+        accessPoint.displayStatus = false;
+      }
+    });
+
     this.applyKeywordFilterToAccessPointCollection(this.accessPoints);
   }
 

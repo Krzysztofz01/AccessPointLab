@@ -11,6 +11,7 @@ import { PreferencesService } from 'src/app/core/services/preferences.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { AccesspointDetailsV2Component } from 'src/app/shared/accesspoint-details-v2/accesspoint-details-v2.component';
 import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/accesspoint-details.component';
+import { AccessPointRangeDisplayStatusEvent } from 'src/app/shared/accesspoint-list/accesspoint-range-display-status-event.interface';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -164,12 +165,15 @@ export class ListComponent implements OnInit, OnDestroy {
 
   /**
    * Access point range display status changed event handler
-   * @param accessPoints Target access point entites
+   * @param displayStatusChangeEvent Event object representing the target status and target access point entity collection
    */
-  public changeAccessPointRangeDisplayStatus(accessPoints: Array<AccessPoint>): void {
+  public changeAccessPointRangeDisplayStatus(displayStatusChangeEvent: AccessPointRangeDisplayStatusEvent): void {
+    if (displayStatusChangeEvent === undefined) return;
+    
+    const accessPoints = displayStatusChangeEvent.accessPoints;
     if (accessPoints === undefined || accessPoints.length === 0) return;
 
-    const targetStatus = !accessPoints[0].displayStatus;
+    const targetStatus = displayStatusChangeEvent.targetStatus;
     const targetIds = accessPoints.map((accessPoint) => {
       return accessPoint.id
     });
