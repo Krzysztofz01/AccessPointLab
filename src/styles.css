@@ -134,6 +134,19 @@ select:focus {
     max-width: 95% !important;
 }
 
+/* OpenLayers */
+.ol-attribution>button {
+    display: none;
+}
+
+.ol-attribution {
+    position: absolute !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    margin: 0;
+    padding: 0;
+}
+
 /* Custom ngx-pagination menu */
 .ngx-pagination {
     color: var(--apm-accent) !important;

@@ -18,6 +18,7 @@ import { AccessPointStamp } from 'src/app/core/models/access-point-stamp.model';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
+import Attribution from 'ol/control/Attribution';
 
 /**
  * @deprecated The AccessPointDetailsComponent is not longer supported. Consider using the AccessPointDetailsV2Component
@@ -197,7 +198,7 @@ export class AccesspointDetailsComponent implements AfterViewInit, OnInit, OnDes
    */
   private initializeMap(): void {
     this.map = new Map({
-      controls: [],
+      controls: [ new Attribution() ],
       target: this.mapId,
       layers: [
         new TileLayer({
