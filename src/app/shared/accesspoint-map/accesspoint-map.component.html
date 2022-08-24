@@ -1,3 +1,3 @@
 <div class="apm-ol-map" [id]="mapId"></div>
 
-<app-accesspoint-map-filter (filterChangedEvent)="filterValuesChanged($event)"></app-accesspoint-map-filter>
+<app-accesspoint-map-filter *ngIf="useFilters" (filterChangedEvent)="filterValuesChanged($event)"></app-accesspoint-map-filter>

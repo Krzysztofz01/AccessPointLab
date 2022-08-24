@@ -20,6 +20,8 @@ import { environment } from 'src/environments/environment';
 export class MainComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
+  public readonly mapId = 'main';
+
   public accessPointsObservable: Observable<Array<AccessPoint>>;
   public mapCenterLatitude: number | undefined;
   public mapCenterLongitude: number | undefined;

@@ -8,7 +8,7 @@ import Icon from 'ol/style/Icon';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import TileLayer from 'ol/layer/Tile';
 import * as olProj from 'ol/proj';
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { environment } from 'src/environments/environment';
@@ -21,15 +21,21 @@ import { AccessPointMapFilterResult } from './accesspoint-map-filter-result.inte
   templateUrl: './accesspoint-map.component.html',
   styleUrls: ['./accesspoint-map.component.css']
 })
-export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
+export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Input() centerLatitude: number | undefined;
   @Input() centerLongitude: number | undefined;
+  @Input() identifier: string;
+  @Input() useFilters: boolean | undefined;
+  @Input() allowReloading: boolean | undefined;
+  @Input() centerAuto: boolean | undefined;
   @Output() accessPointClick = new EventEmitter<Array<AccessPoint>>(false);
 
-  public readonly mapId = "openlayers_accesspoints_map";
+  public fullInitialization = false;
+
+  public mapId: string;
   private readonly initialZoom = 16;
   private readonly initialCenterLatitude = 51;
   private readonly initialCenterLongitude = 19;
@@ -43,6 +49,18 @@ export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
   private accessPoints: Array<AccessPoint>;
 
   constructor(private loggerService: LoggerService) { }
+  
+  ngOnInit(): void {
+    if (this.identifier === undefined) {
+      const errorMessage = "The map component requires a unique identifier.";
+      this.loggerService.logError(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    this.mapId = `openlayers_accesspoints_map_${this.identifier}`;
+
+    if (this.useFilters === undefined) this.useFilters = true;
+  }
 
   ngAfterViewInit(): void {
     this.accessPointObservable
@@ -53,6 +71,30 @@ export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
 
           const features = this.generateAccessPointFeatures(this.accessPoints);
           this.initializeMap(features);
+
+          this.fullInitialization = true;
+        },
+        error: (error) => {
+          this.loggerService.logError(error);
+          this.accessPoints = [];
+        }
+      });
+  }
+
+  ngOnChanges(_: SimpleChanges): void {
+    if (!this.fullInitialization) return;
+    if (this.allowReloading === undefined || !this.allowReloading) return;
+
+    this.accessPointObservable
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result) => {
+          this.accessPoints = result;
+
+          const features = this.generateAccessPointFeatures(this.accessPoints);      
+          this.swapVectorLayer(features);
+
+          this.map.getView().setCenter(olProj.fromLonLat(this.getMapCenterLocation()));
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -96,7 +138,7 @@ export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
         vector
       ],
       view: new View({
-        center: olProj.fromLonLat((this.centerLatitude === undefined || this.centerLongitude === undefined) ? [ this.initialCenterLongitude, this.initialCenterLatitude ] : [ this.centerLongitude, this.centerLatitude ]),
+        center: olProj.fromLonLat(this.getMapCenterLocation()),
         zoom: this.initialZoom
       })
     });
@@ -116,6 +158,25 @@ export class AccesspointMapComponent implements AfterViewInit, OnDestroy {
 
       if (disctinctAccessPoints.length) this.accessPointClick.emit(disctinctAccessPoints);
     });
+  }
+
+  /**
+   * Get the map center location based on provided component settings
+   * @returns 
+   */
+  private getMapCenterLocation(): [number, number] {
+    if (this.centerLatitude !== undefined && this.centerLongitude !== undefined) {
+      return [ this.centerLongitude, this.centerLatitude ];
+    }
+
+    if (this.centerAuto !== undefined && this.centerAuto) {
+      if (this.accessPoints !== undefined && this.accessPoints.length > 0) {
+        const firstAccessPoint = this.accessPoints[0];
+        return [ firstAccessPoint.highSignalLongitude, firstAccessPoint.highSignalLatitude ];
+      }
+    }
+
+    return [ this.initialCenterLongitude, this.initialCenterLatitude ];
   }
 
   /**
