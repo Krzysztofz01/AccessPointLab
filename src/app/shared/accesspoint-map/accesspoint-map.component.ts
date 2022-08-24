@@ -30,6 +30,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges
   @Input() identifier: string;
   @Input() useFilters: boolean | undefined;
   @Input() allowReloading: boolean | undefined;
+  @Input() centerAuto: boolean | undefined;
   @Output() accessPointClick = new EventEmitter<Array<AccessPoint>>(false);
 
   public fullInitialization = false;
@@ -88,11 +89,12 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (result) => {
-          console.log(result);
           this.accessPoints = result;
 
           const features = this.generateAccessPointFeatures(this.accessPoints);      
           this.swapVectorLayer(features);
+
+          this.map.getView().setCenter(olProj.fromLonLat(this.getMapCenterLocation()));
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -136,7 +138,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges
         vector
       ],
       view: new View({
-        center: olProj.fromLonLat((this.centerLatitude === undefined || this.centerLongitude === undefined) ? [ this.initialCenterLongitude, this.initialCenterLatitude ] : [ this.centerLongitude, this.centerLatitude ]),
+        center: olProj.fromLonLat(this.getMapCenterLocation()),
         zoom: this.initialZoom
       })
     });
@@ -156,6 +158,25 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges
 
       if (disctinctAccessPoints.length) this.accessPointClick.emit(disctinctAccessPoints);
     });
+  }
+
+  /**
+   * Get the map center location based on provided component settings
+   * @returns 
+   */
+  private getMapCenterLocation(): [number, number] {
+    if (this.centerLatitude !== undefined && this.centerLongitude !== undefined) {
+      return [ this.centerLongitude, this.centerLatitude ];
+    }
+
+    if (this.centerAuto !== undefined && this.centerAuto) {
+      if (this.accessPoints !== undefined && this.accessPoints.length > 0) {
+        const firstAccessPoint = this.accessPoints[0];
+        return [ firstAccessPoint.highSignalLongitude, firstAccessPoint.highSignalLatitude ];
+      }
+    }
+
+    return [ this.initialCenterLongitude, this.initialCenterLatitude ];
   }
 
   /**
