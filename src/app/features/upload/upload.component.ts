@@ -91,8 +91,6 @@ export class UploadComponent implements OnInit, OnDestroy {
       return;
     }
 
-    //TODO: Implement posting of serialzed command object
-
     const fileReader = new FileReader();
 
     fileReader.onload = () => {
