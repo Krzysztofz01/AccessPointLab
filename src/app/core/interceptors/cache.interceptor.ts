@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 import { LoggerService } from '../services/logger.service';
 import { LocalStorageService } from '../services/local-storage.service';
 
-//TODO: Implement cache resolving from local storage. Map object serialization
+
 @Injectable()
 export class CacheInterceptor implements HttpInterceptor {
   private cache: Map<string, HttpResponse<unknown>> = new Map();
@@ -33,17 +33,6 @@ export class CacheInterceptor implements HttpInterceptor {
   }
 
   /**
-   * @deprecated
-   * Retrievie presisted cache lookup map from local storage or initializea fresh lookup map
-   * @returns Stored or freshly initialzied cache lookup map
-   */
-  private initializePersistantCache(): Map<string, HttpResponse<unknown>> {
-    if (!this.localStorageService.test()) return new Map();
-
-    return new Map();
-  }
-
-  /**
    * Add response to local cache
    * @param requestPath Request identifier
    * @param event HTTP event object which is representing the response
@@ -54,17 +43,6 @@ export class CacheInterceptor implements HttpInterceptor {
     this.cache.set(requestPath, event);
 
     this.loggerService.logInformation(`Requested response from: ${requestPath} cached.`);
-  }
-
-  /**
-   * @deprecated
-   * Remove cached element from cache
-   * @param requestPath Request identifier
-   */
-  private removeResponseFromCache(requestPath: string): void {
-    this.cache.delete(requestPath);
-
-    this.loggerService.logInformation(`Requested response from: ${requestPath} removed from cache.`);
   }
 
   /**
