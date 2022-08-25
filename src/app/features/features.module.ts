@@ -7,6 +7,7 @@ import { StatisticsModule } from './statistics/statistics.module';
 import { UploadModule } from './upload/upload.module';
 import { PreferencesModule } from './preferences/preferences.module';
 import { DownloadModule } from './download/download.module';
+import { RunModule } from './run/run.module';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { DownloadModule } from './download/download.module';
     StatisticsModule,
     UploadModule,
     PreferencesModule,
-    DownloadModule
+    DownloadModule,
+    RunModule
   ],
   exports: [
     MainModule,
@@ -28,7 +30,8 @@ import { DownloadModule } from './download/download.module';
     StatisticsModule,
     UploadModule,
     PreferencesModule,
-    DownloadModule
+    DownloadModule,
+    RunModule
   ]
 })
 export class FeaturesModule { }

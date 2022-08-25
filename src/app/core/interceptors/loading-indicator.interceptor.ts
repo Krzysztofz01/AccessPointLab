@@ -18,8 +18,6 @@ export class LoadingIndicatorInterceptor implements HttpInterceptor {
     const loadingId = request.urlWithParams;
     this.loadingIndicatorService.setLoading(loadingId, true);
 
-    // TODO: This soultion is fixing the problem with the inidicator disabling before async operation end
-    // but is not using sepecific types on map pipe (quick work around). Fix later
     return next.handle(request)
       .pipe(catchError((err) => {
         this.loadingIndicatorService.setLoading(loadingId, false);
@@ -33,26 +31,5 @@ export class LoadingIndicatorInterceptor implements HttpInterceptor {
 
         return event;
       }));
-    
-    // Old soultion which was causing problems
-    //
-    // try {
-    //   this.loadingIndicatorService.isLoading.next(true);
-    //   console.log("Load started")
-    
-    //   return next.handle(request).pipe(
-    //     finalize(() => {
-    //       this.loadingIndicatorService.isLoading.next(false);
-    //       console.log("Load finished")
-    //     })
-    //   );
-
-    // } catch (error) {
-    //   console.error(error)
-    //   this.loadingIndicatorService.isLoading.next(false);
-    //   console.log("Load finished")
-    // }
-
-    // return next.handle(request);
   }
 }

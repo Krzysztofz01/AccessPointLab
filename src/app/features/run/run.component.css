@@ -1,0 +1,25 @@
+.run-selection-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: auto;
+    width: 100%;
+    background-image: linear-gradient(135deg, var(--apm-primary), var(--apm-accent)) !important;
+    transition: .2s opacity ease-in-out !important;
+    opacity: 50%;
+}
+
+.run-selection-container:hover {
+    opacity: 100%;
+}
+
+.run-selection-form-header {
+    padding: 0;
+    margin: 0;
+    color: var(--apm-light) !important;
+}
+
+input[type=text],
+.datapicker-control {
+    background-color: var(--apm-light) !important;
+}

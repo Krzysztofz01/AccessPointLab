@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AccessPoint } from '../models/access-points.model';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { AccessPointStamp } from '../models/access-point-stamp.model';
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +44,12 @@ export class AccessPointService {
     }});
   }
 
+  public deleteAccessPointRange(accessPointIds: Array<string>): Observable<void> {
+    return this.httpClient.delete<void>(this.requestUrl('range'), { body: {
+      ids: accessPointIds
+    }});
+  }
+
   public updateAccessPoint(accessPointId: string, note: string): Observable<void> {
     return this.httpClient.put<void>(this.requestUrl(), {
       id: accessPointId,
@@ -53,6 +60,13 @@ export class AccessPointService {
   public changeAccessPointDisplayStatus(accessPointId: string, status: boolean) : Observable<void> {
     return this.httpClient.put<void>(this.requestUrl("display"), {
       id: accessPointId,
+      status: status
+    });
+  }
+
+  public changeAccessPointRangeDisplayStatus(accessPointIds: Array<string>, status: boolean): Observable<void> {
+    return this.httpClient.put<void>(this.requestUrl('range/display'), {
+      ids: accessPointIds,
       status: status
     });
   }
@@ -87,6 +101,24 @@ export class AccessPointService {
     return full
       ? this.httpClient.get<AccessPoint>(this.requestUrl(`${accessPointId}/full`))
       : this.httpClient.get<AccessPoint>(this.requestUrl(accessPointId));
+  }
+
+  public getRunIds(full: boolean): Observable<Array<string>> {
+    return full
+      ? this.httpClient.get<Array<string>>(this.requestUrl('run/full'))
+      : this.httpClient.get<Array<string>>(this.requestUrl('run'));
+  }
+
+  public getAccessPointsByRunId(runId: string, full: boolean): Observable<Array<AccessPoint>> {
+    return full
+      ? this.httpClient.get<Array<AccessPoint>>(this.requestUrl(`run/${runId}/full`))
+      : this.httpClient.get<Array<AccessPoint>>(this.requestUrl(`run/${runId}`));
+  }
+
+  public getAccessPointStampsByRunId(runId: string, full: boolean): Observable<Array<AccessPointStamp>> {
+    return full
+      ? this.httpClient.get<Array<AccessPointStamp>>(this.requestUrl(`stamps/run/${runId}/full`))
+      : this.httpClient.get<Array<AccessPointStamp>>(this.requestUrl(`stamps/run/${runId}`));
   }
 
   public searchAccessPoints(searchKeyword: string): Observable<Array<AccessPoint>> {
@@ -149,6 +181,13 @@ export class AccessPointService {
     formData.append('scanCsvFile', scanCsvFile);
 
     return this.httpClient.post<void>(this.requestUrl('wigle/csv', true), formData);
+  }
+
+  public postAccessPointsWigleCsvGz(scanCsvFile: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('scanCsvGzFile', scanCsvFile);
+
+    return this.httpClient.post<void>(this.requestUrl('wigle/csvgz', true), formData);
   }
 
   public postAccessPointsAircrackngCsv(scanCsvFile: File): Observable<void> {

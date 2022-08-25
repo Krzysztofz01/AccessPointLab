@@ -50,7 +50,6 @@ import { OrderByPipe } from './accesspoint-list/order-by.pipe';
     AlertComponent,
     NavbarComponent,
     AccesspointMapComponent,
-    AccesspointDetailsComponent,
     AccesspointListComponent,
     LoadingIndicatorComponent,
     ToastComponent,

@@ -1,3 +1,8 @@
 <app-navbar></app-navbar>
 
-<app-accesspoint-list [accessPointObservable]="accessPointsObservable" [page]="listPage" (accessPointClick)="showDetailsClick($event)"></app-accesspoint-list>
+<app-accesspoint-list
+    [accessPointObservable]="accessPointsObservable"
+    (accessPointRangeDeletedClick)="deleteAccessPointRange($event)"
+    (accessPointRangeDisplayStatusClick)="changeAccessPointRangeDisplayStatus($event)"
+    (accessPointClick)="showDetailsClick($event)">
+</app-accesspoint-list>

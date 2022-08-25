@@ -91,11 +91,12 @@ export class AuthService {
   * @returns Refresh response as a observable
   */
    public refreshToken(): Observable<RefreshResponse> {
-    if (this.serverPath === undefined) throw Error('No server insance specified.');
+    if (this.serverPath === undefined) throw new Error('No server insance specified.');
     
-    const refreshRequest: RefreshRequest = {
-      refreshToken: this.localStorageService.get(environment.LSK_REFRESH_TOKEN)
-    };
+    const refreshToken = this.localStorageService.get(environment.LSK_REFRESH_TOKEN);
+    if (refreshToken === null) throw new Error('No refresh token is available.');
+
+    const refreshRequest: RefreshRequest = { refreshToken };
 
     return this.httpClient.post<RefreshResponse>(`${ this.serverPath }/refresh`, refreshRequest, { withCredentials: true })
       .pipe(map(res => {
