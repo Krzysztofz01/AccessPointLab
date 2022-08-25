@@ -29,8 +29,6 @@ export class ListComponent implements OnInit, OnDestroy {
 
   private hasFullPermission: boolean;
   
-  private readonly listPageParamName = 'page';
-  private listPageParamValue: string;
   private readonly accessPointIdParamName = 'id';
   private accessPointIdParamValue: string;
 
@@ -49,16 +47,6 @@ export class ListComponent implements OnInit, OnDestroy {
     this.hasFullPermission = (role === environment.ROLE_SUPPORT || role === environment.ROLE_ADMIN);
 
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
-
-    const pageParamDirty = this.route.snapshot.queryParamMap.get(this.listPageParamName);
-    if (pageParamDirty !== null) {
-      try {
-        this.listPageParamValue = this.sanitizer.sanitize(SecurityContext.URL, pageParamDirty);
-        this.listPage = parseInt(this.listPageParamValue, 10);
-      } catch (error) {
-        this.loggerService.logError(error as Error, "Invalid page argument.");
-      }
-    }
 
     const idParamDirty = this.route.snapshot.queryParamMap.get(this.accessPointIdParamName);
     if (idParamDirty !== null) {

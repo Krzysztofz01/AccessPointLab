@@ -2,7 +2,6 @@
 
 <app-accesspoint-list
     [accessPointObservable]="accessPointsObservable"
-    [page]="listPage"
     (accessPointRangeDeletedClick)="deleteAccessPointRange($event)"
     (accessPointRangeDisplayStatusClick)="changeAccessPointRangeDisplayStatus($event)"
     (accessPointClick)="showDetailsClick($event)">

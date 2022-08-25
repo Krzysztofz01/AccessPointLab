@@ -13,11 +13,6 @@ import { AccessPointRangeDisplayStatusEvent } from './accesspoint-range-display-
 export class AccesspointListComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  /**
-   * @deprecated Pagination was scraped from the list feature. The page property isnt doing anything and will be removed soon.
-   */
-  @Input() page: number | undefined = undefined;
-
   @Input() accessPointObservable: Observable<Array<AccessPoint>>;
   @Output() accessPointClick = new EventEmitter<AccessPoint>(false);
   @Output() accessPointRangeDeletedClick = new EventEmitter<Array<AccessPoint>>(undefined);
