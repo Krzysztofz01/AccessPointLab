@@ -70,15 +70,16 @@ input[type=file]::file-selector-button, input[type=file]::file-selector-button:h
     cursor: pointer !important;
 }
 
-input[type="checkbox"],
-input[type="checkbox"]:focus,
-input[type="checkbox"]:checked {
+input[type=checkbox],
+input[type=checkbox]:focus,
+input[type=checkbox]:checked {
     border: 1px solid var(--apm-primary) !important;
     box-shadow: none !important;
 }
 
-input[type="checkbox"]:checked {
+input[type=checkbox]:checked {
     background-color: var(--apm-primary) !important;
+    accent-color: var(--apm-primary) !important;
 }
 
 /* Button */
