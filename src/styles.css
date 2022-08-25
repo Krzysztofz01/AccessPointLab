@@ -140,21 +140,20 @@ select:focus {
 }
 
 .ol-attribution {
+    color: var(--apm-primary) !important;
+    text-decoration: none !important;
+    font-size: .8em !important;
     position: absolute !important;
     bottom: 10px !important;
     right: 10px !important;
-    margin: 0;
-    padding: 0;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-/* Custom ngx-pagination menu */
-.ngx-pagination {
-    color: var(--apm-accent) !important;
-}
-
-.ngx-pagination .current {
-    color: var(--apm-light) !important;
-    background-color: var(--apm-primary) !important;
+.ol-attribution a {
+    color: var(--apm-primary) !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
 }
 
 /* Toast */

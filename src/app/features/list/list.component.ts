@@ -7,10 +7,8 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
-import { PreferencesService } from 'src/app/core/services/preferences.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { AccesspointDetailsV2Component } from 'src/app/shared/accesspoint-details-v2/accesspoint-details-v2.component';
-import { AccesspointDetailsComponent } from 'src/app/shared/accesspoint-details/accesspoint-details.component';
 import { AccessPointRangeDisplayStatusEvent } from 'src/app/shared/accesspoint-list/accesspoint-range-display-status-event.interface';
 import { environment } from 'src/environments/environment';
 
@@ -25,12 +23,8 @@ export class ListComponent implements OnInit, OnDestroy {
   public accessPointsObservable: Observable<Array<AccessPoint>>;
   public listPage: number | undefined = undefined;
 
-  private useLegacyDetailsView: boolean = false;
-
   private hasFullPermission: boolean;
   
-  private readonly listPageParamName = 'page';
-  private listPageParamValue: string;
   private readonly accessPointIdParamName = 'id';
   private accessPointIdParamValue: string;
 
@@ -41,24 +35,13 @@ export class ListComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private accessPointService: AccessPointService,
     private toastService: ToastService,
-    private loggerService: LoggerService,
-    private preferencesService: PreferencesService) { }
+    private loggerService: LoggerService) { }
 
   ngOnInit(): void {
     const role = this.authService.userValue.role;
     this.hasFullPermission = (role === environment.ROLE_SUPPORT || role === environment.ROLE_ADMIN);
 
     this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission);
-
-    const pageParamDirty = this.route.snapshot.queryParamMap.get(this.listPageParamName);
-    if (pageParamDirty !== null) {
-      try {
-        this.listPageParamValue = this.sanitizer.sanitize(SecurityContext.URL, pageParamDirty);
-        this.listPage = parseInt(this.listPageParamValue, 10);
-      } catch (error) {
-        this.loggerService.logError(error as Error, "Invalid page argument.");
-      }
-    }
 
     const idParamDirty = this.route.snapshot.queryParamMap.get(this.accessPointIdParamName);
     if (idParamDirty !== null) {
@@ -96,46 +79,24 @@ export class ListComponent implements OnInit, OnDestroy {
    * @param accessPoint AccessPoint entity
    */
   private createDetailsModalInstance(accessPoint: AccessPoint): void {
-    if (this.useLegacyDetailsView) {
-      this.loggerService.logInformation("Using leagacy deprecated access points details view.");
-      const modalReference = this.modalService.open(AccesspointDetailsComponent, { modalDialogClass: 'modal-xl' });
-    
-      (modalReference.componentInstance as AccesspointDetailsComponent).accessPoints = new Array<AccessPoint>(accessPoint);
+    const modalReference = this.modalService.open(AccesspointDetailsV2Component, { modalDialogClass: 'modal-xl' });
 
-      const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
-        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
-      }) as Subscription;
+    (modalReference.componentInstance as AccesspointDetailsV2Component).initializeModalData(accessPoint, this.hasFullPermission);
 
-      const deleteSubscription = modalReference.componentInstance.accessPointDeletedEvent.subscribe({
-        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
-      }) as Subscription;
+    const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
+      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
+    }) as Subscription;
 
-      const unsubscribe = () => {
-        changesSubscription.unsubscribe();
-        deleteSubscription.unsubscribe();
-      };
+    const deleteSubscription = modalReference.componentInstance.accessPointDeletedEvent.subscribe({
+      complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
+    }) as Subscription;
 
-      modalReference.result.then(() => unsubscribe(), () => unsubscribe());
-    } else {
-      const modalReference = this.modalService.open(AccesspointDetailsV2Component, { modalDialogClass: 'modal-xl' });
-    
-      (modalReference.componentInstance as AccesspointDetailsV2Component).initializeModalData(accessPoint, this.hasFullPermission);
+    const unsubscribe = () => {
+      changesSubscription.unsubscribe();
+      deleteSubscription.unsubscribe();
+    };
 
-      const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
-        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
-      }) as Subscription;
-
-      const deleteSubscription = modalReference.componentInstance.accessPointDeletedEvent.subscribe({
-        complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
-      }) as Subscription;
-
-      const unsubscribe = () => {
-        changesSubscription.unsubscribe();
-        deleteSubscription.unsubscribe();
-      };
-
-      modalReference.result.then(() => unsubscribe(), () => unsubscribe());
-    }
+    modalReference.result.then(() => unsubscribe(), () => unsubscribe());
   }
 
   /**
@@ -190,24 +151,5 @@ export class ListComponent implements OnInit, OnDestroy {
           this.toastService.setError('Access points display status change failed.');
         }
       });
-  }
-
-  /**
-   * Apply custom user preferences
-   */
-   private applyPreferences(): void {
-    const useLegacyDetailsView = this.preferencesService.getPreference("useLegacyDetailsView");
-
-    if (useLegacyDetailsView !== null) {
-      const stringToBoolean = (value: string): boolean => {
-        try {
-          return JSON.parse(value);
-        } catch {
-          return false;
-        }
-      };
-
-      this.useLegacyDetailsView = stringToBoolean(useLegacyDetailsView);
-    }
   }
 }
