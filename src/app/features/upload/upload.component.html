@@ -69,7 +69,7 @@
                 <p>Network frames in CAP format provided by the program airodump-ng (Aircrack-ng platform).</p>
                 <form [formGroup]="aircrackngCapUploadForm" (ngSubmit)="submitUploadAircrackngCap()">
                     <div>
-                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
+                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, aircrackngCapUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>
@@ -83,7 +83,7 @@
                 <p>Network frames in PCAP format provided by the Wireshark suite.</p>
                 <form [formGroup]="wiresharkPcapUploadForm" (ngSubmit)="submitUploadWiresharkPcap()">
                     <div>
-                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, defaultUploadForm)">
+                        <input class="form-control" type="file" formControlName="file" (change)="assignFileToControlOnChange($event, wiresharkPcapUploadForm)">
                     </div>
                     <button type="submit" class="btn btn-primary col-12 mt-3">Upload</button> 
                 </form>
