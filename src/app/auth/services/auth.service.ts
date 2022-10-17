@@ -28,8 +28,6 @@ export class AuthService {
   private server: string;
   private serverPath: string;
 
-  private refreshTokenTimeout: any;
-
   constructor(
     private router: Router,
     private httpClient: HttpClient,
@@ -77,11 +75,10 @@ export class AuthService {
         this.localStorageService.set({
           key: environment.LSK_REFRESH_TOKEN,
           value: res.refreshToken,
-          expirationMinutes: null,
+          expirationMinutes: environment.AUTH_REFRESH_TOKEN_EXPIRATION_HOURS * 60
         });
 
         this.userSubject.next(authUser);
-        this.startRefreshTokenTimer();
         return res;
       }));
   }
@@ -105,11 +102,10 @@ export class AuthService {
         this.localStorageService.set({
           key: environment.LSK_REFRESH_TOKEN,
           value: res.refreshToken,
-          expirationMinutes: null,
+          expirationMinutes: environment.AUTH_REFRESH_TOKEN_EXPIRATION_HOURS * 60
         });
 
         this.userSubject.next(authUser);
-        this.startRefreshTokenTimer();
         return res;
       }));
   }
@@ -149,7 +145,6 @@ export class AuthService {
    * Remove authentication related tokens and server from local storage
    */
   public clientSideLogout(): void {
-    this.stopRefreshTokenTimer();
     this.userSubject.next(null);
 
     this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
@@ -170,29 +165,13 @@ export class AuthService {
   public passwordReset(contract: PasswordResetRequest): void {
     this.httpClient.post(`${ this.serverPath }/reset`, contract, { withCredentials: true }).subscribe({
       complete: () => {
-        this.stopRefreshTokenTimer();
-        this.userSubject.next(null);
-        
-        this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
-        this.localStorageService.unset(environment.LSK_SERVER);
-
-        this.router.navigate(['/login']);
+        this.clientSideLogout();
+        this.router.navigate(['/auth']);
       },
       error: (error) => {
         this.loggerService.logError(error);
       }
     });
-  }
-
-  private startRefreshTokenTimer(): void {
-    const payload: any = jwt_decode(this.userValue.jwt);
-    const expires: Date = new Date(payload.exp * 1000);
-    const timeout = expires.getTime() * Date.now() - (60 * 1000);
-    this.refreshTokenTimeout = setTimeout(() => this.refreshToken().subscribe(), timeout);
-  }
-
-  private stopRefreshTokenTimer(): void {
-    clearTimeout(this.refreshTokenTimeout);
   }
 
   private mapAuthUser(jwt: string): AuthUser {
