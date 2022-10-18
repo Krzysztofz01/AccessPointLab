@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, throwError } from 'rxjs';
 import { GlobalScopeService } from 'src/app/core/services/global-scope.service';
 import { LoginRequest } from '../contracts/login.request';
 import { LoginResponse } from '../contracts/login.response';
@@ -55,6 +55,14 @@ export class AuthService {
   }
 
   /**
+   * Get the server auth endpoint
+   * @returns Server auth endpoint url
+   */
+  public getServiceAuthPath(): string {
+    return this.serverPath
+  }
+
+  /**
   * Get user value from the beahavior subject
   * @returns AuthUser model encoded into JWT
   */
@@ -88,10 +96,10 @@ export class AuthService {
   * @returns Refresh response as a observable
   */
    public refreshToken(): Observable<RefreshResponse> {
-    if (this.serverPath === undefined) throw new Error('No server insance specified.');
+    if (this.serverPath === undefined) return throwError(() => new Error('No server insance specified.'));
     
     const refreshToken = this.localStorageService.get(environment.LSK_REFRESH_TOKEN);
-    if (refreshToken === null) throw new Error('No refresh token is available.');
+    if (refreshToken === null) return throwError(() => new Error('No refresh token is available.'))
 
     const refreshRequest: RefreshRequest = { refreshToken };
 
