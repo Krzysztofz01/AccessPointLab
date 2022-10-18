@@ -14,12 +14,14 @@ import { GlobalScopeService } from '../services/global-scope.service';
 export class TokenInterceptor implements HttpInterceptor {
   private isRefreshing: boolean;
   private server: string;
+  private authEndpoint: string;
 
   private readonly refreshRetryCount = 3;
   private readonly refreshRetryDelayMs = 1500;
 
   constructor(private authService: AuthService, private globalScopeService: GlobalScopeService) {
     this.globalScopeService.server.subscribe(server => this.server = server);
+    this.authEndpoint = this.authService.getServiceAuthPath();
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -35,8 +37,10 @@ export class TokenInterceptor implements HttpInterceptor {
 
     // Passing the request, catching errors...
     return next.handle(request).pipe(catchError(error => {
+      const isRequestToAuthEndpoint = request.url.startsWith(this.authEndpoint);
+
       // [401] Unauthroized - No token present or the token is invalid
-      if (error instanceof HttpErrorResponse && error.status === 401) {
+      if (error instanceof HttpErrorResponse && error.status === 401 && !isRequestToAuthEndpoint) {
         // Trying to refresh the token (3 retires) then call the original request
         return this.handleTokenRefreshing(request, next).pipe(
           retryWhen(error => error.pipe(
@@ -58,7 +62,10 @@ export class TokenInterceptor implements HttpInterceptor {
 
   private isClientSizeSessionValid(): boolean {
     const user = this.authService.userValue;
-    return user !== null && user.jwt !== null;
+
+    if (user === undefined || user === null) return false;
+    if (user.jwt === undefined || user.jwt === null) return false;
+    return true;
   }
 
   private getUserJwt(): string {
@@ -93,14 +100,13 @@ export class TokenInterceptor implements HttpInterceptor {
         catchError((error) => {
           this.isRefreshing = false;
 
-          // If the response is 401/403 the refresh token is no loger valid causing a client side logout
-          if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
+          // If the response is 403 the refresh token is no loger valid causing a client side logout
+          if (error instanceof HttpErrorResponse && error.status === 403) {
             this.authService.clientSideLogout();
             return throwError(() => new Error("You must be authenticated to perform this operation."));
           }
 
-          // Some other problem occured, return the error
-          return throwError(() => new Error("Authentication token refreshing failed."));
+          return throwError(() => error);
         })
       );
     }
