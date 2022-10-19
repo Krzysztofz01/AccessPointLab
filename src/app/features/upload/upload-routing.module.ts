@@ -6,8 +6,7 @@ const routes: Routes = [
     {
         path: '',
         component: UploadComponent
-    },
-    { path: '**', redirectTo: '' }
+    }
 ];
 
 @NgModule({
