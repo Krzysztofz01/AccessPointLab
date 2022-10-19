@@ -6,8 +6,7 @@ const routes: Routes = [
     {
         path: '',
         component: DownloadComponent
-    },
-    { path: '**', redirectTo: '' }
+    }
 ];
 
 @NgModule({
