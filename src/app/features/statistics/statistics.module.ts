@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { StatisticsComponent } from './statistics.component';
 import { NgChartsModule } from 'ng2-charts';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { StatisticsRoutingModule } from './statistics-routing.module';
 
 
 
@@ -12,6 +13,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
   ],
   imports: [
     CommonModule,
+    StatisticsRoutingModule,
     NgChartsModule,
     SharedModule
   ]
