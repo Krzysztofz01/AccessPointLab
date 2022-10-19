@@ -6,7 +6,8 @@ const routes: Routes = [
     {
         path: '',
         component: StatisticsComponent
-    }
+    },
+    { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
