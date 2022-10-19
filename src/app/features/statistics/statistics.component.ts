@@ -106,7 +106,10 @@ export class StatisticsComponent implements OnDestroy, OnInit {
 
           if (frequency.length) {
             frequency.forEach((e: any) => {
-              labels.push(e.frequency);
+              // TODO: The frequencies are not string. Backend compatibility hack
+              const frequencyName = (e.frequency == 0) ? "Other" : e.frequency;
+              
+              labels.push(frequencyName);
               data.push(e.count);
             });
           } else {
