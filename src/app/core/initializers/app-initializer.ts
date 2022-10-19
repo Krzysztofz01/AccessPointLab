@@ -5,12 +5,12 @@ export function appInitializer(authService: AuthService) {
     if (authService.getServerName() === undefined) return () => Promise<null>;
     
     const refreshResolveObservable = authService.refreshToken()
-        .pipe(catchError((_1, _2) => { 
+        .pipe(catchError((_) => {
             authService.clientSideLogout();
-            return of(undefined);
+            // TODO: Maybe still return the original error?
+            return of(null)
         }));
-    
- 
+        
     return () => (firstValueFrom(refreshResolveObservable).catch((_3) => {
         return () => Promise<null>;
     }));
