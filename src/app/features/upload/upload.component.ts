@@ -212,15 +212,15 @@ export class UploadComponent implements OnInit, OnDestroy {
    * Submit the upload of the Aircrack-ng cap scan file
    */
   public submitUploadAircrackngCap(): void {
-    if (!this.aircrackngUploadForm.valid) {
+    if (!this.aircrackngCapUploadForm.valid) {
       this.toastService.setError("Select a file to upload it.");
       return;
     }
     
-    const file = this.aircrackngUploadForm.get('file').value as File;
+    const file = this.aircrackngCapUploadForm.get('file').value as File;
     if (!this.isFileTypeValid(file, 'cap')) {
       this.toastService.setError("Invalid file format.");
-      this.aircrackngUploadForm.reset();
+      this.aircrackngCapUploadForm.reset();
       return;
     }
     
@@ -229,7 +229,7 @@ export class UploadComponent implements OnInit, OnDestroy {
       .subscribe({
         complete: () => {
           this.toastService.setInformation("Upload successful.");
-          this.aircrackngUploadForm.reset();
+          this.aircrackngCapUploadForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -242,15 +242,15 @@ export class UploadComponent implements OnInit, OnDestroy {
    * Submit the upload of the Wireshrak pcap scan file
    */
   public submitUploadWiresharkPcap(): void {
-    if (!this.aircrackngUploadForm.valid) {
+    if (!this.wiresharkPcapUploadForm.valid) {
       this.toastService.setError("Select a file to upload it.");
       return;
     }
     
-    const file = this.aircrackngUploadForm.get('file').value as File;
+    const file = this.wiresharkPcapUploadForm.get('file').value as File;
     if (!this.isFileTypeValid(file, 'pcap')) {
       this.toastService.setError("Invalid file format.");
-      this.aircrackngUploadForm.reset();
+      this.wiresharkPcapUploadForm.reset();
       return;
     }
     
@@ -259,7 +259,7 @@ export class UploadComponent implements OnInit, OnDestroy {
       .subscribe({
         complete: () => {
           this.toastService.setInformation("Upload successful.");
-          this.aircrackngUploadForm.reset();
+          this.wiresharkPcapUploadForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);

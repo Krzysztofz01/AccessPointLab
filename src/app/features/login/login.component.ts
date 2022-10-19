@@ -33,8 +33,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       email: new UntypedFormControl('', [ Validators.required, Validators.email ]),
       password: new UntypedFormControl('', [ Validators.required, Validators.minLength(6) ])
     });
-
-    this.initializeRefreshToken();
   }
 
   ngOnDestroy(): void {
@@ -97,6 +95,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   /**
+  * @deprecated All the refreshing is handled on the token-interceptor and app-initializer. This helper method will be removed soon.
   * Check for a pending session and authenticate.
   */
   private initializeRefreshToken(): void {

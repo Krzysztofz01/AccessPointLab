@@ -199,14 +199,14 @@ export class AccessPointService {
 
   public postAccessPointsPacketsAircrackngCap(scanPcapFile : File): Observable<void> {
     const formData = new FormData();
-    formData.append('scanPcapFile ', scanPcapFile);
+    formData.append('scanPcapFile', scanPcapFile);
 
     return this.httpClient.post<void>(this.requestUrl('aircrackng/cap', true), formData);
   }
 
   public postAccessPointsPacketsWiresharkPcap(scanPcapFile: File): Observable<void> {
     const formData = new FormData();
-    formData.append('scanPcapFile ', scanPcapFile);
+    formData.append('scanPcapFile', scanPcapFile);
 
     return this.httpClient.post<void>(this.requestUrl('wireshark/pcap', true), formData);
   }

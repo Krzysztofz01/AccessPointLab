@@ -17,5 +17,6 @@ export const environment = {
   PIN_ICON_UNKNOWN: 'PIN_UNKNOWN.png',
   LOG_INFO: true,
   LOG_ERROR: true,
-  LOG_SINGLE_LEVEL: true
+  LOG_SINGLE_LEVEL: true,
+  AUTH_REFRESH_TOKEN_EXPIRATION_HOURS: 24 * 7
 };
