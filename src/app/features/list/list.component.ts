@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -35,7 +35,8 @@ export class ListComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private accessPointService: AccessPointService,
     private toastService: ToastService,
-    private loggerService: LoggerService) { }
+    private loggerService: LoggerService,
+    private changedetector: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     const role = this.authService.userValue.role;
@@ -81,6 +82,8 @@ export class ListComponent implements OnInit, OnDestroy {
   private createDetailsModalInstance(accessPoint: AccessPoint): void {
     const modalReference = this.modalService.open(AccesspointDetailsV2Component, { modalDialogClass: 'modal-xl' });
 
+    this.changedetector.detach();
+
     (modalReference.componentInstance as AccesspointDetailsV2Component).initializeModalData(accessPoint, this.hasFullPermission);
 
     const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
@@ -91,12 +94,13 @@ export class ListComponent implements OnInit, OnDestroy {
       complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
     }) as Subscription;
 
-    const unsubscribe = () => {
+    const releaseModalContext = () => {
       changesSubscription.unsubscribe();
       deleteSubscription.unsubscribe();
+      this.changedetector.reattach();
     };
 
-    modalReference.result.then(() => unsubscribe(), () => unsubscribe());
+    modalReference.result.then(() => releaseModalContext(), () => releaseModalContext());
   }
 
   /**
