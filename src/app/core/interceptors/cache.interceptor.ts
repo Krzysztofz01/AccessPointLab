@@ -4,16 +4,26 @@ import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';  
 import { environment } from 'src/environments/environment';
 import { LoggerService } from '../services/logger.service';
-import { LocalStorageService } from '../services/local-storage.service';
+import { PreferencesService } from '../services/preferences.service';
 
 
 @Injectable()
 export class CacheInterceptor implements HttpInterceptor {
   private cache: Map<string, HttpResponse<unknown>> = new Map();
 
-  constructor(private localStorageService: LocalStorageService, private loggerService: LoggerService) { }
+  private readonly cachePreferenceKey = "disableClientSideCaching";
+
+  constructor(
+    private preferencesService: PreferencesService,
+    private loggerService: LoggerService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const disableCaching = this.preferencesService.getPreference(this.cachePreferenceKey) as string;
+    if (disableCaching !== undefined && disableCaching.toLowerCase() === "true") {
+      this.loggerService.logInformation("Caching disabled by preference.");
+      return next.handle(request);
+    }
+
     const requestPath = request.urlWithParams;
 
     if (request.method !== 'GET' || requestPath === undefined)
