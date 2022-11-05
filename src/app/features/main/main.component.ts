@@ -110,8 +110,8 @@ export class MainComponent implements OnInit, OnDestroy {
    * Apply custom user preferences
    */
   private applyPreferences(): void {
-    const centerLatitude = this.preferencesService.getPreference("mapCenterLatitude");
-    const centerLongitude = this.preferencesService.getPreference("mapCenterLongitude");
+    const centerLatitude = this.preferencesService.getPreference("mapCenterLatitude") as string;
+    const centerLongitude = this.preferencesService.getPreference("mapCenterLongitude") as string;
     
     if (centerLatitude !== null && centerLongitude !== null) {
       this.mapCenterLatitude = parseFloat(centerLatitude);
