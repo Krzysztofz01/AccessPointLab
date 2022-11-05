@@ -10,7 +10,8 @@ export class PreferencesService {
   private readonly defaultPreferences: Preferences = {
     mapCenterLatitude: null,
     mapCenterLongitude: null,
-    useLegacyDetailsView: false
+    useLegacyDetailsView: false,
+    disableClientSideCaching: false
   };
 
   constructor(
@@ -58,7 +59,7 @@ export class PreferencesService {
    * @param property Preference property name
    * @returns Preference property value
    */
-  getPreference(property: string): string | null {
+  getPreference(property: string): any {
     if (!this.localStorageService.test()) {
       this.loggerService.logError("The local storage is not supported. Preferences can not be applied.");
       return null;
@@ -80,4 +81,5 @@ export interface Preferences {
   mapCenterLatitude: string | undefined;
   mapCenterLongitude: string | undefined;
   useLegacyDetailsView: boolean | undefined;
+  disableClientSideCaching: boolean | undefined;
 }
