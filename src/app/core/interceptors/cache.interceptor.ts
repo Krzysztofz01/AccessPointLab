@@ -19,7 +19,7 @@ export class CacheInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const disableCaching = this.preferencesService.getPreference(this.cachePreferenceKey) as string;
-    if (disableCaching !== undefined && disableCaching.toLowerCase() === "true") {
+    if (disableCaching != undefined && disableCaching.toLowerCase() === "true") {
       this.loggerService.logInformation("Caching disabled by preference.");
       return next.handle(request);
     }
