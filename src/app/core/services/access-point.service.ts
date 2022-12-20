@@ -132,8 +132,8 @@ export class AccessPointService {
     const endpoint = 'statistics/signal';
     
     const headers = this.getLocalCachingHeaders();
-    const params = new HttpParams();
-    if (limit !== undefined) params.set('limit', limit);
+    let params = new HttpParams();
+    if (limit !== undefined) params = params.set('limit', limit);
     
     return allowLocalCaching
       ? this.httpClient.get<Array<AccessPoint>>(this.requestUrl(endpoint), { params, headers })
@@ -144,8 +144,8 @@ export class AccessPointService {
     const endpoint = 'statistics/frequency';
     
     const headers = this.getLocalCachingHeaders();
-    const params = new HttpParams();
-    if (limit !== undefined) params.set('limit', limit);
+    let params = new HttpParams();
+    if (limit !== undefined) params = params.set('limit', limit);
 
     return allowLocalCaching
       ? this.httpClient.get<[frequency: number, count: number]>(this.requestUrl(endpoint), { params, headers })
@@ -156,8 +156,8 @@ export class AccessPointService {
     const endpoint = 'statistics/manufacturer';
 
     const headers = this.getLocalCachingHeaders();
-    const params = new HttpParams();
-    if (limit !== undefined) params.set('limit', limit);
+    let params = new HttpParams();
+    if (limit !== undefined) params = params.set('limit', limit);
 
     return allowLocalCaching
       ? this.httpClient.get<[manufacturer: string, count: number]>(this.requestUrl(endpoint), { params, headers })
@@ -168,8 +168,8 @@ export class AccessPointService {
     const endpoint = 'statistics/encryption';
 
     const headers = this.getLocalCachingHeaders();
-    const params = new HttpParams();
-    if (limit !== undefined) params.set('limit', limit);
+    let params = new HttpParams();
+    if (limit !== undefined) params = params.set('limit', limit);
 
     return allowLocalCaching
       ? this.httpClient.get<[encryption: string, count: number]>(this.requestUrl(endpoint), { params, headers })
@@ -199,14 +199,14 @@ export class AccessPointService {
 
   public postAccessPointsPacketsAircrackngCap(scanPcapFile : File): Observable<void> {
     const formData = new FormData();
-    formData.append('scanPcapFile ', scanPcapFile);
+    formData.append('scanPcapFile', scanPcapFile);
 
     return this.httpClient.post<void>(this.requestUrl('aircrackng/cap', true), formData);
   }
 
   public postAccessPointsPacketsWiresharkPcap(scanPcapFile: File): Observable<void> {
     const formData = new FormData();
-    formData.append('scanPcapFile ', scanPcapFile);
+    formData.append('scanPcapFile', scanPcapFile);
 
     return this.httpClient.post<void>(this.requestUrl('wireshark/pcap', true), formData);
   }

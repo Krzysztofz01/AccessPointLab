@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -37,7 +37,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private accessPointService: AccessPointService,
     private loggerService: LoggerService,
-    private preferencesService: PreferencesService) { }
+    private preferencesService: PreferencesService,
+    private changedetector: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     const role = this.authService.userValue.role;
@@ -84,6 +85,8 @@ export class MainComponent implements OnInit, OnDestroy {
   private createDetailsModalInstance(accessPoints: Array<AccessPoint>): void {
     const modalReference = this.modalService.open(AccesspointDetailsV2Component, { modalDialogClass: 'modal-xl' });
 
+    this.changedetector.detach();
+
     (modalReference.componentInstance as AccesspointDetailsV2Component).initializeModalData(accessPoints, this.hasFullPermission);
 
     const changesSubscription = modalReference.componentInstance.accessPointUpdatedEvent.subscribe({
@@ -94,20 +97,21 @@ export class MainComponent implements OnInit, OnDestroy {
       complete: () => this.accessPointsObservable = this.accessPointService.getAllAccessPoints(this.hasFullPermission, false)
     }) as Subscription;
 
-    const unsubscribe = () => {
+    const releaseModalContext = () => {
       changesSubscription.unsubscribe();
       deleteSubscription.unsubscribe();
+      this.changedetector.reattach();
     };
 
-    modalReference.result.then(() => unsubscribe(), () => unsubscribe());
+    modalReference.result.then(() => releaseModalContext(), () => releaseModalContext());
   }
 
   /**
    * Apply custom user preferences
    */
   private applyPreferences(): void {
-    const centerLatitude = this.preferencesService.getPreference("mapCenterLatitude");
-    const centerLongitude = this.preferencesService.getPreference("mapCenterLongitude");
+    const centerLatitude = this.preferencesService.getPreference("mapCenterLatitude") as string;
+    const centerLongitude = this.preferencesService.getPreference("mapCenterLongitude") as string;
     
     if (centerLatitude !== null && centerLongitude !== null) {
       this.mapCenterLatitude = parseFloat(centerLatitude);

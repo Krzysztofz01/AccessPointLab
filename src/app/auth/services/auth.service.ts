@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, throwError } from 'rxjs';
 import { GlobalScopeService } from 'src/app/core/services/global-scope.service';
 import { LoginRequest } from '../contracts/login.request';
 import { LoginResponse } from '../contracts/login.response';
@@ -27,8 +27,6 @@ export class AuthService {
   
   private server: string;
   private serverPath: string;
-
-  private refreshTokenTimeout: any;
 
   constructor(
     private router: Router,
@@ -57,6 +55,14 @@ export class AuthService {
   }
 
   /**
+   * Get the server auth endpoint
+   * @returns Server auth endpoint url
+   */
+  public getServiceAuthPath(): string {
+    return this.serverPath
+  }
+
+  /**
   * Get user value from the beahavior subject
   * @returns AuthUser model encoded into JWT
   */
@@ -77,11 +83,10 @@ export class AuthService {
         this.localStorageService.set({
           key: environment.LSK_REFRESH_TOKEN,
           value: res.refreshToken,
-          expirationMinutes: null,
+          expirationMinutes: environment.AUTH_REFRESH_TOKEN_EXPIRATION_HOURS * 60
         });
 
         this.userSubject.next(authUser);
-        this.startRefreshTokenTimer();
         return res;
       }));
   }
@@ -91,10 +96,10 @@ export class AuthService {
   * @returns Refresh response as a observable
   */
    public refreshToken(): Observable<RefreshResponse> {
-    if (this.serverPath === undefined) throw new Error('No server insance specified.');
+    if (this.serverPath === undefined) return throwError(() => new Error('No server insance specified.'));
     
     const refreshToken = this.localStorageService.get(environment.LSK_REFRESH_TOKEN);
-    if (refreshToken === null) throw new Error('No refresh token is available.');
+    if (refreshToken === null) return throwError(() => new Error('No refresh token is available.'))
 
     const refreshRequest: RefreshRequest = { refreshToken };
 
@@ -105,11 +110,10 @@ export class AuthService {
         this.localStorageService.set({
           key: environment.LSK_REFRESH_TOKEN,
           value: res.refreshToken,
-          expirationMinutes: null,
+          expirationMinutes: environment.AUTH_REFRESH_TOKEN_EXPIRATION_HOURS * 60
         });
 
         this.userSubject.next(authUser);
-        this.startRefreshTokenTimer();
         return res;
       }));
   }
@@ -149,7 +153,6 @@ export class AuthService {
    * Remove authentication related tokens and server from local storage
    */
   public clientSideLogout(): void {
-    this.stopRefreshTokenTimer();
     this.userSubject.next(null);
 
     this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
@@ -170,29 +173,13 @@ export class AuthService {
   public passwordReset(contract: PasswordResetRequest): void {
     this.httpClient.post(`${ this.serverPath }/reset`, contract, { withCredentials: true }).subscribe({
       complete: () => {
-        this.stopRefreshTokenTimer();
-        this.userSubject.next(null);
-        
-        this.localStorageService.unset(environment.LSK_REFRESH_TOKEN);
-        this.localStorageService.unset(environment.LSK_SERVER);
-
-        this.router.navigate(['/login']);
+        this.clientSideLogout();
+        this.router.navigate(['/auth']);
       },
       error: (error) => {
         this.loggerService.logError(error);
       }
     });
-  }
-
-  private startRefreshTokenTimer(): void {
-    const payload: any = jwt_decode(this.userValue.jwt);
-    const expires: Date = new Date(payload.exp * 1000);
-    const timeout = expires.getTime() * Date.now() - (60 * 1000);
-    this.refreshTokenTimeout = setTimeout(() => this.refreshToken().subscribe(), timeout);
-  }
-
-  private stopRefreshTokenTimer(): void {
-    clearTimeout(this.refreshTokenTimeout);
   }
 
   private mapAuthUser(jwt: string): AuthUser {

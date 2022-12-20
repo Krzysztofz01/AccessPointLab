@@ -1,21 +1,31 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
+import { AuthService } from 'src/app/auth/services/auth.service';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-download',
   templateUrl: './download.component.html',
   styleUrls: ['./download.component.css']
 })
-export class DownloadComponent implements OnDestroy {
+export class DownloadComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
+
+  private hasFullPermission: boolean;
 
   constructor(
     private accessPointService: AccessPointService,
+    private authService: AuthService,
     private toastService: ToastService,
     private loggerService: LoggerService) { }
+
+  ngOnInit(): void {
+    const role = this.authService.userValue.role;
+    this.hasFullPermission = (role === environment.ROLE_SUPPORT || role === environment.ROLE_ADMIN);
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
@@ -26,7 +36,7 @@ export class DownloadComponent implements OnDestroy {
    * Button click method for downloading the kml file
    */
   public downloadNativeKml(): void {
-    this.accessPointService.getAccessPointsInKmlFile(false)
+    this.accessPointService.getAccessPointsInKmlFile(this.hasFullPermission)
       .pipe(takeUntil(this.destroy$))  
       .subscribe({
         next: (responseBlob) => {

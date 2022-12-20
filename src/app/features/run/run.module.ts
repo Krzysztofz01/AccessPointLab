@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RunComponent } from './run.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RunRoutingModule } from './run-routing.module';
 
 
 
@@ -12,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   ],
   imports: [
     CommonModule,
+    RunRoutingModule,
     SharedModule,
     ReactiveFormsModule
   ]

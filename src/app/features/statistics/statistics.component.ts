@@ -12,7 +12,10 @@ import { ChartOptionGroup } from './chart-option-group.model';
 export class StatisticsComponent implements OnDestroy, OnInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   
+  private readonly encryptionChartEntryLimit = 7;
+  private readonly frequencyChartEntryLimit = 10;
   private readonly lineChartEntryLimit = 6;
+  
   private readonly chartsColors = [
     '#5F0A87',
     '#831BB3',
@@ -45,7 +48,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
    * Fetch encryption statistics and prepare chart options object
    */
   private initializeEncryptionChart(): void {
-    this.accessPointService.getStatisticsMostCommonEncryption(undefined)
+    this.accessPointService.getStatisticsMostCommonEncryption(this.encryptionChartEntryLimit, true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (encryption) => {
@@ -94,7 +97,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
    * Fetch frequency data and prepare chare options object
    */
   private initializeFrequencyChart(): void {
-    this.accessPointService.getStatisticsFrequency(10)
+    this.accessPointService.getStatisticsFrequency(this.frequencyChartEntryLimit, true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (frequency) => {
@@ -103,7 +106,10 @@ export class StatisticsComponent implements OnDestroy, OnInit {
 
           if (frequency.length) {
             frequency.forEach((e: any) => {
-              labels.push(e.frequency);
+              // TODO: The frequencies are not string. Backend compatibility hack
+              const frequencyName = (e.frequency == 0) ? "Other" : e.frequency;
+              
+              labels.push(frequencyName);
               data.push(e.count);
             });
           } else {
@@ -143,7 +149,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
    * Fetch signal range data and prepare chare options object
    */
   private initializeSignalRangeChart(): void {
-    this.accessPointService.getStatisticsGreatestSignalRange(this.lineChartEntryLimit)
+    this.accessPointService.getStatisticsGreatestSignalRange(this.lineChartEntryLimit, true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (accessPoints) => {
@@ -188,7 +194,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
    * Fetch most common manufacturer and prepare chart options object
    */
   private initializeManufacturerChart(): void {
-    this.accessPointService.getStatisticsMostCommonManufacturer(this.lineChartEntryLimit)
+    this.accessPointService.getStatisticsMostCommonManufacturer(this.lineChartEntryLimit, true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (manufacturer) => {

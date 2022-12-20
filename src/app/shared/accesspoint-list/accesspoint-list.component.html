@@ -44,7 +44,7 @@
                                 <td>{{ ap.deviceType }}</td>
                                 <td>{{ formatDate(ap.creationTimestamp) }}</td>
                                 <td>{{ ap.isPresent ? 'Present' : 'Missing' }}</td>
-                                <td>{{ ap.displayStatus ? 'Public' : 'Hidden' }}</td>
+                                <td>{{ (ap.displayStatus === undefined || ap.displayStatus === true) ? 'Public' : 'Hidden' }}</td>
                                 <td>{{ ap.runIdentifier ? ap.runIdentifier.substring(0, 6) : 'Unknown' }}</td>
                                 <td [style.color]="getCssSecurityColor(ap)">{{ ap.simplifiedSecurityStandard }}</td>
                                 <td>{{ getManufacturerName(ap) }}</td>

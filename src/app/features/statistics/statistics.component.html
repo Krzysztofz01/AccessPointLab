@@ -3,7 +3,7 @@
 <div class="container-fluid">
     <div class="row justify-content-center mt-2">
         <div class="col-lg-4 col-md-12 mx-3 px-5 text-center">
-            <div *ngIf="encryptionChartOptions !== undefined">
+            <div *ngIf="encryptionChartOptions !== undefined; else encryptionChartNotFound">
                 <h3>Encryption types</h3>
                 <canvas baseChart
                     [data]="encryptionChartOptions.data"
@@ -11,9 +11,12 @@
                     [type]="encryptionChartOptions.type">
                 </canvas>
             </div>
+            <ng-template #encryptionChartNotFound>
+                <h3 class="pt-5">No encryption data found</h3>
+            </ng-template>
         </div>
         <div class="col-lg-4 col-md-12 mx-3 px-5 text-center">
-            <div *ngIf="frequencyChartOptions !== undefined">
+            <div *ngIf="frequencyChartOptions !== undefined; else frequencyChartNotFound">
                 <h3>Signal frequencies</h3>
                 <canvas baseChart
                     [data]="frequencyChartOptions.data"
@@ -21,11 +24,14 @@
                     [type]="frequencyChartOptions.type">
                 </canvas>
             </div>
+            <ng-template #frequencyChartNotFound>
+                <h3 class="pt-5">No signal frequency data found</h3>
+            </ng-template>
         </div>
     </div>
     <div class="row justify-content-center mt-3">
         <div class="col-lg-4 col-md-12 px-5 text-center">
-            <div *ngIf="signalRangeChartOptions !== undefined">
+            <div *ngIf="signalRangeChartOptions !== undefined; else signalRangeChartNotFound">
                 <h3>Highest signal range</h3>
                 <canvas baseChart
                     [data]="signalRangeChartOptions.data"
@@ -33,9 +39,12 @@
                     [type]="signalRangeChartOptions.type">
                 </canvas>
             </div>
+            <ng-template #signalRangeChartNotFound>
+                <h3 class="pt-5">No signal range data found</h3>
+            </ng-template>
         </div>
         <div class="col-lg-4 col-md-12 px-5 text-center">
-            <div *ngIf="manufacturerChartOptions !== undefined">
+            <div *ngIf="manufacturerChartOptions !== undefined; else manufacturerChartNotFound">
                 <h3>Most common manufacturer</h3>
                 <canvas baseChart
                     [data]="manufacturerChartOptions.data"
@@ -43,6 +52,9 @@
                     [type]="manufacturerChartOptions.type">
                 </canvas>
             </div>
+            <ng-template #manufacturerChartNotFound>
+                <h3 class="pt-5">No manufacturer data found</h3>
+            </ng-template>
         </div>
     </div>
 </div>
