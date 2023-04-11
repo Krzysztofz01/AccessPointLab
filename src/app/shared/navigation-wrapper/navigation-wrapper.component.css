@@ -1,0 +1,30 @@
+.sidebar {
+    background-image: linear-gradient(135deg, var(--apm-primary), var(--apm-accent)) !important;
+    color: var(--apm-light) !important;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-logo-wrapper {
+    background-color: var(--apm-light);
+    border-radius: 1em;
+    max-width: 11em;
+    padding: 0.5em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sidebar-logo-wrapper img {
+    width: 100%;
+    height: auto;
+}
+
+.sidebar-nav-item {
+    color: var(--apm-light) !important;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.sidebar-nav-item:hover {
+    color: var(--apm-primary) !important;
+}
