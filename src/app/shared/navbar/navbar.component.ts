@@ -2,6 +2,9 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
+/**
+ * @deprecated The NavbarComponent is not longer supported. Consider using the NavigationWrapperComponent
+ */
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
