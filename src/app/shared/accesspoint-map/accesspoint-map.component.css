@@ -1,7 +1,7 @@
-.apm-ol-map {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+.apm-ol-map-filters {
+    height: 92%;
+}
+
+.apm-ol-map-no-filters {
     height: 100%;
 }

@@ -1,3 +1,16 @@
-<div class="apm-ol-map" [id]="mapId"></div>
+<div class="container-fluid">
+    <div class="row">      
+        <div *ngIf="useFilters; else noFilters" class="col p-0 vh-100">
+            <div class="apm-ol-map-filters" [id]="mapId"></div>
+            
+            <app-accesspoint-map-filter *ngIf="useFilters"
+                (filterChangedEvent)="filterValuesChanged($event)"></app-accesspoint-map-filter>
+        </div>
 
-<app-accesspoint-map-filter *ngIf="useFilters" (filterChangedEvent)="filterValuesChanged($event)"></app-accesspoint-map-filter>
+        <ng-template #noFilters>
+            <div class="col p-0 vh-100">
+                <div class="apm-ol-map-no-filters" [id]="mapId"></div>
+            </div>
+        </ng-template>
+    </div>
+</div>
