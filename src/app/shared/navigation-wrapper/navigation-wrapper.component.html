@@ -7,20 +7,20 @@
                         <div class="sidebar-logo-wrapper"><img src="assets/apm-logo.webp" alt="AccessPointLab logo"></div>
                     </a>
 
-                    <p class="mt-2"><em>Server: {{ getServerName() }}</em></p>
+                    <p *ngIf="isAuthenticated()" class="mt-2"><em>Server: {{ getServerName() }}</em></p>
                 </div>
                 
                 <div class="d-flex flex-column p-2">
-                    <h5 class="py-2"><a class="sidebar-nav-item" routerLink="/">Map</a></h5>
-                    <h5 class="py-2"><a class="sidebar-nav-item" routerLink="/list">List</a></h5>
-                    <h5 class="py-2"><a class="sidebar-nav-item" routerLink="/run">Run</a></h5>
-                    <h5 class="py-2"><a class="sidebar-nav-item" routerLink="/statistics">Statistics</a></h5>
-                    <h5 class="py-2"><a class="sidebar-nav-item" routerLink="/upload">Upload</a></h5>
-                    <h5 class="py-2"><a class="sidebar-nav-item" routerLink="/download">Download</a></h5>
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/">Map</a></h5>
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/list">List</a></h5>
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/run">Run</a></h5>
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/statistics">Statistics</a></h5>
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/upload">Upload</a></h5>
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/download">Download</a></h5>
                 </div>
 
                 <div class="p-2">
-                    <h5 class="py-2"><a class="sidebar-nav-item" (click)="logout()"><b>Logout</b></a></h5>       
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" (click)="logout()"><b>Logout</b></a></h5>       
                  </div>
             </div>
         </div>

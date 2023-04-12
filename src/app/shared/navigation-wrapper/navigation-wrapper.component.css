@@ -28,3 +28,9 @@
 .sidebar-nav-item:hover {
     color: var(--apm-primary) !important;
 }
+
+.sidebar-element-disabled {
+    color: var(--apm-accent) !important;
+    pointer-events: none !important;
+    cursor: default !important;
+}
