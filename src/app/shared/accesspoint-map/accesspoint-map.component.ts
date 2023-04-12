@@ -29,6 +29,7 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges
   @Input() centerLatitude: number | undefined;
   @Input() centerLongitude: number | undefined;
   @Input() identifier: string;
+  @Input() height: number | undefined;
   @Input() useFilters: boolean | undefined;
   @Input() allowReloading: boolean | undefined;
   @Input() centerAuto: boolean | undefined;
@@ -115,6 +116,21 @@ export class AccesspointMapComponent implements OnInit, AfterViewInit, OnChanges
   public filterValuesChanged(filterResult: AccessPointMapFilterResult): void {
     const features = this.generateAccessPointFeatures(this.accessPoints, filterResult);
     this.swapVectorLayer(features);
+  }
+
+  /**
+   * Get the map div height according the requested height and usege of filter component
+   * @returns View height value in range from 0vh to 100vh as CSS string
+   */
+  public getMapHeightStyle(): string {
+    const resultStyle = (value: number) => {
+      return `height: ${value}vh`;
+    }
+
+    if (this.useFilters !== undefined && this.useFilters) return resultStyle(92);
+    if ((this.height === undefined) || (this.height < 0 || this.height > 100)) return resultStyle(100);
+
+    return resultStyle(this.height); 
   }
 
   /**
