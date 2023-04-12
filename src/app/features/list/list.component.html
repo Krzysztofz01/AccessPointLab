@@ -1,9 +1,7 @@
-<app-navigation-wrapper>
-    <div class="p-3">
-        <app-accesspoint-list [accessPointObservable]="accessPointsObservable"
-            (accessPointRangeDeletedClick)="deleteAccessPointRange($event)"
-            (accessPointRangeDisplayStatusClick)="changeAccessPointRangeDisplayStatus($event)"
-            (accessPointClick)="showDetailsClick($event)">
-        </app-accesspoint-list>
-    </div>
-</app-navigation-wrapper>
+<div class="p-3">
+    <app-accesspoint-list [accessPointObservable]="accessPointsObservable"
+        (accessPointRangeDeletedClick)="deleteAccessPointRange($event)"
+        (accessPointRangeDisplayStatusClick)="changeAccessPointRangeDisplayStatus($event)"
+        (accessPointClick)="showDetailsClick($event)">
+    </app-accesspoint-list>
+</div>
