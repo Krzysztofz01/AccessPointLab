@@ -21,6 +21,7 @@ export class RunComponent implements OnInit, OnDestroy {
 
   public readonly mapId = 'run';
   public readonly useFilters = false;
+  public readonly mapHeight = 92;
   public readonly allowReloading = true;
   public readonly centerAuto = true;
 

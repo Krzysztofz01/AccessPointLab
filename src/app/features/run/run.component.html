@@ -1,20 +1,20 @@
-<app-navbar [animatedBackground]="true"></app-navbar>
+<app-navigation-wrapper>
+    <div *ngIf="runAccessPoints !== undefined">
+        <app-accesspoint-map [identifier]="mapId" [centerAuto]="centerAuto" [allowReloading]="allowReloading"
+            [height]="mapHeight" [useFilters]="useFilters" [accessPointObservable]="runAccessPoints"></app-accesspoint-map>
 
-<div *ngIf="runAccessPoints !== undefined">
-    <app-accesspoint-map [identifier]="mapId" [centerAuto]="centerAuto" [allowReloading]="allowReloading" [useFilters]="useFilters" [accessPointObservable]="runAccessPoints"></app-accesspoint-map>
-</div>
-
-<div *ngIf="runIdentifiers !== undefined" class="run-selection-container">
-    <div class="container-fluid">
-        <div class="row justify-content-center my-2">
-            <div class="col-lg-4 col-md-12 px-5 text-center">
-                <p class="run-selection-form-header">Run</p>
-                <form [formGroup]="runIdentifierForm">
-                    <select class="form-select" formControlName="selectedRunId">
-                        <option *ngFor="let runIdentifier of runIdentifiers" [value]="runIdentifier">{{ runIdentifier }}</option>
-                    </select>
-                </form>
+        <div class="container-fluid">
+            <div class="row justify-content-center my-2">
+                <div class="col-lg-4 col-md-12 px-5 text-center">
+                    <p class="run-selection-form-header">Run</p>
+                    <form [formGroup]="runIdentifierForm">
+                        <select class="form-select" formControlName="selectedRunId">
+                            <option *ngFor="let runIdentifier of runIdentifiers" [value]="runIdentifier">{{ runIdentifier }}
+                            </option>
+                        </select>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</app-navigation-wrapper>
