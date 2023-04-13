@@ -1,37 +1,24 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject, takeUntil } from 'rxjs';
 import { AccessPoint } from 'src/app/core/models/access-points.model';
 import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 
-/**
- * @deprecated The feature UploadComponent is not longer supported. Consider using the modal provided via the NavigationWrapperComponent
- */
 @Component({
-  selector: 'app-upload',
-  templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.css']
+  selector: 'app-navigation-wrapper-upload',
+  templateUrl: './navigation-wrapper-upload.component.html',
+  styleUrls: ['./navigation-wrapper-upload.component.css']
 })
-export class UploadComponent implements OnInit, OnDestroy {
+export class NavigationWrapperUploadComponent implements OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   
-  public defaultUploadForm: UntypedFormGroup;
-  public wigleUploadForm: UntypedFormGroup;
-  public wigleUploadCsvGzForm: UntypedFormGroup
-  public aircrackngUploadForm: UntypedFormGroup;
-  public aircrackngCapUploadForm: UntypedFormGroup;
-  public wiresharkPcapUploadForm: UntypedFormGroup;
-
   constructor(
+    private modal: NgbActiveModal,
     private accessPointService: AccessPointService,
-    private toastService: ToastService,
-    private loggerService: LoggerService) { }
-  
-  ngOnInit(): void {
-    this.initializeForms();
-  }
+    private loggerService: LoggerService,
+    private toastService: ToastService) { }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
@@ -39,63 +26,12 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Initialize scan data upload forms
-   */
-  private initializeForms(): void {
-    this.defaultUploadForm = new UntypedFormGroup({
-      file: new UntypedFormControl(null, [ Validators.required ])
-    });
-
-    this.wigleUploadForm = new UntypedFormGroup({
-      file: new UntypedFormControl(null, [ Validators.required ])
-    });
-
-    this.wigleUploadCsvGzForm = new UntypedFormGroup({
-      file: new UntypedFormControl(null, [Validators.required])
-    });
-
-    this.aircrackngUploadForm = new UntypedFormGroup({
-      file: new UntypedFormControl(null, [ Validators.required ])
-    });
-
-    this.aircrackngCapUploadForm = new UntypedFormGroup({
-      file: new UntypedFormControl(null, [ Validators.required ])
-    });
-
-    this.wiresharkPcapUploadForm = new UntypedFormGroup({
-      file: new UntypedFormControl(null, [ Validators.required ])
-    });
-  }
-
-  /**
-   * Set the selected file to the form-groups control
-   * @param e Event argument
-   * @param form Target form-group
-   */
-  public assignFileToControlOnChange(e: any, form: UntypedFormGroup): void {
-    if (e === undefined || form === undefined) return;
-    
-    const input = e.target as HTMLInputElement;
-    if (input.files.length < 1) return;
-    
-    const file = input.files[0];
-    form.get('file').setValue(file);
-  }
-
-  /**
    * Submit the upload of the default AccessPointMap scan file
    * Temporary workaround. The post endpoint has no json file support.
    */
-  public submitUploadDefault(): void {
-    if (!this.defaultUploadForm.valid) {
-      this.toastService.setError("Select a file to upload it.");
-      return;
-    }
-    
-    const file = this.defaultUploadForm.get('file').value as File;
+  public submitUploadDefault(file: File): void {
     if (!this.isFileTypeValid(file, 'json')) {
       this.toastService.setError("Invalid file format.");
-      this.defaultUploadForm.reset();
       return;
     }
 
@@ -109,7 +45,6 @@ export class UploadComponent implements OnInit, OnDestroy {
         .subscribe({
           complete: () => {
             this.toastService.setInformation("Upload successful.");
-            this.defaultUploadForm.reset();
           },
           error: (error) => {
             this.loggerService.logError(error);
@@ -117,23 +52,16 @@ export class UploadComponent implements OnInit, OnDestroy {
           }
         });
     }
-    
+
     fileReader.readAsText(file);
   }
 
   /**
    * Submit the upload of the WiGLE scan file
    */
-  public submitUploadWigle(): void {
-    if (!this.wigleUploadForm.valid) {
-      this.toastService.setError("Select a file to upload it.");
-      return;
-    }
-    
-    const file = this.wigleUploadForm.get('file').value as File;
+  public submitUploadWigle(file: File): void {
     if (!this.isFileTypeValid(file, 'csv')) {
       this.toastService.setError("Invalid file format.");
-      this.wigleUploadForm.reset();
       return;
     }
 
@@ -142,7 +70,6 @@ export class UploadComponent implements OnInit, OnDestroy {
       .subscribe({
         complete: () => {
           this.toastService.setInformation("Upload successful.");
-          this.wigleUploadForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -154,16 +81,9 @@ export class UploadComponent implements OnInit, OnDestroy {
   /**
    * Submit the upload of the WiGLE CSV.GZ scan file
    */
-  public submitUploadWigleCsvGz(): void {
-    if (!this.wigleUploadCsvGzForm.valid) {
-      this.toastService.setError("Select a file to upload it.");
-      return;
-    }
-
-    const file = this.wigleUploadCsvGzForm.get('file').value as File;
+  public submitUploadWigleCsvGz(file: File): void {
     if (!this.isFileTypeValid(file, 'csv')) {
       this.toastService.setError("Invalid file format.");
-      this.wigleUploadForm.reset();
       return;
     }
 
@@ -172,7 +92,6 @@ export class UploadComponent implements OnInit, OnDestroy {
       .subscribe({
         complete: () => {
           this.toastService.setInformation("Upload successful.");
-          this.wigleUploadCsvGzForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -184,25 +103,17 @@ export class UploadComponent implements OnInit, OnDestroy {
   /**
    * Submit the upload of the Aircrack-ng scan file
    */
-  public submitUploadAircrackng(): void {
-    if (!this.aircrackngUploadForm.valid) {
-      this.toastService.setError("Select a file to upload it.");
-      return;
-    }
-    
-    const file = this.aircrackngUploadForm.get('file').value as File;
+  public submitUploadAircrackng(file: File): void {
     if (!this.isFileTypeValid(file, 'csv')) {
       this.toastService.setError("Invalid file format.");
-      this.aircrackngUploadForm.reset();
       return;
     }
-    
+
     this.accessPointService.postAccessPointsAircrackngCsv(file)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
           this.toastService.setInformation("Upload successful.");
-          this.aircrackngUploadForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -214,25 +125,17 @@ export class UploadComponent implements OnInit, OnDestroy {
   /**
    * Submit the upload of the Aircrack-ng cap scan file
    */
-  public submitUploadAircrackngCap(): void {
-    if (!this.aircrackngCapUploadForm.valid) {
-      this.toastService.setError("Select a file to upload it.");
-      return;
-    }
-    
-    const file = this.aircrackngCapUploadForm.get('file').value as File;
+  public submitUploadAircrackngCap(file: File): void {
     if (!this.isFileTypeValid(file, 'cap')) {
       this.toastService.setError("Invalid file format.");
-      this.aircrackngCapUploadForm.reset();
       return;
     }
-    
+
     this.accessPointService.postAccessPointsPacketsAircrackngCap(file)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
           this.toastService.setInformation("Upload successful.");
-          this.aircrackngCapUploadForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -244,25 +147,17 @@ export class UploadComponent implements OnInit, OnDestroy {
   /**
    * Submit the upload of the Wireshrak pcap scan file
    */
-  public submitUploadWiresharkPcap(): void {
-    if (!this.wiresharkPcapUploadForm.valid) {
-      this.toastService.setError("Select a file to upload it.");
-      return;
-    }
-    
-    const file = this.wiresharkPcapUploadForm.get('file').value as File;
+  public submitUploadWiresharkPcap(file: File): void {
     if (!this.isFileTypeValid(file, 'pcap')) {
       this.toastService.setError("Invalid file format.");
-      this.wiresharkPcapUploadForm.reset();
       return;
     }
-    
+
     this.accessPointService.postAccessPointsPacketsWiresharkPcap(file)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         complete: () => {
           this.toastService.setInformation("Upload successful.");
-          this.wiresharkPcapUploadForm.reset();
         },
         error: (error) => {
           this.loggerService.logError(error);
@@ -279,10 +174,17 @@ export class UploadComponent implements OnInit, OnDestroy {
    */
   private isFileTypeValid(file: File, expectedType: string): boolean {
     if (!file) return false;
-        
+
     const extension = file.name.split('.')[1].toLocaleLowerCase();
-    if (extension !==  expectedType.toLocaleLowerCase()) return false;    
-    
+    if (extension !== expectedType.toLocaleLowerCase()) return false;
+
     return true;
+  }
+
+  /**
+   * Dismiss the current modal instance
+   */
+  public closeModal(): void {
+    this.modal.close(undefined);
   }
 }

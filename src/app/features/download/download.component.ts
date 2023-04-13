@@ -6,6 +6,9 @@ import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { environment } from 'src/environments/environment';
 
+/**
+ * @deprecated The feature DownloadComponent is not longer supported. Consider using the download option provided via the feature ListComponent
+ */
 @Component({
   selector: 'app-download',
   templateUrl: './download.component.html',

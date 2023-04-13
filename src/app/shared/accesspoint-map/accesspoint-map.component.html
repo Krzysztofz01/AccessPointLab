@@ -1,3 +1,12 @@
-<div class="apm-ol-map" [id]="mapId"></div>
+<div class="container-fluid">
+    <div class="row">      
+        <div class="col p-0">
+            <div [id]="mapId" [style]="getMapHeightStyle()"></div>
 
-<app-accesspoint-map-filter *ngIf="useFilters" (filterChangedEvent)="filterValuesChanged($event)"></app-accesspoint-map-filter>
+            <div *ngIf="useFilters">
+                <app-accesspoint-map-filter *ngIf="useFilters"
+                    (filterChangedEvent)="filterValuesChanged($event)"></app-accesspoint-map-filter>
+            </div>
+        </div>
+    </div>
+</div>

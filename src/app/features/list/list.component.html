@@ -1,8 +1,15 @@
-<app-navbar></app-navbar>
+<div class="p-3">
+    <app-accesspoint-list [accessPointObservable]="accessPointsObservable"
+        (accessPointRangeDeletedClick)="deleteAccessPointRange($event)"
+        (accessPointRangeDisplayStatusClick)="changeAccessPointRangeDisplayStatus($event)"
+        (accessPointClick)="showDetailsClick($event)">
 
-<app-accesspoint-list
-    [accessPointObservable]="accessPointsObservable"
-    (accessPointRangeDeletedClick)="deleteAccessPointRange($event)"
-    (accessPointRangeDisplayStatusClick)="changeAccessPointRangeDisplayStatus($event)"
-    (accessPointClick)="showDetailsClick($event)">
-</app-accesspoint-list>
+        <div ngbDropdown class="d-inline-block">
+            <button type="button" class="btn btn-primary px-4" id="download-dropdown" ngbDropdownToggle>Download</button>
+            <div ngbDropdownMenu aria-labelledby="download-dropdown">
+                <button class="dropdown-button" (click)="downloadNativeKml()" ngbDropdownItem>Native KML Format</button>
+                <button class="dropdown-button" (click)="downloadWigleCsv()" ngbDropdownItem>WiGLE CSV Format</button>
+            </div>
+        </div>
+    </app-accesspoint-list>
+</div>

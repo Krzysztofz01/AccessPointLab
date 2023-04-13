@@ -18,6 +18,9 @@ import { AccesspointDetailsV2DetailsComponent } from './accesspoint-details-v2/a
 import { AccesspointDetailsV2StampsComponent } from './accesspoint-details-v2/accesspoint-details-v2-stamps/accesspoint-details-v2-stamps.component';
 import { AccesspointDetailsV2ManageComponent } from './accesspoint-details-v2/accesspoint-details-v2-manage/accesspoint-details-v2-manage.component';
 import { OrderByPipe } from './accesspoint-list/order-by.pipe';
+import { NavigationWrapperComponent } from './navigation-wrapper/navigation-wrapper.component';
+import { NavigationWrapperUploadComponent } from './navigation-wrapper/navigation-wrapper-upload/navigation-wrapper-upload.component';
+import { FileDialogButtonComponent } from './file-dialog-button/file-dialog-button.component';
 
 
 
@@ -37,7 +40,10 @@ import { OrderByPipe } from './accesspoint-list/order-by.pipe';
     AccesspointDetailsV2DetailsComponent,
     AccesspointDetailsV2StampsComponent,
     AccesspointDetailsV2ManageComponent,
-    OrderByPipe
+    OrderByPipe,
+    NavigationWrapperComponent,
+    NavigationWrapperUploadComponent,
+    FileDialogButtonComponent
   ],
   imports: [
     CommonModule,
@@ -53,7 +59,8 @@ import { OrderByPipe } from './accesspoint-list/order-by.pipe';
     AccesspointListComponent,
     LoadingIndicatorComponent,
     ToastComponent,
-    AccesspointDetailsV2Component
+    AccesspointDetailsV2Component,
+    NavigationWrapperComponent
   ]
 })
 export class SharedModule { }
