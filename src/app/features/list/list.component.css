@@ -1,0 +1,7 @@
+.dropdown-button {
+    color: var(--apm-primary) !important;
+}
+
+.dropdown-button:hover {
+    color: var(--apm-accent) !important;
+}
