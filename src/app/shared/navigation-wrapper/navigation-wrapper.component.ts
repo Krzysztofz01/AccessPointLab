@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { NavigationWrapperUploadComponent } from './navigation-wrapper-upload/navigation-wrapper-upload.component';
 
 @Component({
   selector: 'app-navigation-wrapper',
@@ -9,7 +11,10 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 })
 export class NavigationWrapperComponent {
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private modalService: NgbModal) { }
 
   /**
    * Get a boolean value representing if the user is authenticated
@@ -35,5 +40,16 @@ export class NavigationWrapperComponent {
   public logout(): void {
     this.authService.logout();
     this.router.navigate(['/auth']);
+  }
+
+  /**
+   * Open a modal with all upload options
+   */
+  public openUploadModal(): void {
+    const modalReference = this.modalService.open(NavigationWrapperUploadComponent, { modalDialogClass: 'modal-lg' });
+
+    const releaseModalContext = () => {};
+
+    modalReference.result.then(() => releaseModalContext(), () => releaseModalContext());
   }
 }

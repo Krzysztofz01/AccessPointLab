@@ -1,0 +1,16 @@
+h5 {
+    color: var(--apm-primary) !important;
+}
+
+p {
+    font-size: 0.8em;
+    color: var(--apm-accent) !important;
+}
+
+.upload-section {
+    margin-left: 1em;
+    margin-right: 1em;
+    border: .1em var(--apm-primary) solid;
+    border-radius: 2em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}

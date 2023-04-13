@@ -10,6 +10,10 @@
                     <p *ngIf="isAuthenticated()" class="mt-2"><em>Server: {{ getServerName() }}</em></p>
                 </div>
                 
+                <div class="p-2">
+                    <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" (click)="openUploadModal()"><b>Upload</b></a></h5>
+                </div>
+
                 <div class="d-flex flex-column p-2">
                     <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/">Map</a></h5>
                     <h5 class="py-2"><a class="sidebar-nav-item" [ngClass]="{ 'sidebar-element-disabled' : !isAuthenticated() }" routerLink="/list">List</a></h5>

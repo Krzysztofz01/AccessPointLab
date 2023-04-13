@@ -1,0 +1,49 @@
+<div class="container-fluid">
+    <div class="row p-3">
+        <div class="col">
+            <button (click)="closeModal()" type="button" class="btn-close float-end"></button>
+        </div>
+    </div>
+
+    <div class="row justify-content-center py-3 px-4">
+        <div class="col p-3 upload-section">
+            <h5>Default (.JSON)</h5>
+            <p><em>Vanilla AccessPointMap feature.</em><br>Data in JSON format provided by the AccessPointMap scanner mobile application.</p> 
+            <app-file-dialog-button [id]="'default-json'" (fileSelectedEvent)="submitUploadDefault($event)">Select and upload</app-file-dialog-button>
+        </div>
+
+        <div class="col p-3 upload-section">
+            <h5>Wireshark (.PCAP)</h5>
+            <p><em>Integration version: 0.0.0-alpha</em><br>Network frames in PCAP format provided by the Wireshark suite.</p>
+            <app-file-dialog-button [id]="'wireshark-pcap'" (fileSelectedEvent)="submitUploadWiresharkPcap($event)">Select and upload</app-file-dialog-button>
+        </div>
+    </div>
+
+    <div class="row justify-content-center py-3 px-4">
+        <div class="col p-3 upload-section">
+            <h5>WiGLE (.CSV.GZ)</h5>
+            <p><em>Integration version: 1.1.0</em><br>Data in CSV.GZ format provided by the WiGLE Wifi mobile application.</p>
+            <app-file-dialog-button [id]="'wigle-csvgz'" (fileSelectedEvent)="submitUploadWigleCsvGz($event)">Select and upload</app-file-dialog-button>
+        </div>
+
+        <div class="col p-3 upload-section">
+            <h5>WiGLE (.CSV)</h5>
+            <p><em>Integration version: 1.1.0</em><br>Data in CSV format provided by the WiGLE Wifi mobile application.</p>
+            <app-file-dialog-button [id]="'wigle-csv'" (fileSelectedEvent)="submitUploadWigle($event)">Select and upload</app-file-dialog-button>
+        </div>
+    </div>
+
+    <div class="row justify-content-center py-3 px-4">
+        <div class="col p-3 upload-section">
+            <h5>Aircrack-ng (.CSV)</h5>
+            <p><em>Integration version: 1.1.0</em><br>Data in CSV format provided by the program airodump-ng (Aircrack-ng platform).</p>
+            <app-file-dialog-button [id]="'aircrackng-csv'" (fileSelectedEvent)="submitUploadAircrackng($event)">Select and upload</app-file-dialog-button>
+        </div>
+
+        <div class="col p-3 upload-section">
+            <h5>Aircrack-ng (.CAP)</h5>
+            <p><em>Integration version: 1.1.0</em><br>Network frames in CAP format provided by the program airodump-ng (Aircrack-ng platform).</p>
+            <app-file-dialog-button [id]="'aircrackng-cap'" (fileSelectedEvent)="submitUploadAircrackngCap($event)">Select and upload</app-file-dialog-button>
+        </div>
+    </div>
+</div>
