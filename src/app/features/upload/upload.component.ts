@@ -6,6 +6,9 @@ import { AccessPointService } from 'src/app/core/services/access-point.service';
 import { LoggerService } from 'src/app/core/services/logger.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 
+/**
+ * @deprecated The feature UploadComponent is not longer supported. Consider using the modal provided via the NavigationWrapperComponent
+ */
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
