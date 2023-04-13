@@ -1,0 +1,6 @@
+<div *ngIf="isValid()">
+    <input type="file" [id]="id" class="d-none" (change)="assignSelectedFile($event)">
+    <button class="btn btn-primary col-12" (click)="invokeFileDialog()">
+        <ng-content></ng-content>
+    </button>
+</div>
