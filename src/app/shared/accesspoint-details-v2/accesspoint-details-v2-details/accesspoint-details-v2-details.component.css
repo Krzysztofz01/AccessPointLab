@@ -3,6 +3,10 @@ th {
     font-weight: bold;
 }
 
+tr {
+    border-color: var(--apm-primary) !important;
+}
+
 td {
     color: var(--apm-accent);
 }

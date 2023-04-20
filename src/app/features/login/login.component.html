@@ -1,4 +1,4 @@
-<div class="login-content-container">
+<div class="login-content-container apm-theme-background">
     <div class="container-fluid">
         <div class="row justify-content-center login-row">
             <div class="col-lg-5 col-md-12">
@@ -8,13 +8,13 @@
                             <h2 class="title text-center">AccessPointLab</h2>
                             <form class="mt-3" [formGroup]="loginForm" (ngSubmit)="loginSubmit()">
                                 <div class="mb-2">
-                                    <input type="text" class="form-control" id="server" placeholder="Server..." formControlName="server" aria-describedby="Server">
+                                    <input type="text" class="form-control" id="server" placeholder="Server" formControlName="server" aria-describedby="Server">
                                 </div>
                                 <div class="mb-2">
-                                    <input type="email" class="form-control" id="email" placeholder="Email..." formControlName="email" aria-describedby="Email">
+                                    <input type="email" class="form-control" id="email" placeholder="Email" formControlName="email" aria-describedby="Email">
                                 </div>
                                 <div class="mb-2">
-                                    <input type="password" class="form-control" id="password" placeholder="Password..." formControlName="password" aria-describedby="Password">
+                                    <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password" aria-describedby="Password">
                                 </div>
                                 <button type="submit" class="btn btn-primary col-12 mt-3">Sign in</button>
                             </form>

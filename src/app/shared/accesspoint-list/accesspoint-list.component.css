@@ -21,5 +21,13 @@ thead {
 }
 
 tbody {
-    color: var(--apm-accent) !important;
+    color: var(--apm-primary-focus) !important;
+}
+
+tr {
+    border-color: var(--apm-primary) !important;
+}
+
+.table-hover>tbody>tr:hover>* {
+    color: var(--apm-accent-focus) !important;
 }

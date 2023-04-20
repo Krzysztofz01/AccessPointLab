@@ -4,7 +4,7 @@ h5 {
 
 p {
     font-size: 0.8em;
-    color: var(--apm-accent) !important;
+    color: var(--apm-primary-focus) !important;
 }
 
 .upload-section {
