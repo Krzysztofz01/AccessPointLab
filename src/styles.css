@@ -1,10 +1,12 @@
 /* AccessPointLab theme */
 :root {
-    --apm-primary: rgba(95,10,135,1);
-    --apm-accent: rgba(164,80,139,1);
+    --apm-primary: rgba(164, 80, 139, 1);
+    --apm-accent: rgba(95, 10, 135, 1);
+    --apm-primary-focus: rgb(245, 171, 222);
+    --apm-accent-focus: rgb(143, 52, 185);
     --apm-placeholder: rgb(151, 107, 138);
     --apm-light: #fff;
-    --apm-dark: #000;
+    --apm-dark: #212121;
     --apm-primary-fade: rgba(95,10,135,.5);
     --apm-accent-fade: rgba(164,80,139,.5);
     --apm-encryption-good: #68BC00;
@@ -25,6 +27,11 @@ html,
 body,
 div {
     font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Shared theme classes */
+.apm-theme-background {
+    background-color: var(--apm-dark);
 }
 
 /* Bootstrap 5 customization */
@@ -82,18 +89,22 @@ input[type=checkbox]:checked {
     accent-color: var(--apm-primary) !important;
 }
 
+.form-check-input {
+    background-color: var(--apm-dark) !important;
+}
+
 /* Button */
 .btn-primary {
     font-family: 'Montserrat', sans-serif !important;
     background-color: var(--apm-primary) !important;
     border-color: transparent !important;
     border-radius: 1em !important;
-    color: var(--apm-light) !important;
+    color: var(--apm-dark) !important;
 }
 .btn-primary:hover,
 .btn-primary:focus:hover {
     background-color: var(--apm-accent) !important;
-    color: var(--apm-light) !important;
+    color: var(--apm-primary) !important;
     box-shadow: none !important;
 }
 
@@ -101,7 +112,7 @@ input[type=checkbox]:checked {
 .btn-primary:visited,
 .btn-primary:focus {
     background-color: var(--apm-primary) !important;
-    color: var(--apm-light) !important;
+    color: var(--apm-dark) !important;
     box-shadow: none !important;
 }
 
@@ -109,6 +120,7 @@ input[type=checkbox]:checked {
 select {
     text-align: center !important;
     color: var(--apm-primary) !important;
+    background-color: var(--apm-dark) !important;
     border: .1em var(--apm-primary) solid !important;
     border-radius: 1em !important;
 }
@@ -124,16 +136,47 @@ select:focus {
 
 .modal-content {
     border-radius: 2em !important;
+    background-color: var(--apm-dark) !important;
     /* max-height: 90vh !important; */
 }
 
 .btn-close:focus {
+    color: var(--apm-primary-focus) !important;
     box-shadow: none !important;
 }
 
 .modal-xl {
     max-width: 95% !important;
 }
+
+/* Nav */
+.nav-tabs {
+    border-color: var(--apm-primary) !important;
+}
+
+.nav-item {
+    cursor: pointer;
+}
+
+.nav-link {
+    color: var(--apm-primary) !important;
+}
+
+.nav-link:hover {
+    border-color: var(--apm-primary) !important;
+}
+
+.nav-tabs .nav-item.show .nav-link {
+    background-color: var(--apm-dark) !important;
+}
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+    color: var(--apm-accent) !important;
+    background-color: var(--apm-primary) !important;
+    border-color: var(--apm-primary) !important;
+}
+
 
 /* OpenLayers */
 .ol-attribution>button {
@@ -169,4 +212,26 @@ select:focus {
 
 :root .ngb-dp-weekday {
     color: var(--apm-accent) !important;
+}
+
+.ngb-dp-weekdays,
+.ngb-dp-header {
+    background-color: var(--apm-dark) !important;
+}
+
+[ngbDatepickerDayView]:hover {
+    color: var(--apm-primary) !important;
+    background-color: var(--apm-accent) !important;
+    outline: none !important;
+}
+
+/* Dropdown button */
+.dropdown-menu {
+    color: var(--apm-accent-focus) !important;
+    background-color: var(--apm-dark) !important;
+}
+
+.dropdown-item:hover {
+    color: var(--apm-accent) !important;
+    background-color: var(--apm-primary) !important;
 }
